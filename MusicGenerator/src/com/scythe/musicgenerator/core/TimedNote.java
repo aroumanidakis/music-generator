@@ -9,9 +9,6 @@ public class TimedNote
 		mNote = note;
 		mDuration = duration;
 		mDotted = dotted;
-		
-		System.out.println("mDuration: " + mDuration);
-		System.out.println("mDotted: " + dotted);
 	}
 	
 	public Note note()

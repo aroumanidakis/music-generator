@@ -19,7 +19,6 @@ public class Duration
 			case QUARTER: return 0.25f;
 		}
 		
-		System.out.println(duration);
 		return 0;
 	}
 }
