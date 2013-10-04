@@ -1,10 +1,8 @@
 package com.scythe.musicgenerator.core;
 
 import com.scythe.musicgenerator.core.Note.Notation;
-import com.scythe.musicgenerator.defines.Degree;
 import com.scythe.musicgenerator.defines.Interval;
 import com.scythe.musicgenerator.defines.Mode;
-
 
 public class Main
 {
@@ -24,7 +22,7 @@ public class Main
 				Note baseNote = scale.note(noteIndex);
 				Note perfectFifth = baseNote.getNoteAtInterval(Interval.PERFECT_FIFTH, scale.accidental());
 				
-				if(!scale.isIn(perfectFifth))
+				if(!scale.isIn(perfectFifth, true))
 				{
 					Note note = scale.note((noteIndex + 4) % scale.noteCnt());
 					

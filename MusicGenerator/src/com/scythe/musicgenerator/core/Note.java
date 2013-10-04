@@ -54,6 +54,17 @@ public class Note
 		return mName == note.name() && mAccidental == note.accidental() ? true : false;
 	}
 	
+	public boolean equalsNormalized(Note note)
+	{
+		Note note1 = new Note(note);
+		Note note2 = new Note(this);
+		
+		note1.normalize();
+		note2.normalize();
+		
+		return note1.name() == note2.name() && note1.accidental() == note2.accidental() ? true : false;
+	}
+	
 	public Note getNoteAtInterval(int interval, int accidental)
 	{
 		Note note = new Note(this);
@@ -95,6 +106,30 @@ public class Note
 		}
 		
 		return note;
+	}
+	
+	public void normalize()
+	{
+		if(mName == Name.C && mAccidental == Accidental.FLAT)
+		{
+			mName = Name.B;
+			mAccidental = Accidental.NONE;
+		}
+		else if(mName == Name.E && mAccidental == Accidental.SHARP)
+		{
+			mName = Name.F;
+			mAccidental = Accidental.NONE;
+		}
+		else if(mName == Name.F && mAccidental == Accidental.FLAT)
+		{
+			mName = Name.E;
+			mAccidental = Accidental.NONE;
+		}
+		else if(mName == Name.B && mAccidental == Accidental.SHARP)
+		{
+			mName = Name.C;
+			mAccidental = Accidental.NONE;
+		}
 	}
 	
 	public static void notation(int notation)

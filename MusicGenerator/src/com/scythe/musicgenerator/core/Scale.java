@@ -48,13 +48,23 @@ public class Scale
 		return mAccidental;
 	}
 	
-	public boolean isIn(Note note)
+	public boolean isIn(Note note, boolean normalized)
 	{
 		for(int i = 0; i < mNotes.length; i++)
 		{
-			if(mNotes[i].equals(note))
+			if(normalized)
 			{
-				return true;
+				if(mNotes[i].equalsNormalized(note))
+				{
+					return true;
+				}
+			}
+			else
+			{
+				if(mNotes[i].equals(note))
+				{
+					return true;
+				}
 			}
 		}
 		
