@@ -27,10 +27,22 @@ public class Bar
 		float realTotalTime = 0;
 		for(int i = 0; i < mNotes.length; i++)
 		{
-			realTotalTime += mNotes[i].duration();
+			realTotalTime += mNotes[i].realDuration();
 		}
 		
 		return expectedTotalTime == realTotalTime;
+	}
+	
+	@Override
+	public String toString()
+	{
+		String str = mRhythmSignature[0] + "/" + Duration.convertToRhythmSignature(mRhythmSignature[1]) + " ";
+		for(int i = 0; i < mNotes.length; i++)
+		{
+			str += mNotes[i].toString() + " ";
+		}
+		
+		return str;
 	}
 	
 	private int[] mRhythmSignature;

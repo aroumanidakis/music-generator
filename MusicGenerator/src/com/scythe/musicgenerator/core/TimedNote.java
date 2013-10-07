@@ -21,7 +21,12 @@ public class TimedNote
 		mNote = note;
 	}
 	
-	public float duration()
+	public int duration()
+	{
+		return mDuration;
+	}
+	
+	public float realDuration()
 	{
 		float duration = Duration.convert(mDuration);
 		
@@ -41,7 +46,7 @@ public class TimedNote
 	@Override
 	public String toString()
 	{
-		return duration() + mNote.toString();
+		return realDuration() + mNote.toString();
 	}
 	
 	private Note mNote;
