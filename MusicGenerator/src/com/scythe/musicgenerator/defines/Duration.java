@@ -1,5 +1,6 @@
 package com.scythe.musicgenerator.defines;
 
+
 public class Duration
 {
 	public static final int NB_DURATIONS = 5;
@@ -10,7 +11,7 @@ public class Duration
 	public static final int HALF = 3;
 	public static final int QUARTER = 4;
 	
-	public static float convert(int duration)
+	public static float convertInTime(int duration)
 	{
 		switch(duration)
 		{
@@ -24,7 +25,7 @@ public class Duration
 		return 0;
 	}
 	
-	public static int convertToRhythmSignature(int duration)
+	public static int convertInRhythmSignature(int duration)
 	{
 		switch(duration)
 		{

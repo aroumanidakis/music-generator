@@ -17,17 +17,17 @@ public class Bar
 	
 	public boolean isRhythmSignatureValid()
 	{
-		return mRhythmSignature.length != 2 || Duration.convert(mRhythmSignature[1]) == 0 ? false : true;
+		return mRhythmSignature.length != 2 || Duration.convertInRhythmSignature(mRhythmSignature[1]) == 0 ? false : true;
 	}
 	
 	public boolean isNotesValid()
 	{
-		float expectedTotalTime = mRhythmSignature[0] * Duration.convert(mRhythmSignature[1]);
+		float expectedTotalTime = mRhythmSignature[0] * Duration.convertInTime(mRhythmSignature[1]);
 		
 		float realTotalTime = 0;
 		for(int i = 0; i < mNotes.length; i++)
 		{
-			realTotalTime += mNotes[i].realDuration();
+			realTotalTime += mNotes[i].durationInTime();
 		}
 		
 		return expectedTotalTime == realTotalTime;
@@ -36,7 +36,7 @@ public class Bar
 	@Override
 	public String toString()
 	{
-		String str = mRhythmSignature[0] + "/" + Duration.convertToRhythmSignature(mRhythmSignature[1]) + " ";
+		String str = mRhythmSignature[0] + "/" + Duration.convertInRhythmSignature(mRhythmSignature[1]) + " ";
 		for(int i = 0; i < mNotes.length; i++)
 		{
 			str += mNotes[i].toString() + " ";

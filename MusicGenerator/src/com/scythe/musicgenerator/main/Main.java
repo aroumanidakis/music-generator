@@ -1,5 +1,8 @@
 package com.scythe.musicgenerator.main;
 
+import java.io.File;
+import java.io.FileOutputStream;
+
 import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.Note;
 import com.scythe.musicgenerator.core.Note.Notation;
@@ -14,7 +17,7 @@ import com.scythe.musicgenerator.factories.ScaleFactory;
 
 public class Main
 {
-	public static void main(String[] args)
+	public static void main(String[] args) throws Exception
 	{
 		Note.notation(Notation.FRENCH);
 		
@@ -67,9 +70,26 @@ public class Main
 		System.out.println();
 	}
 	
-	public static void testBarFactory()
+	public static void testBarFactory() throws Exception
 	{
-		System.out.println(BarFactory.generateNonMelodic(new int[]{9, Duration.HALF}));
+		FileOutputStream file = new FileOutputStream(new File("rhythms.txt"));
+		
+		for(int i = 0; i < 10; i++)
+		{
+			int[] signature = (Math.random() < 0.5f) ? new int[]{4, Duration.SINGLE} : new int[]{6, Duration.HALF};
+			
+			Bar bar = BarFactory.generateNonMelodic(signature);
+			
+			String barStr = bar.toString();
+			System.out.println(barStr + (bar.isFullyValid() ? " (valid)" : " (not valid)"));
+			
+			barStr += "\n";
+			
+			file.write(barStr.getBytes());
+			
+		}
+		
+		file.close();
 	}
 }
 

@@ -11,6 +11,13 @@ public class TimedNote
 		mDotted = dotted;
 	}
 	
+	public TimedNote(TimedNote note)
+	{
+		mNote = note.mNote;
+		mDuration = note.mDuration;
+		mDotted = note.mDotted;
+	}
+	
 	public Note note()
 	{
 		return mNote;
@@ -26,16 +33,10 @@ public class TimedNote
 		return mDuration;
 	}
 	
-	public float realDuration()
+	public float durationInTime()
 	{
-		float duration = Duration.convert(mDuration);
-		
-		if(mDotted)
-		{
-			duration += mDuration * 0.5f;
-		}
-		
-		return duration;
+		float duration = Duration.convertInTime(mDuration);
+		return mDotted ? duration * 1.5f : duration;
 	}
 	
 	public boolean dotted()
@@ -46,7 +47,7 @@ public class TimedNote
 	@Override
 	public String toString()
 	{
-		return realDuration() + mNote.toString();
+		return durationInTime() + mNote.toString();
 	}
 	
 	private Note mNote;
