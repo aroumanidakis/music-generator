@@ -4,14 +4,13 @@ import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.Note;
-import com.scythe.musicgenerator.core.TimedNote;
 import com.scythe.musicgenerator.defines.Duration;
 
 public class BarFactory
 {
 	public static Bar generateNonMelodic(int[] rhythmSignature)
 	{
-		ArrayList<TimedNoteToCut> notesToCut = createBeginningNotes(rhythmSignature[0] * Duration.convertInTime(rhythmSignature[1]));
+		ArrayList<NoteToCut> notesToCut = createBeginningNotes(rhythmSignature[0] * Duration.convertInTime(rhythmSignature[1]));
 		
 		boolean newCuts = true;
 		while(newCuts)
@@ -21,7 +20,7 @@ public class BarFactory
 			{
 				if(notesToCut.get(i).cuttingChance() != 0)
 				{
-					ArrayList<TimedNoteToCut> cuts = notesToCut.get(i).randomCutting();
+					ArrayList<NoteToCut> cuts = notesToCut.get(i).randomCutting();
 					
 					notesToCut.remove(i);
 					notesToCut.addAll(i, cuts);
@@ -32,7 +31,7 @@ public class BarFactory
 			}
 		}
 		
-		TimedNote[] notes = new TimedNote[notesToCut.size()];
+		Note[] notes = new Note[notesToCut.size()];
 		for(int i = 0; i < notes.length; i++)
 		{
 			notes[i] = notesToCut.get(i).note();
@@ -41,9 +40,9 @@ public class BarFactory
 		return new Bar(rhythmSignature, notes);
 	}
 	
-	private static ArrayList<TimedNoteToCut> createBeginningNotes(float totalTime)
+	private static ArrayList<NoteToCut> createBeginningNotes(float totalTime)
 	{
-		ArrayList<TimedNoteToCut> notes = new ArrayList<TimedNoteToCut>();
+		ArrayList<NoteToCut> notes = new ArrayList<NoteToCut>();
 		
 		float timeToAdd = totalTime;
 		while(timeToAdd > 0)
@@ -52,14 +51,14 @@ public class BarFactory
 			{
 				if((Duration.convertInTime(duration) * 1.5) <= timeToAdd)
 				{
-					notes.add(new TimedNoteToCut(new TimedNote(new Note(Note.Name.A), duration, true), cuttingChanceCoeff));
+					notes.add(new NoteToCut(new Note(Note.Name.A, Note.Accidental.NONE, duration, true), cuttingChanceCoeff));
 					timeToAdd -= Duration.convertInTime(duration) * 1.5;
 					break;
 				}
 				
 				if(Duration.convertInTime(duration) <= timeToAdd)
 				{
-					notes.add(new TimedNoteToCut(new TimedNote(new Note(Note.Name.A), duration, false), cuttingChanceCoeff));
+					notes.add(new NoteToCut(new Note(Note.Name.A, Note.Accidental.NONE, duration, false), cuttingChanceCoeff));
 					timeToAdd -= Duration.convertInTime(duration);
 					break;
 				}
@@ -70,7 +69,7 @@ public class BarFactory
 		{
 			int randomIndex = (int)(Math.random() * notes.size());
 			
-			TimedNoteToCut tmp = notes.get(i);
+			NoteToCut tmp = notes.get(i);
 			notes.set(i, notes.get(randomIndex));
 			notes.set(randomIndex, tmp);
 		}
@@ -80,18 +79,18 @@ public class BarFactory
 	
 	private static float cuttingChanceCoeff = 0.85f;
 	
-	private static class TimedNoteToCut
+	private static class NoteToCut
 	{
-		public TimedNoteToCut(TimedNote note, float cuttingChance)
+		public NoteToCut(Note note, float cuttingChance)
 		{
 			mNote = note;
 			mCuttingChance = cuttingChance;
 		}
 		
-		public ArrayList<TimedNoteToCut> randomCutting()
+		public ArrayList<NoteToCut> randomCutting()
 		{
-			ArrayList<TimedNoteToCut> cuts = new ArrayList<TimedNoteToCut>();
-			TimedNote note1, note2;
+			ArrayList<NoteToCut> cuts = new ArrayList<NoteToCut>();
+			Note note1, note2;
 			
 			if(mNote.duration() != Duration.QUARTER)
 			{
@@ -99,47 +98,47 @@ public class BarFactory
 				{
 					if(mNote.dotted())
 					{
-						note1 = new TimedNote(mNote.note(), mNote.duration(), false);
-						note2 = new TimedNote(mNote.note(), mNote.duration() + 1, false);
+						note1 = new Note(mNote.name(), mNote.accidental(), mNote.duration(), false);
+						note2 = new Note(mNote.name(), mNote.accidental(), mNote.duration() + 1, false);
 					}
 					else
 					{
 						if(mNote.duration() == Duration.HALF)
 						{
-							note1 = new TimedNote(mNote.note(), mNote.duration() + 1, false);
+							note1 = new Note(mNote.name(), mNote.accidental(), mNote.duration() + 1, false);
 							note2 = note1;
 						}
 						else
 						{
 							if(Math.random() < 0.4)
 							{	
-								note1 = new TimedNote(mNote.note(), mNote.duration() + 1, false);
+								note1 = new Note(mNote.name(), mNote.accidental(), mNote.duration() + 1, false);
 								note2 = note1;
 							}
 							else
 							{
-								note1 = new TimedNote(mNote.note(), mNote.duration() + 1, true);
-								note2 = new TimedNote(mNote.note(), mNote.duration() + 2, false);
+								note1 = new Note(mNote.name(), mNote.accidental(), mNote.duration() + 1, true);
+								note2 = new Note(mNote.name(), mNote.accidental(), mNote.duration() + 2, false);
 							}
 						}
 					}
 					
-					cuts.add(new TimedNoteToCut(note1, mCuttingChance * cuttingChanceCoeff));
-					cuts.add(new TimedNoteToCut(note2, mCuttingChance * cuttingChanceCoeff));
+					cuts.add(new NoteToCut(note1, mCuttingChance * cuttingChanceCoeff));
+					cuts.add(new NoteToCut(note2, mCuttingChance * cuttingChanceCoeff));
 				}
 			}
 			
 			if(cuts.size() == 0)
 			{
-				note1 = new TimedNote(mNote);
-				cuts.add(new TimedNoteToCut(note1, 0));
+				note1 = new Note(mNote);
+				cuts.add(new NoteToCut(note1, 0));
 			}
 			
 			for(int i = 0; i < cuts.size(); i++)
 			{
 				int randomIndex = (int)(Math.random() * cuts.size());
 				
-				TimedNoteToCut tmp = cuts.get(i);
+				NoteToCut tmp = cuts.get(i);
 				cuts.set(i, cuts.get(randomIndex));
 				cuts.set(randomIndex, tmp);
 			}
@@ -147,7 +146,7 @@ public class BarFactory
 			return cuts;
 		}
 		
-		public TimedNote note()
+		public Note note()
 		{
 			return mNote;
 		}
@@ -157,7 +156,7 @@ public class BarFactory
 			return mCuttingChance;
 		}
 		
-		private TimedNote mNote;
+		private Note mNote;
 		private float mCuttingChance;
 	}
 }

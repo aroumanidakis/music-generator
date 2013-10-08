@@ -7,7 +7,6 @@ import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.Note;
 import com.scythe.musicgenerator.core.Note.Notation;
 import com.scythe.musicgenerator.core.Scale;
-import com.scythe.musicgenerator.core.TimedNote;
 import com.scythe.musicgenerator.defines.Degree;
 import com.scythe.musicgenerator.defines.Duration;
 import com.scythe.musicgenerator.defines.Interval;
@@ -19,32 +18,37 @@ public class Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		Note.notation(Notation.FRENCH);
+		Note.notation(Notation.AMERICAN);
 		
-		//validBarTest();
-		//perfectFifthTest();
-		testBarFactory();
+		validBarTest();
+		perfectFifthTest();
+		barFactoryTest();
 	}
 	
 	public static void validBarTest()
 	{
+		System.out.println("VALID BAR TEST\n");
+		
 		int[] rhythmSignature = new int[2];
 		rhythmSignature[0] = 4;
 		rhythmSignature[1] = Duration.SINGLE;
 		
-		TimedNote[] notes = new TimedNote[4];
-		notes[0] = new TimedNote(new Note(Note.Name.A), Duration.SINGLE, false);
-		notes[1] = new TimedNote(new Note(Note.Name.A), Duration.SINGLE, false);
-		notes[2] = new TimedNote(new Note(Note.Name.A), Duration.SINGLE, false);
-		notes[3] = new TimedNote(new Note(Note.Name.A), Duration.SINGLE, false);
+		Note[] notes = new Note[4];
+		notes[0] = new Note(Note.Name.A, Note.Accidental.NONE, Duration.SINGLE, false);
+		notes[1] = new Note(Note.Name.A, Note.Accidental.NONE, Duration.SINGLE, false);
+		notes[2] = new Note(Note.Name.A, Note.Accidental.NONE, Duration.SINGLE, false);
+		notes[3] = new Note(Note.Name.A, Note.Accidental.NONE, Duration.SINGLE, false);
 		
 		Bar bar = new Bar(rhythmSignature, notes);
 		
 		System.out.println("Bar is fully valid: " + (bar.isFullyValid() ? "YES" : "NO"));
+		System.out.println();
 	}
 	
 	public static void perfectFifthTest()
 	{
+		System.out.println("PERFECT FIFTH TEST\n");
+		
 		Note tonic = new Note(Note.Name.A, Note.Accidental.NONE);
 		
 		for(int mode = 0; mode < Mode.NB_MODES; mode++)
@@ -70,11 +74,13 @@ public class Main
 		System.out.println();
 	}
 	
-	public static void testBarFactory() throws Exception
+	public static void barFactoryTest() throws Exception
 	{
+		System.out.println("BAR FACTORY TEST\n");
+		
 		FileOutputStream file = new FileOutputStream(new File("rhythms.txt"));
 		
-		for(int i = 0; i < 10; i++)
+		for(int i = 0; i < 30; i++)
 		{
 			int[] signature = (Math.random() < 0.5f) ? new int[]{4, Duration.SINGLE} : new int[]{6, Duration.HALF};
 			
@@ -86,10 +92,10 @@ public class Main
 			barStr += "\n";
 			
 			file.write(barStr.getBytes());
-			
 		}
 		
 		file.close();
+		System.out.println();
 	}
 }
 

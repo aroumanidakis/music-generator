@@ -1,23 +1,43 @@
 package com.scythe.musicgenerator.core;
 
+import com.scythe.musicgenerator.defines.Duration;
+
 public class Note 
 {
+	public Note(int name, int accidental, int duration, boolean dotted)
+	{
+		mName = name;
+		mAccidental = accidental;
+		mIsTimed = true;
+		mDuration = duration;
+		mDotted = dotted;
+	}
+	
 	public Note(int name, int accidental)
 	{
 		mName = name;
 		mAccidental = accidental;
+		mIsTimed = false;
+		mDuration = 0;
+		mDotted = false;
 	}
 	
 	public Note(int name)
 	{
 		mName = name;
 		mAccidental = Accidental.NONE;
+		mIsTimed = false;
+		mDuration = 0;
+		mDotted = false;
 	}
 	
 	public Note(Note note)
 	{
-		mName = note.name();
-		mAccidental = note.accidental();
+		mName = note.mName;
+		mAccidental = note.mAccidental;
+		mIsTimed = note.mIsTimed;
+		mDuration = note.mDuration;
+		mDotted = note.mDotted;
 	}
 	
 	public int name()
@@ -40,10 +60,31 @@ public class Note
 		mAccidental = accidental;
 	}
 	
+	public boolean isTimed()
+	{
+		return mIsTimed;
+	}
+	
+	public int duration()
+	{
+		return mDuration;
+	}
+	
+	public float durationInTime()
+	{
+		float duration = Duration.convertInTime(mDuration);
+		return mDotted ? duration * 1.5f : duration;
+	}
+	
+	public boolean dotted()
+	{
+		return mDotted;
+	}
+	
 	@Override
 	public String toString()
 	{
-		return Name.toString(mName) + Accidental.toString(mAccidental);
+		return (mIsTimed ? durationInTime() : "") + Name.toString(mName) + Accidental.toString(mAccidental);
 	}
 	
 	@Override
@@ -194,5 +235,10 @@ public class Note
 	
 	private int mName;
 	private int mAccidental;
+	
+	private boolean mIsTimed;
+	private int mDuration;
+	private boolean mDotted;
+	
 	private static int mNotation = Notation.AMERICAN;
 }

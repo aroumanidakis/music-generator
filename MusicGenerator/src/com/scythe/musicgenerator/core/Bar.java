@@ -4,7 +4,7 @@ import com.scythe.musicgenerator.defines.Duration;
 
 public class Bar
 {
-	public Bar(int[] rhythmSignature, TimedNote[] notes)
+	public Bar(int[] rhythmSignature, Note[] notes)
 	{
 		mRhythmSignature = rhythmSignature;
 		mNotes = notes;
@@ -27,6 +27,11 @@ public class Bar
 		float realTotalTime = 0;
 		for(int i = 0; i < mNotes.length; i++)
 		{
+			if(!mNotes[i].isTimed())
+			{
+				return false;
+			}
+			
 			realTotalTime += mNotes[i].durationInTime();
 		}
 		
@@ -46,5 +51,5 @@ public class Bar
 	}
 	
 	private int[] mRhythmSignature;
-	private TimedNote[] mNotes;
+	private Note[] mNotes;
 }
