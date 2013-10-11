@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
+import com.scythe.musicgenerator.core.BarSignature;
 import com.scythe.musicgenerator.core.Note;
 import com.scythe.musicgenerator.core.Note.Notation;
 import com.scythe.musicgenerator.core.Scale;
@@ -31,17 +32,13 @@ public class Main
 	{
 		System.out.println("VALID BAR TEST\n");
 		
-		int[] rhythmSignature = new int[2];
-		rhythmSignature[0] = 4;
-		rhythmSignature[1] = Duration.SINGLE;
-		
 		ArrayList<TimedElement> timedElements = new ArrayList<TimedElement>();
 		timedElements.add(new TimedElement(Duration.SINGLE, false));
 		timedElements.add(new TimedElement(Duration.SINGLE, false));
 		timedElements.add(new TimedElement(Duration.SINGLE, false));
 		timedElements.add(new TimedElement(Duration.SINGLE, false));
 		
-		Bar bar = new Bar(rhythmSignature, timedElements);
+		Bar bar = new Bar(new BarSignature("4/4"), timedElements);
 		
 		System.out.println("Bar is fully valid: " + (bar.isValid() ? "YES" : "NO"));
 		System.out.println();
@@ -84,9 +81,16 @@ public class Main
 		
 		for(int i = 0; i < 30; i++)
 		{
-			int[] signature = (Math.random() < 0.5f) ? new int[]{4, Duration.SINGLE} : new int[]{6, Duration.HALF};
+			Bar bar = null;
 			
-			Bar bar = BarFactory.generateRhythm(signature);
+			if(Math.random() < 0.5f)
+			{
+				bar = BarFactory.generateRhythm(new BarSignature("4/4"));
+			}
+			else
+			{
+				bar = BarFactory.generateRhythm(new BarSignature("6/8"));
+			}
 			
 			String barStr = bar.toString();
 			System.out.println(barStr + (bar.isValid() ? " (valid)" : " (not valid)"));

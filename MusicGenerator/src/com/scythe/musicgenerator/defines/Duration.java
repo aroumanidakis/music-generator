@@ -38,4 +38,18 @@ public class Duration
 		
 		return 0;
 	}
+	
+	public static int reverseConvert(int rhythmSignature)
+	{
+		switch(rhythmSignature)
+		{
+			case 1:		return QUADRUPLE;
+			case 2:		return DOUBLE;
+			case 4:		return SINGLE;
+			case 8:		return HALF;
+			case 16:	return QUARTER;
+		}
+		
+		return 0;
+	}
 }

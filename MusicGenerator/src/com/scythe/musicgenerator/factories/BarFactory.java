@@ -3,14 +3,15 @@ package com.scythe.musicgenerator.factories;
 import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
+import com.scythe.musicgenerator.core.BarSignature;
 import com.scythe.musicgenerator.core.TimedElement;
 import com.scythe.musicgenerator.defines.Duration;
 
 public class BarFactory
 {
-	public static Bar generateRhythm(int[] rhythmSignature)
+	public static Bar generateRhythm(BarSignature signature)
 	{
-		ArrayList<TimedElementToCut> timedElementsToCut = createBeginningTimedElements(rhythmSignature[0] * Duration.convertInTime(rhythmSignature[1]));
+		ArrayList<TimedElementToCut> timedElementsToCut = createBeginningTimedElements(signature.timeCnt() * Duration.convertInTime(signature.refTime()));
 		
 		boolean newCuts = true;
 		while(newCuts)
@@ -37,7 +38,7 @@ public class BarFactory
 			timedElements.add(element.timedElement());
 		}
 		
-		return new Bar(rhythmSignature, timedElements);
+		return new Bar(signature, timedElements);
 	}
 	
 	private static ArrayList<TimedElementToCut> createBeginningTimedElements(float totalTime)
