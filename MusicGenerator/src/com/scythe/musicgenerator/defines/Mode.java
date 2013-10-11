@@ -16,12 +16,12 @@ public class Mode
 	{
 		switch(mode)
 		{
-			case IONIAN		: return "IONIAN";
+			case IONIAN		: return "IONIAN (major)";
 			case DORIAN		: return "DORIAN";
 			case PHRYGIAN	: return "PHRYGIAN";
 			case LYDIAN		: return "LYDIAN";
 			case MIXOLYDIAN	: return "MIXOLYDIAN";
-			case EOLIAN		: return "EOLIAN";
+			case EOLIAN		: return "EOLIAN (minor)";
 			case LOCRIAN	: return "LOCRIAN";
 		}
 		

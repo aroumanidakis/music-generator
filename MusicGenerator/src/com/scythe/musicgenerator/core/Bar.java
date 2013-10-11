@@ -1,38 +1,35 @@
 package com.scythe.musicgenerator.core;
 
+import java.util.ArrayList;
+
 import com.scythe.musicgenerator.defines.Duration;
 
 public class Bar
 {
-	public Bar(int[] rhythmSignature, Note[] notes)
+	public Bar(int[] rhythmSignature, ArrayList<TimedElement> timedElements)
 	{
 		mRhythmSignature = rhythmSignature;
-		mNotes = notes;
+		mTimedElements = timedElements;
 	}
 	
-	public boolean isFullyValid()
+	public boolean isValid()
 	{
 		return isRhythmSignatureValid() && isNotesValid();
 	}
 	
-	public boolean isRhythmSignatureValid()
+	private boolean isRhythmSignatureValid()
 	{
 		return mRhythmSignature.length != 2 || Duration.convertInRhythmSignature(mRhythmSignature[1]) == 0 ? false : true;
 	}
 	
-	public boolean isNotesValid()
+	private boolean isNotesValid()
 	{
 		float expectedTotalTime = mRhythmSignature[0] * Duration.convertInTime(mRhythmSignature[1]);
 		
 		float realTotalTime = 0;
-		for(int i = 0; i < mNotes.length; i++)
+		for(int i = 0; i < mTimedElements.size(); i++)
 		{
-			if(!mNotes[i].isTimed())
-			{
-				return false;
-			}
-			
-			realTotalTime += mNotes[i].durationInTime();
+			realTotalTime += mTimedElements.get(i).durationInTime();
 		}
 		
 		return expectedTotalTime == realTotalTime;
@@ -42,14 +39,14 @@ public class Bar
 	public String toString()
 	{
 		String str = mRhythmSignature[0] + "/" + Duration.convertInRhythmSignature(mRhythmSignature[1]) + " ";
-		for(int i = 0; i < mNotes.length; i++)
+		for(int i = 0; i < mTimedElements.size(); i++)
 		{
-			str += mNotes[i].toString() + " ";
+			str += mTimedElements.get(i) + " ";
 		}
 		
 		return str;
 	}
 	
 	private int[] mRhythmSignature;
-	private Note[] mNotes;
+	private ArrayList<TimedElement> mTimedElements;
 }

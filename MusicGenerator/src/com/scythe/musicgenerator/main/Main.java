@@ -2,11 +2,13 @@ package com.scythe.musicgenerator.main;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.Note;
 import com.scythe.musicgenerator.core.Note.Notation;
 import com.scythe.musicgenerator.core.Scale;
+import com.scythe.musicgenerator.core.TimedElement;
 import com.scythe.musicgenerator.defines.Degree;
 import com.scythe.musicgenerator.defines.Duration;
 import com.scythe.musicgenerator.defines.Interval;
@@ -33,15 +35,15 @@ public class Main
 		rhythmSignature[0] = 4;
 		rhythmSignature[1] = Duration.SINGLE;
 		
-		Note[] notes = new Note[4];
-		notes[0] = new Note(Note.Name.A, Note.Accidental.NONE, Duration.SINGLE, false);
-		notes[1] = new Note(Note.Name.A, Note.Accidental.NONE, Duration.SINGLE, false);
-		notes[2] = new Note(Note.Name.A, Note.Accidental.NONE, Duration.SINGLE, false);
-		notes[3] = new Note(Note.Name.A, Note.Accidental.NONE, Duration.SINGLE, false);
+		ArrayList<TimedElement> timedElements = new ArrayList<TimedElement>();
+		timedElements.add(new TimedElement(Duration.SINGLE, false));
+		timedElements.add(new TimedElement(Duration.SINGLE, false));
+		timedElements.add(new TimedElement(Duration.SINGLE, false));
+		timedElements.add(new TimedElement(Duration.SINGLE, false));
 		
-		Bar bar = new Bar(rhythmSignature, notes);
+		Bar bar = new Bar(rhythmSignature, timedElements);
 		
-		System.out.println("Bar is fully valid: " + (bar.isFullyValid() ? "YES" : "NO"));
+		System.out.println("Bar is fully valid: " + (bar.isValid() ? "YES" : "NO"));
 		System.out.println();
 	}
 	
@@ -49,7 +51,7 @@ public class Main
 	{
 		System.out.println("PERFECT FIFTH TEST\n");
 		
-		Note tonic = new Note(Note.Name.A, Note.Accidental.NONE);
+		Note tonic = new Note(Note.Name.C, Note.Accidental.NONE);
 		
 		for(int mode = 0; mode < Mode.NB_MODES; mode++)
 		{
@@ -84,10 +86,10 @@ public class Main
 		{
 			int[] signature = (Math.random() < 0.5f) ? new int[]{4, Duration.SINGLE} : new int[]{6, Duration.HALF};
 			
-			Bar bar = BarFactory.generateNonMelodic(signature);
+			Bar bar = BarFactory.generateRhythm(signature);
 			
 			String barStr = bar.toString();
-			System.out.println(barStr + (bar.isFullyValid() ? " (valid)" : " (not valid)"));
+			System.out.println(barStr + (bar.isValid() ? " (valid)" : " (not valid)"));
 			
 			barStr += "\n";
 			
