@@ -23,6 +23,7 @@ public class Main
 		Note.notation(Notation.AMERICAN);
 		
 		validBarTest();
+		scaleInstanciationTest();
 		perfectFifthTest();
 		barFactoryTest();
 	}
@@ -41,6 +42,22 @@ public class Main
 		
 		System.out.println("Bar is fully valid: " + (bar.isValid() ? "YES" : "NO"));
 		System.out.println();
+	}
+	
+	public static void scaleInstanciationTest()
+	{
+		for(int name = 0; name < Note.Name.NB_NAMES; name++)
+		{
+			for(int accidental = 0; accidental < Note.Accidental.NB_ACCIDENTALS; accidental++)
+			{
+				Note tonic = new Note(name, accidental);
+				for(int mode = 0; mode < Mode.NB_MODES; mode++)
+				{
+					Scale scale = new Scale(tonic, mode);
+					System.out.println(scale);
+				}
+			}
+		}
 	}
 	
 	public static void perfectFifthTest()

@@ -12,6 +12,7 @@ public class Scale
 	{
 		mTonic = tonic;
 		mMode = mode;
+		mIsValid = true;
 		
 		int[] intervals = shift(mMode);
 		
@@ -49,6 +50,11 @@ public class Scale
 				}
 			}
 		}
+	}
+	
+	public Note tonic()
+	{
+		return mTonic;
 	}
 	
 	public int mode()
@@ -134,6 +140,15 @@ public class Scale
 			str += mNotes.get(i) + (i == mNotes.size() - 1 ? ")" : " ");
 		}
 		
+		if(!mIsValid)
+		{
+			str += " (not valid)";
+		}
+		else if(hasStrangeNote())
+		{
+			str += " (strange)";
+		}
+
 		return str;
 	}
 	
@@ -151,7 +166,7 @@ public class Scale
 	
 	private Note getHalfToneUpperNote(Note refNote, int halfTones)
 	{
-		Note newNote = new Note((refNote.name() + 1) % Name.NB_NAME, refNote.accidental());
+		Note newNote = new Note((refNote.name() + 1) % Name.NB_NAMES, refNote.accidental());
 		
 		int halfToneDiffenrence = getHalfToneDifference(refNote, newNote);
 		
@@ -211,7 +226,7 @@ public class Scale
 				}
 				else
 				{
-					notes[i].name((notes[i].name() + 1) % Name.NB_NAME);
+					notes[i].name((notes[i].name() + 1) % Name.NB_NAMES);
 					notes[i].accidental(Accidental.FLAT);
 				}
 			}
@@ -248,7 +263,7 @@ public class Scale
 			}
 			else
 			{
-				notes[0].name((notes[0].name() + 1) % Name.NB_NAME);
+				notes[0].name((notes[0].name() + 1) % Name.NB_NAMES);
 				notes[0].accidental(Accidental.FLAT);
 			}
 			
