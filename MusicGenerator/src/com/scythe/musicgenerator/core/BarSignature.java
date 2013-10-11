@@ -21,8 +21,8 @@ public class BarSignature
 		int tmp = 0;
 		try
 		{
-			mTimeCnt = Integer.parseInt(fields[0]);
-			tmp = Integer.parseInt(fields[1]);
+			mTimeCnt = Integer.parseInt(fields[0].trim());
+			tmp = Integer.parseInt(fields[1].trim());
 		}
 		catch(NumberFormatException e)
 		{

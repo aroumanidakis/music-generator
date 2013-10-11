@@ -15,7 +15,6 @@ import com.scythe.musicgenerator.defines.Duration;
 import com.scythe.musicgenerator.defines.Interval;
 import com.scythe.musicgenerator.defines.Mode;
 import com.scythe.musicgenerator.factories.BarFactory;
-import com.scythe.musicgenerator.factories.ScaleFactory;
 
 public class Main
 {
@@ -52,7 +51,7 @@ public class Main
 		
 		for(int mode = 0; mode < Mode.NB_MODES; mode++)
 		{
-			Scale scale = ScaleFactory.NaturalMode.generate(tonic, mode);
+			Scale scale = new Scale(tonic, mode);
 			System.out.println("Selected scale: " + scale);
 			
 			for(int noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
