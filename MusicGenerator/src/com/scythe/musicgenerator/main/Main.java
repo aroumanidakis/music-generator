@@ -15,6 +15,7 @@ import com.scythe.musicgenerator.defines.Duration;
 import com.scythe.musicgenerator.defines.Interval;
 import com.scythe.musicgenerator.defines.Mode;
 import com.scythe.musicgenerator.factories.BarFactory;
+import com.scythe.musicgenerator.midi.MidiWriter;
 
 public class Main
 {
@@ -26,6 +27,7 @@ public class Main
 		scaleInstanciationTest();
 		perfectFifthTest();
 		barFactoryTest();
+		midiWriterTest();
 	}
 	
 	public static void validBarTest()
@@ -118,6 +120,21 @@ public class Main
 		
 		file.close();
 		System.out.println();
+	}
+	
+	public static void midiWriterTest()
+	{
+		MidiWriter midiWriter = new MidiWriter("output.mid");
+		midiWriter.addTrack(new ArrayList<Bar>());
+		
+		if(Math.random() < 0.5)
+		{
+			midiWriter.addTrack(new ArrayList<Bar>());
+		}
+		
+		midiWriter.write();
+		
+		System.out.println("Midi file writen.");
 	}
 }
 
