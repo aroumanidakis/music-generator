@@ -2,24 +2,32 @@ package com.scythe.musicgenerator.core;
 
 public class Note 
 {
-	private static int mNotation = Notation.AMERICAN;
+	public Note(int name, int accidental, int octave)
+	{
+		mName = name;
+		mAccidental = accidental;
+		mOctave = octave;
+	}
 	
 	public Note(int name, int accidental)
 	{
 		mName = name;
 		mAccidental = accidental;
+		mOctave = mDefaultOctave;
 	}
 	
 	public Note(int name)
 	{
 		mName = name;
 		mAccidental = Accidental.NONE;
+		mOctave = mDefaultOctave;
 	}
 	
 	public Note(Note note)
 	{
 		mName = note.mName;
 		mAccidental = note.mAccidental;
+		mOctave = note.mOctave;
 	}
 	
 	public int name()
@@ -42,10 +50,20 @@ public class Note
 		mAccidental = accidental;
 	}
 	
+	public int octave()
+	{
+		return mOctave;
+	}
+	
+	public void octave(int octave)
+	{
+		mOctave = octave;
+	}
+	
 	@Override
 	public String toString()
 	{
-		return Name.toString(mName) + Accidental.toString(mAccidental);
+		return Name.toString(mName) + Accidental.toString(mAccidental) + mOctave;
 	}
 	
 	@Override
@@ -54,6 +72,11 @@ public class Note
 		Note note = (Note) obj;
 		
 		return mName == note.name() && mAccidental == note.accidental() ? true : false;
+	}
+	
+	public boolean equalsOctave(Note note)
+	{
+		return mName == note.name() && mAccidental == note.accidental() && mOctave == note.mOctave ? true : false;
 	}
 	
 	public boolean equalsNormalized(Note note)
@@ -67,7 +90,7 @@ public class Note
 		return note1.name() == note2.name() && note1.accidental() == note2.accidental() ? true : false;
 	}
 	
-	public Note getNoteAtInterval(int interval, int accidental)
+	public Note getNoteAtUpperInterval(int interval, int accidental)
 	{
 		Note note = new Note(this);
 		
@@ -105,6 +128,11 @@ public class Note
 					note.accidental(Accidental.SHARP);
 				}
 			}
+			
+			if(note.name() == Note.Name.C)
+			{
+				note.mOctave++;
+			}
 		}
 		
 		return note;
@@ -116,6 +144,7 @@ public class Note
 		{
 			mName = Name.B;
 			mAccidental = Accidental.NONE;
+			mOctave--;
 		}
 		else if(mName == Name.E && mAccidental == Accidental.SHARP)
 		{
@@ -131,12 +160,13 @@ public class Note
 		{
 			mName = Name.C;
 			mAccidental = Accidental.NONE;
+			mOctave++;
 		}
 	}
 	
-	public static void notation(int notation)
+	public static void defaultOctave(int defaultOctave)
 	{
-		mNotation = notation;
+		mDefaultOctave = defaultOctave;
 	}
 	
 	public static class Name
@@ -155,13 +185,13 @@ public class Note
 		{
 			switch(note)
 			{
-				case A: return mNotation == Notation.FRENCH ? "LA" : "A";
-				case B: return mNotation == Notation.FRENCH ? "SI" : "B";
-				case C: return mNotation == Notation.FRENCH ? "DO" : "C";
-				case D: return mNotation == Notation.FRENCH ? "RE" : "D";
-				case E: return mNotation == Notation.FRENCH ? "MI" : "E";
-				case F: return mNotation == Notation.FRENCH ? "FA" : "F";
-				case G: return mNotation == Notation.FRENCH ? "SOL" : "G";
+				case A: return "A";
+				case B: return "B";
+				case C: return "C";
+				case D: return "D";
+				case E: return "E";
+				case F: return "F";
+				case G: return "G";
 			}
 			
 			return "";
@@ -188,12 +218,8 @@ public class Note
 		}
 	}
 	
-	public static class Notation
-	{
-		public static final int AMERICAN = 0;
-		public static final int FRENCH = 1;
-	}
-	
+	private static int mDefaultOctave = 4;
 	private int mName;
 	private int mAccidental;
+	private int mOctave;
 }

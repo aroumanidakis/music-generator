@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.BarSignature;
 import com.scythe.musicgenerator.core.Note;
-import com.scythe.musicgenerator.core.Note.Notation;
 import com.scythe.musicgenerator.core.Scale;
 import com.scythe.musicgenerator.core.TimedElement;
 import com.scythe.musicgenerator.defines.Degree;
@@ -21,8 +20,6 @@ public class Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		Note.notation(Notation.AMERICAN);
-		
 		validBarTest();
 		scaleInstanciationTest();
 		perfectFifthTest();
@@ -76,7 +73,7 @@ public class Main
 			for(int noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
 			{
 				Note baseNote = scale.note(noteIndex);
-				Note perfectFifth = baseNote.getNoteAtInterval(Interval.PERFECT_FIFTH, scale.accidental());
+				Note perfectFifth = baseNote.getNoteAtUpperInterval(Interval.PERFECT_FIFTH, scale.accidental());
 				
 				if(!scale.isIn(perfectFifth, true))
 				{

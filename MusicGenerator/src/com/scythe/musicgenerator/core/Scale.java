@@ -10,14 +10,13 @@ public class Scale
 {
 	public Scale(Note tonic, int mode)
 	{
-		mTonic = tonic;
 		mMode = mode;
 		mIsValid = true;
 		
 		int[] intervals = shift(mMode);
 		
 		mNotes = new ArrayList<Note>();
-		mNotes.add(mTonic);
+		mNotes.add(tonic);
 		
 		for(int i = 1; i < 7; i++)
 		{
@@ -50,11 +49,19 @@ public class Scale
 				}
 			}
 		}
+		
+		if(mNotes.get(0).name() != Note.Name.C)
+		{
+			for(int i = indexOfC(); i < mNotes.size(); i++)
+			{
+				mNotes.get(i).octave(mNotes.get(i).octave() + 1);
+			}
+		}
 	}
 	
 	public Note tonic()
 	{
-		return mTonic;
+		return mNotes.get(0);
 	}
 	
 	public int mode()
@@ -150,6 +157,13 @@ public class Scale
 		}
 
 		return str;
+	}
+	
+	private int indexOfC()
+	{
+		int indexC;
+		for(indexC = 0; mNotes.get(indexC).name() != Note.Name.C; indexC++);
+		return indexC;
 	}
 	
 	private int[] shift(int shift)
@@ -273,7 +287,6 @@ public class Scale
 		return halfToneCnt;
 	}
 	
-	private Note mTonic;
 	private int mMode;
 	private ArrayList<Note> mNotes;
 	private int mAccidental;
