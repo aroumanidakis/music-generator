@@ -96,6 +96,8 @@ public class Note
 		
 		for(int i = 0; i < interval; i++)
 		{
+			int prevName = note.name();
+			
 			if(note.name() == Note.Name.E)
 			{
 				note.name(Note.Name.F);
@@ -129,7 +131,7 @@ public class Note
 				}
 			}
 			
-			if(note.name() == Note.Name.C)
+			if(prevName == Note.Name.B && note.name() == Note.Name.C)
 			{
 				note.mOctave++;
 			}

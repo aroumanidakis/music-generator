@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.BarSignature;
+import com.scythe.musicgenerator.core.Grid;
 import com.scythe.musicgenerator.core.Note;
 import com.scythe.musicgenerator.core.Scale;
 import com.scythe.musicgenerator.core.TimedElement;
@@ -25,6 +26,7 @@ public class Main
 		perfectFifthTest();
 		barFactoryTest();
 		midiWriterTest();
+		gridTest();
 	}
 	
 	public static void validBarTest()
@@ -121,6 +123,8 @@ public class Main
 	
 	public static void midiWriterTest()
 	{
+		System.out.println("MIDI WRITER TEST\n");
+		
 		MidiWriter midiWriter = new MidiWriter("output.mid");
 		midiWriter.addTrack(new ArrayList<Bar>());
 		
@@ -132,6 +136,56 @@ public class Main
 		midiWriter.write();
 		
 		System.out.println("Midi file writen.");
+		System.out.println();
+	}
+	
+	public static void gridTest()
+	{
+		System.out.println("GRID TEST\n");
+		
+		ArrayList<Integer> degrees = new ArrayList<Integer>();
+		
+		degrees.add(Degree.I);
+		for(int i = 0; i < 3; i++)
+		{
+			int degree = (int)(Math.random() * Degree.NB_DEGREES);
+			degrees.add(degree);
+		}
+		
+		Grid grid = new Grid(degrees);
+		
+		System.out.println("Selected grid: " + grid);
+		
+		Scale scale = new Scale(new Note(Note.Name.C), Mode.IONIAN);
+		
+		System.out.println("Selected scale: " + scale);
+		
+		ArrayList<TimedElement> timedElements = new ArrayList<TimedElement>();
+		
+		for(int i = 0; i < 4; i++)
+		{
+			Note fundamental = scale.note(grid.degree(i));
+			Note perfectFifth = fundamental.getNoteAtUpperInterval(Interval.PERFECT_FIFTH, scale.accidental());
+			
+			if(!scale.isIn(perfectFifth, true))
+			{
+				System.out.println("Warning: powerchord is not in the scale");
+			}
+			
+			Note octave = fundamental.getNoteAtUpperInterval(12, scale.accidental());
+			
+			TimedElement timedElement = new TimedElement(Duration.SINGLE, false);
+			timedElement.addNote(fundamental);
+			timedElement.addNote(perfectFifth);
+			timedElement.addNote(octave);
+			
+			timedElements.add(timedElement);
+		}
+		
+		Bar bar = new Bar(new BarSignature("4/4"), timedElements);
+		
+		System.out.println("Resulting bar: " + bar);
+		System.out.println();
 	}
 }
 

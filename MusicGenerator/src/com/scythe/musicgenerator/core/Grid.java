@@ -1,22 +1,24 @@
 package com.scythe.musicgenerator.core;
 
+import java.util.ArrayList;
+
 import com.scythe.musicgenerator.defines.Degree;
 
 public class Grid
 {
-	public Grid(int[] degrees)
+	public Grid(ArrayList<Integer> degrees)
 	{
 		mDegrees = degrees;
 	}
 	
 	public int degree(int index)
 	{
-		return mDegrees[index];
+		return mDegrees.get(index);
 	}
 	
 	public int degreesCnt()
 	{
-		return mDegrees.length;
+		return mDegrees.size();
 	}
 	
 	@Override
@@ -24,13 +26,13 @@ public class Grid
 	{
 		String str = "";
 		
-		for(int i = 0; i < mDegrees.length; i++)
+		for(int i = 0; i < mDegrees.size(); i++)
 		{
-			str += Degree.toString(mDegrees[i]) + (i == mDegrees.length - 1 ? "" : " ");
+			str += Degree.toString(mDegrees.get(i)) + (i == mDegrees.size() - 1 ? "" : " ");
 		}
 		
 		return str;
 	}
 	
-	private int[] mDegrees;
+	private ArrayList<Integer> mDegrees;
 }
