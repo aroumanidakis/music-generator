@@ -6,9 +6,9 @@ import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.BarSignature;
+import com.scythe.musicgenerator.core.DiatonicScale;
 import com.scythe.musicgenerator.core.Grid;
 import com.scythe.musicgenerator.core.Note;
-import com.scythe.musicgenerator.core.Scale;
 import com.scythe.musicgenerator.core.TimedElement;
 import com.scythe.musicgenerator.defines.Degree;
 import com.scythe.musicgenerator.defines.Duration;
@@ -21,7 +21,6 @@ public class Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		validBarTest();
 		scaleInstanciationTest();
 		perfectFifthTest();
 		barFactoryTest();
@@ -29,24 +28,10 @@ public class Main
 		gridTest();
 	}
 	
-	public static void validBarTest()
-	{
-		System.out.println("VALID BAR TEST\n");
-		
-		ArrayList<TimedElement> timedElements = new ArrayList<TimedElement>();
-		timedElements.add(new TimedElement(Duration.SINGLE, false));
-		timedElements.add(new TimedElement(Duration.SINGLE, false));
-		timedElements.add(new TimedElement(Duration.SINGLE, false));
-		timedElements.add(new TimedElement(Duration.SINGLE, false));
-		
-		Bar bar = new Bar(new BarSignature("4/4"), timedElements);
-		
-		System.out.println("Bar is fully valid: " + (bar.isValid() ? "YES" : "NO"));
-		System.out.println();
-	}
-	
 	public static void scaleInstanciationTest()
 	{
+		System.out.println("SCALE INSTTANCIATION TEST\n");
+		
 		for(int name = 0; name < Note.Name.COUNT; name++)
 		{
 			for(int accidental = 0; accidental < Note.Accidental.COUNT; accidental++)
@@ -54,11 +39,13 @@ public class Main
 				Note tonic = new Note(name, accidental);
 				for(int mode = 0; mode < Mode.COUNT; mode++)
 				{
-					Scale scale = new Scale(tonic, mode);
+					DiatonicScale scale = new DiatonicScale(tonic, mode);
 					System.out.println(scale);
 				}
 			}
 		}
+		
+		System.out.println();
 	}
 	
 	public static void perfectFifthTest()
@@ -69,22 +56,20 @@ public class Main
 		
 		for(int mode = 0; mode < Mode.COUNT; mode++)
 		{
-			Scale scale = new Scale(tonic, mode);
+			DiatonicScale scale = new DiatonicScale(tonic, mode);
 			System.out.println("Selected scale: " + scale);
 			
 			for(int noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
 			{
-				Note baseNote = scale.note(noteIndex);
-				Note perfectFifth = baseNote.getNoteAtUpperInterval(Interval.PERFECT_FIFTH, scale.accidental());
+				Note newNote = new Note(Note.Name.C);
+				int qualification = scale.getNoteAtUpperInterval(noteIndex, Interval.Name.FIFTH, newNote);
 				
-				if(!scale.isIn(perfectFifth, true))
+				if(qualification != Interval.Qualification.PERFECT)
 				{
-					System.out.println("degree " + Degree.toString(noteIndex) + " chord can't be a power chord");
+					System.out.println("degree " + Degree.toString(noteIndex) + " chord can't be a power chord (" + Interval.Qualification.toString(qualification) + ")");
 					break;
 				}
 			}
-			
-			continue;
 		}
 		
 		System.out.println();
@@ -156,7 +141,7 @@ public class Main
 		
 		System.out.println("Selected grid: " + grid);
 		
-		Scale scale = new Scale(new Note(Note.Name.C), Mode.IONIAN);
+		DiatonicScale scale = new DiatonicScale(new Note(Note.Name.C), Mode.IONIAN);
 		
 		System.out.println("Selected scale: " + scale);
 		
@@ -165,18 +150,20 @@ public class Main
 		for(int i = 0; i < 4; i++)
 		{
 			Note fundamental = scale.note(grid.degree(i));
-			Note perfectFifth = fundamental.getNoteAtUpperInterval(Interval.PERFECT_FIFTH, scale.accidental());
+			Note fifth = new Note(Note.Name.C);
+			int qualification = scale.getNoteAtUpperInterval(grid.degree(i), Interval.Name.FIFTH, fifth);
 			
-			if(!scale.isIn(perfectFifth, true))
+			if(qualification != Interval.Qualification.PERFECT)
 			{
 				System.out.println("Warning: powerchord is not in the scale");
 			}
 			
-			Note octave = fundamental.getNoteAtUpperInterval(12, scale.accidental());
+			Note octave = new Note(fundamental);
+			octave.octave(octave.octave() + 1);
 			
 			TimedElement timedElement = new TimedElement(Duration.SINGLE, false);
 			timedElement.addNote(fundamental);
-			timedElement.addNote(perfectFifth);
+			timedElement.addNote(fifth);
 			timedElement.addNote(octave);
 			
 			timedElements.add(timedElement);

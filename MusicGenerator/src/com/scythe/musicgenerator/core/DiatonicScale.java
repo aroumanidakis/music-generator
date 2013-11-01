@@ -4,23 +4,24 @@ import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Note.Accidental;
 import com.scythe.musicgenerator.core.Note.Name;
+import com.scythe.musicgenerator.defines.Interval;
 import com.scythe.musicgenerator.defines.Mode;
 
-public class Scale
+public class DiatonicScale
 {
-	public Scale(Note tonic, int mode)
+	public DiatonicScale(Note tonic, int mode)
 	{
 		mMode = mode;
 		mIsValid = true;
 		
-		int[] intervals = shift(mMode);
+		mIntervals = shift(mMode);
 		
 		mNotes = new ArrayList<Note>();
 		mNotes.add(tonic);
 		
 		for(int i = 1; i < 7; i++)
 		{
-			Note nextNote = getHalfToneUpperNote(mNotes.get(i - 1), intervals[i - 1]);
+			Note nextNote = getHalfToneUpperNote(mNotes.get(i - 1), mIntervals[i - 1]);
 			
 			if(nextNote == null)
 			{
@@ -135,6 +136,149 @@ public class Scale
 		}
 		
 		return false;
+	}
+	
+	public int getNoteAtUpperInterval(int baseNoteIndex, int interval, Note note)
+	{
+		Note n = mNotes.get((baseNoteIndex + interval + 1) % mNotes.size());
+		
+		note.name(n.name());
+		note.accidental(n.accidental());
+		note.octave(n.octave());
+		
+		int diatHalfToneCnt = 0;
+		int toneCnt = 0;
+		
+		for(int i = baseNoteIndex; i < baseNoteIndex + interval + 1; i++)
+		{
+			int halfToneInterval = mIntervals[i % mIntervals.length];
+			
+			if(halfToneInterval == 1)
+			{
+				diatHalfToneCnt++;
+			}
+			else if(halfToneInterval == 2)
+			{
+				toneCnt++;
+			}
+		}
+		
+		switch(interval)
+		{
+			case Interval.Name.SECOND:
+			{
+				if(toneCnt == 0 && diatHalfToneCnt == 1)
+				{
+					return Interval.Qualification.MINOR;
+				}
+				else if(toneCnt == 1 && diatHalfToneCnt == 0)
+				{
+					return Interval.Qualification.MAJOR;
+				}
+				
+				break;
+			}
+			case Interval.Name.THIRD:
+			{
+				if(toneCnt == 0 && diatHalfToneCnt == 2)
+				{
+					return Interval.Qualification.DECREASED;
+				}
+				else if(toneCnt == 1 && diatHalfToneCnt == 1)
+				{
+					return Interval.Qualification.MINOR;
+				}
+				else if(toneCnt == 2 && diatHalfToneCnt == 0)
+				{
+					return Interval.Qualification.MAJOR;
+				}
+				
+				break;
+			}
+			case Interval.Name.FOURTH:
+			{
+				if(toneCnt == 1 && diatHalfToneCnt == 2)
+				{
+					return Interval.Qualification.DECREASED;
+				}
+				else if(toneCnt == 2 && diatHalfToneCnt == 1)
+				{
+					return Interval.Qualification.PERFECT;
+				}
+				else if(toneCnt == 3 && diatHalfToneCnt == 0)
+				{
+					return Interval.Qualification.INCREASED;
+				}
+				
+				break;
+			}
+			case Interval.Name.FIFTH:
+			{
+				if(toneCnt == 2 && diatHalfToneCnt == 2)
+				{
+					return Interval.Qualification.DECREASED;
+				}
+				else if(toneCnt == 3 && diatHalfToneCnt == 1)
+				{
+					return Interval.Qualification.PERFECT;
+				}
+				else if(toneCnt == 4 && diatHalfToneCnt == 0)
+				{
+					return Interval.Qualification.INCREASED;
+				}
+				
+				break;
+			}
+			case Interval.Name.SIXTH:
+			{
+				if(toneCnt == 2 && diatHalfToneCnt == 3)
+				{
+					return Interval.Qualification.DECREASED;
+				}
+				else if(toneCnt == 3 && diatHalfToneCnt == 2)
+				{
+					return Interval.Qualification.MINOR;
+				}
+				else if(toneCnt == 4 && diatHalfToneCnt == 1)
+				{
+					return Interval.Qualification.MAJOR;
+				}
+				
+				break;
+			}
+			case Interval.Name.SEVENTH:
+			{
+				if(toneCnt == 3 && diatHalfToneCnt == 3)
+				{
+					return Interval.Qualification.DECREASED;
+				}
+				else if(toneCnt == 4 && diatHalfToneCnt == 2)
+				{
+					return Interval.Qualification.MINOR;
+				}
+				else if(toneCnt == 5 && diatHalfToneCnt == 1)
+				{
+					return Interval.Qualification.MAJOR;
+				}
+				
+				break;
+			}
+			case Interval.Name.OCTAVE:
+			{
+				if(toneCnt == 4 && diatHalfToneCnt == 3)
+				{
+					return Interval.Qualification.DECREASED;
+				}
+				else if(toneCnt == 5 && diatHalfToneCnt == 2)
+				{
+					return Interval.Qualification.PERFECT;
+				}
+				
+				break;
+			}
+		}
+		
+		return -1;
 	}
 	
 	@Override
@@ -292,6 +436,8 @@ public class Scale
 	private int mAccidental;
 	
 	private boolean mIsValid;
+	
+	private int[] mIntervals;
 	
 	private static final int[] IONIAN_INTERVALS = {2, 2, 1, 2, 2, 2, 1};
 }

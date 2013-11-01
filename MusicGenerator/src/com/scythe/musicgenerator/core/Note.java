@@ -1,7 +1,7 @@
 package com.scythe.musicgenerator.core;
 
 public class Note 
-{
+{	
 	public Note(int name, int accidental, int octave)
 	{
 		mName = name;
@@ -88,56 +88,6 @@ public class Note
 		note2.normalize();
 		
 		return note1.name() == note2.name() && note1.accidental() == note2.accidental() ? true : false;
-	}
-	
-	public Note getNoteAtUpperInterval(int interval, int accidental)
-	{
-		Note note = new Note(this);
-		
-		for(int i = 0; i < interval; i++)
-		{
-			int prevName = note.name();
-			
-			if(note.name() == Note.Name.E)
-			{
-				note.name(Note.Name.F);
-			}
-			else if(note.name() == Note.Name.B)
-			{
-				note.name(Note.Name.C);
-			}
-			else if(accidental == Accidental.FLAT)
-			{
-				if(note.accidental() == Accidental.FLAT)
-				{
-					note.accidental(Accidental.NONE);
-				}
-				else
-				{
-					note.name((note.name() + 1) % Note.Name.COUNT);
-					note.accidental(Note.Accidental.FLAT);
-				}
-			}
-			else
-			{
-				if(note.accidental() == Accidental.SHARP)
-				{
-					note.name((note.name() + 1) % Note.Name.COUNT);
-					note.accidental(Note.Accidental.NONE);
-				}
-				else
-				{
-					note.accidental(Accidental.SHARP);
-				}
-			}
-			
-			if(prevName == Note.Name.B && note.name() == Note.Name.C)
-			{
-				note.mOctave++;
-			}
-		}
-		
-		return note;
 	}
 	
 	public void normalize()
