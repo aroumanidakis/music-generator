@@ -2,7 +2,7 @@ package com.scythe.musicgenerator.defines;
 
 public class Degree
 {
-	public static final int NB_DEGREES = 7;
+	public static final int COUNT = 7;
 	
 	public static final int I = 0;
 	public static final int II = 1;

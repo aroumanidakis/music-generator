@@ -114,7 +114,7 @@ public class Note
 				}
 				else
 				{
-					note.name((note.name() + 1) % Note.Name.NB_NAMES);
+					note.name((note.name() + 1) % Note.Name.COUNT);
 					note.accidental(Note.Accidental.FLAT);
 				}
 			}
@@ -122,7 +122,7 @@ public class Note
 			{
 				if(note.accidental() == Accidental.SHARP)
 				{
-					note.name((note.name() + 1) % Note.Name.NB_NAMES);
+					note.name((note.name() + 1) % Note.Name.COUNT);
 					note.accidental(Note.Accidental.NONE);
 				}
 				else
@@ -173,7 +173,7 @@ public class Note
 	
 	public static class Name
 	{
-		public static final int NB_NAMES = 7;
+		public static final int COUNT = 7;
 		
 		public static final int A = 0;
 		public static final int B = 1;
@@ -202,7 +202,7 @@ public class Note
 	
 	public static class Accidental
 	{
-		public static final int NB_ACCIDENTALS = 3;
+		public static final int COUNT = 3;
 		
 		public static final int NONE = 0;
 		public static final int SHARP = 1;

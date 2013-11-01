@@ -3,7 +3,7 @@ package com.scythe.musicgenerator.defines;
 
 public class Duration
 {
-	public static final int NB_DURATIONS = 5;
+	public static final int COUNT = 5;
 	
 	public static final int QUADRUPLE = 0;
 	public static final int DOUBLE = 1;

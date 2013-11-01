@@ -2,7 +2,7 @@ package com.scythe.musicgenerator.defines;
 
 public class Mode
 {
-	public static final int NB_MODES = 7;
+	public static final int COUNT = 7;
 	
 	public static final int IONIAN		= 0;
 	public static final int DORIAN		= 6;

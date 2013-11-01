@@ -48,7 +48,7 @@ public class BarFactory
 		float timeToAdd = totalTime;
 		while(timeToAdd > 0)
 		{
-			for(int duration = 0; duration < Duration.NB_DURATIONS; duration++)
+			for(int duration = 0; duration < Duration.COUNT; duration++)
 			{
 				if((Duration.convertInTime(duration) * 1.5) <= timeToAdd)
 				{

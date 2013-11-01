@@ -180,7 +180,7 @@ public class Scale
 	
 	private Note getHalfToneUpperNote(Note refNote, int halfTones)
 	{
-		Note newNote = new Note((refNote.name() + 1) % Name.NB_NAMES, refNote.accidental());
+		Note newNote = new Note((refNote.name() + 1) % Name.COUNT, refNote.accidental());
 		
 		int halfToneDiffenrence = getHalfToneDifference(refNote, newNote);
 		
@@ -240,7 +240,7 @@ public class Scale
 				}
 				else
 				{
-					notes[i].name((notes[i].name() + 1) % Name.NB_NAMES);
+					notes[i].name((notes[i].name() + 1) % Name.COUNT);
 					notes[i].accidental(Accidental.FLAT);
 				}
 			}
@@ -277,7 +277,7 @@ public class Scale
 			}
 			else
 			{
-				notes[0].name((notes[0].name() + 1) % Name.NB_NAMES);
+				notes[0].name((notes[0].name() + 1) % Name.COUNT);
 				notes[0].accidental(Accidental.FLAT);
 			}
 			

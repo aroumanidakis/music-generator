@@ -47,12 +47,12 @@ public class Main
 	
 	public static void scaleInstanciationTest()
 	{
-		for(int name = 0; name < Note.Name.NB_NAMES; name++)
+		for(int name = 0; name < Note.Name.COUNT; name++)
 		{
-			for(int accidental = 0; accidental < Note.Accidental.NB_ACCIDENTALS; accidental++)
+			for(int accidental = 0; accidental < Note.Accidental.COUNT; accidental++)
 			{
 				Note tonic = new Note(name, accidental);
-				for(int mode = 0; mode < Mode.NB_MODES; mode++)
+				for(int mode = 0; mode < Mode.COUNT; mode++)
 				{
 					Scale scale = new Scale(tonic, mode);
 					System.out.println(scale);
@@ -67,7 +67,7 @@ public class Main
 		
 		Note tonic = new Note(Note.Name.C, Note.Accidental.NONE);
 		
-		for(int mode = 0; mode < Mode.NB_MODES; mode++)
+		for(int mode = 0; mode < Mode.COUNT; mode++)
 		{
 			Scale scale = new Scale(tonic, mode);
 			System.out.println("Selected scale: " + scale);
@@ -148,7 +148,7 @@ public class Main
 		degrees.add(Degree.I);
 		for(int i = 0; i < 3; i++)
 		{
-			int degree = (int)(Math.random() * Degree.NB_DEGREES);
+			int degree = (int)(Math.random() * Degree.COUNT);
 			degrees.add(degree);
 		}
 		

@@ -2,7 +2,7 @@ package com.scythe.musicgenerator.defines;
 
 public class Interval
 {
-	public static final int NB_INTERVALS = 12;
+	public static final int COUNT = 12;
 	
 	public static final int UNISON = 0;
 	public static final int MINOR_SECOND = 1;
