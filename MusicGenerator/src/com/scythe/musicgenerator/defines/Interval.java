@@ -35,21 +35,21 @@ public class Interval
 	{
 		public static final int COUNT = 5;
 		
-		public static final int DECREASED	= 0;
+		public static final int DIMINISHED	= 0;
 		public static final int MINOR		= 1;
 		public static final int PERFECT		= 2;
 		public static final int MAJOR		= 3;
-		public static final int INCREASED	= 4;
+		public static final int AUGMENTED	= 4;
 		
 		public static String toString(int qualification)
 		{
 			switch(qualification)
 			{
-				case DECREASED:	return "dec.";
+				case DIMINISHED:	return "dim.";
 				case MINOR:		return "min.";
 				case PERFECT:	return "per.";
 				case MAJOR:		return "maj.";
-				case INCREASED:	return "inc.";
+				case AUGMENTED:	return "aug.";
 			}
 			
 			return "";
