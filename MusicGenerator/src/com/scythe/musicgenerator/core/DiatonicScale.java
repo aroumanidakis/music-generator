@@ -182,7 +182,7 @@ public class DiatonicScale
 			{
 				if(toneCnt == 0 && diatHalfToneCnt == 2)
 				{
-					return Interval.Qualification.DECREASED;
+					return Interval.Qualification.DIMINISHED;
 				}
 				else if(toneCnt == 1 && diatHalfToneCnt == 1)
 				{
@@ -199,7 +199,7 @@ public class DiatonicScale
 			{
 				if(toneCnt == 1 && diatHalfToneCnt == 2)
 				{
-					return Interval.Qualification.DECREASED;
+					return Interval.Qualification.DIMINISHED;
 				}
 				else if(toneCnt == 2 && diatHalfToneCnt == 1)
 				{
@@ -207,7 +207,7 @@ public class DiatonicScale
 				}
 				else if(toneCnt == 3 && diatHalfToneCnt == 0)
 				{
-					return Interval.Qualification.INCREASED;
+					return Interval.Qualification.AUGMENTED;
 				}
 				
 				break;
@@ -216,7 +216,7 @@ public class DiatonicScale
 			{
 				if(toneCnt == 2 && diatHalfToneCnt == 2)
 				{
-					return Interval.Qualification.DECREASED;
+					return Interval.Qualification.DIMINISHED;
 				}
 				else if(toneCnt == 3 && diatHalfToneCnt == 1)
 				{
@@ -224,7 +224,7 @@ public class DiatonicScale
 				}
 				else if(toneCnt == 4 && diatHalfToneCnt == 0)
 				{
-					return Interval.Qualification.INCREASED;
+					return Interval.Qualification.AUGMENTED;
 				}
 				
 				break;
@@ -233,7 +233,7 @@ public class DiatonicScale
 			{
 				if(toneCnt == 2 && diatHalfToneCnt == 3)
 				{
-					return Interval.Qualification.DECREASED;
+					return Interval.Qualification.DIMINISHED;
 				}
 				else if(toneCnt == 3 && diatHalfToneCnt == 2)
 				{
@@ -250,7 +250,7 @@ public class DiatonicScale
 			{
 				if(toneCnt == 3 && diatHalfToneCnt == 3)
 				{
-					return Interval.Qualification.DECREASED;
+					return Interval.Qualification.DIMINISHED;
 				}
 				else if(toneCnt == 4 && diatHalfToneCnt == 2)
 				{
@@ -267,7 +267,7 @@ public class DiatonicScale
 			{
 				if(toneCnt == 4 && diatHalfToneCnt == 3)
 				{
-					return Interval.Qualification.DECREASED;
+					return Interval.Qualification.DIMINISHED;
 				}
 				else if(toneCnt == 5 && diatHalfToneCnt == 2)
 				{

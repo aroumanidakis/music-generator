@@ -46,10 +46,10 @@ public class Interval
 			switch(qualification)
 			{
 				case DIMINISHED:	return "dim.";
-				case MINOR:		return "min.";
-				case PERFECT:	return "per.";
-				case MAJOR:		return "maj.";
-				case AUGMENTED:	return "aug.";
+				case MINOR:			return "min.";
+				case PERFECT:		return "per.";
+				case MAJOR:			return "maj.";
+				case AUGMENTED:		return "aug.";
 			}
 			
 			return "";
