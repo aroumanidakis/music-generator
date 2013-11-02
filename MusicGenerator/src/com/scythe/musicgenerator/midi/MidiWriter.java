@@ -33,6 +33,7 @@ public class MidiWriter
 			mOutputStream = new FileOutputStream(new File(mFileName));
 			
 			writeMidiHeader();
+			writeMidiTracks();
 		
 			mOutputStream.close();
 		}
@@ -50,7 +51,9 @@ public class MidiWriter
 		byte[] nbTracks = new byte[2];
 		nbTracks[0] = (byte)((mTracks.size() & 0x0000FF00) >> 8);
 		nbTracks[1] = (byte)(mTracks.size() & 0x000000FF);
-		byte[] timeDivision = {0x00, 0x00};
+		byte[] timeDivision = new byte[2];
+		timeDivision[0] = (byte)((mTicksPerBeat & 0x0000FF00) >> 8);
+		timeDivision[1] = (byte)(mTicksPerBeat & 0x000000FF);
 		
 		mOutputStream.write(chunkID);
 		mOutputStream.write(chunkSize);
@@ -58,6 +61,16 @@ public class MidiWriter
 		mOutputStream.write(nbTracks);
 		mOutputStream.write(timeDivision);
 	}
+	
+	private void writeMidiTracks()
+	{
+		for(ArrayList<Bar> track : mTracks)
+		{
+			
+		}
+	}
+	
+	private static final int mTicksPerBeat = 60;
 	
 	private ArrayList<ArrayList<Bar>> mTracks;
 	private String mFileName;
