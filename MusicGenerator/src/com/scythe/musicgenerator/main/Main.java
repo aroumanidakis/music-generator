@@ -1,7 +1,5 @@
 package com.scythe.musicgenerator.main;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
@@ -21,113 +19,70 @@ public class Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		scaleInstanciationTest();
-		perfectFifthTest();
-		barFactoryTest();
-		midiWriterTest();
-		gridTest();
+		generate();
 	}
 	
-	public static void scaleInstanciationTest()
+	public static void generate()
 	{
-		System.out.println("SCALE INSTTANCIATION TEST\n");
+		System.out.println("Scale generation...");
 		
-		for(int name = 0; name < Note.Name.COUNT; name++)
+		DiatonicScale scale = null;
+		while(scale == null || !scale.isValid() || scale.hasStrangeNote())
 		{
-			for(int accidental = 0; accidental < Note.Accidental.COUNT; accidental++)
-			{
-				Note tonic = new Note(name, accidental);
-				for(int mode = 0; mode < Mode.COUNT; mode++)
-				{
-					DiatonicScale scale = new DiatonicScale(tonic, mode);
-					System.out.println(scale);
-				}
-			}
+			scale = generateRandomScale();
 		}
 		
-		System.out.println();
-	}
-	
-	public static void perfectFifthTest()
-	{
-		System.out.println("PERFECT FIFTH TEST\n");
+		System.out.println("Generated scale: " + scale);
+		System.out.println("Grid generation...");
 		
-		Note tonic = new Note(Note.Name.C, Note.Accidental.NONE);
-		
-		for(int mode = 0; mode < Mode.COUNT; mode++)
+		Grid grid = null;
+		while(grid == null || !validateGridForScale(grid, scale))
 		{
-			DiatonicScale scale = new DiatonicScale(tonic, mode);
-			System.out.println("Selected scale: " + scale);
-			
-			for(int noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
-			{
-				Note newNote = new Note(Note.Name.C);
-				int qualification = scale.getNoteAtUpperInterval(noteIndex, Interval.Name.FIFTH, newNote);
-				
-				if(qualification != Interval.Qualification.PERFECT)
-				{
-					System.out.println("degree " + Degree.toString(noteIndex) + " chord can't be a power chord (" + Interval.Qualification.toString(qualification) + ")");
-					break;
-				}
-			}
+			grid = generateRandomGrid();
 		}
 		
-		System.out.println();
-	}
-	
-	public static void barFactoryTest() throws Exception
-	{
-		System.out.println("BAR FACTORY TEST\n");
+		System.out.println("Generated grid: " + grid);
 		
-		FileOutputStream file = new FileOutputStream(new File("rhythms.txt"));
+		System.out.println("Rhythm generation...");
+		ArrayList<Bar> rhythmTrack = generatePowerChords(grid, scale);
 		
-		for(int i = 0; i < 30; i++)
+		System.out.println("Melody generation...");
+		ArrayList<Bar> melodyTrack = new ArrayList<Bar>();
+		for(int barCnt = 0; barCnt < rhythmTrack.size(); barCnt++)
 		{
 			Bar bar = null;
-			
-			if(Math.random() < 0.5f)
+			while(bar == null || bar.elements().size() < 4)
 			{
 				bar = BarFactory.generateRhythm(new BarSignature("4/4"));
 			}
-			else
+			
+			ArrayList<TimedElement> elements = bar.elements();
+			for(int i = 0; i < elements.size(); i++)
 			{
-				bar = BarFactory.generateRhythm(new BarSignature("6/8"));
+				TimedElement element = elements.get(i);
+				element.addNote(scale.note((int)(Math.random() * scale.noteCnt())));
 			}
 			
-			String barStr = bar.toString();
-			System.out.println(barStr + (bar.isValid() ? " (valid)" : " (not valid)"));
-			
-			barStr += "\n";
-			
-			file.write(barStr.getBytes());
+			System.out.println("Modified bar: " + bar);
+			melodyTrack.add(bar);
 		}
 		
-		file.close();
-		System.out.println();
-	}
-	
-	public static void midiWriterTest()
-	{
-		System.out.println("MIDI WRITER TEST\n");
-		
-		MidiWriter midiWriter = new MidiWriter("output.mid");
-		midiWriter.addTrack(new ArrayList<Bar>());
-		
-		if(Math.random() < 0.5)
-		{
-			midiWriter.addTrack(new ArrayList<Bar>());
-		}
-		
+		MidiWriter midiWriter = new MidiWriter("song.mid");
+		midiWriter.addTrack(melodyTrack, "melody");
+		midiWriter.addTrack(rhythmTrack, "rhythm");
 		midiWriter.write();
-		
-		System.out.println("Midi file writen.");
-		System.out.println();
 	}
 	
-	public static void gridTest()
+	public static DiatonicScale generateRandomScale()
 	{
-		System.out.println("GRID TEST\n");
-		
+		int mode = (int)(Math.random() * Mode.COUNT);
+		int tonicName = (int)(Math.random() * Note.Name.COUNT);
+		int tonicAccidental = (int)(Math.random() * Note.Accidental.COUNT);
+		return new DiatonicScale(new Note(tonicName, tonicAccidental), mode);
+	}
+	
+	public static Grid generateRandomGrid()
+	{
 		ArrayList<Integer> degrees = new ArrayList<Integer>();
 		
 		degrees.add(Degree.I);
@@ -137,42 +92,56 @@ public class Main
 			degrees.add(degree);
 		}
 		
-		Grid grid = new Grid(degrees);
-		
-		System.out.println("Selected grid: " + grid);
-		
-		DiatonicScale scale = new DiatonicScale(new Note(Note.Name.C), Mode.IONIAN);
-		
-		System.out.println("Selected scale: " + scale);
-		
-		ArrayList<TimedElement> timedElements = new ArrayList<TimedElement>();
-		
-		for(int i = 0; i < 4; i++)
+		return new Grid(degrees);
+	}
+	
+	public static boolean validateGridForScale(Grid grid, DiatonicScale scale)
+	{
+		for(int degreeIndex = 0; degreeIndex < grid.degreesCnt(); degreeIndex++)
 		{
-			Note fundamental = scale.note(grid.degree(i));
-			Note fifth = new Note(Note.Name.C);
-			int qualification = scale.getNoteAtUpperInterval(grid.degree(i), Interval.Name.FIFTH, fifth);
+			Note fifth = new Note();
+			int qualification = scale.getNoteAtUpperInterval(grid.degree(degreeIndex), Interval.Name.FIFTH, fifth);
 			
 			if(qualification != Interval.Qualification.PERFECT)
 			{
-				System.out.println("Warning: powerchord is not in the scale");
+				return false;
 			}
+		}
+		
+		return true;
+	}
+	
+	public static ArrayList<Bar> generatePowerChords(Grid grid, DiatonicScale scale)
+	{
+		ArrayList<Bar> track = new ArrayList<Bar>();
+		
+		for(int degreeIndex = 0; degreeIndex < grid.degreesCnt(); degreeIndex++)
+		{
+			Note fundamental = scale.note(grid.degree(degreeIndex));
+			
+			Note fifth = new Note();
+			scale.getNoteAtUpperInterval(grid.degree(degreeIndex), Interval.Name.FIFTH, fifth);
 			
 			Note octave = new Note(fundamental);
 			octave.octave(octave.octave() + 1);
+			
+			System.out.println("Power chord from degree " + Degree.toString(grid.degree(degreeIndex)) + ": " + fundamental + " " + fifth + " " + octave);
 			
 			TimedElement timedElement = new TimedElement(Duration.SINGLE, false);
 			timedElement.addNote(fundamental);
 			timedElement.addNote(fifth);
 			timedElement.addNote(octave);
 			
-			timedElements.add(timedElement);
+			ArrayList<TimedElement> timedElements = new ArrayList<TimedElement>();
+			for(int i = 0; i < 4; i++)
+			{
+				timedElements.add(timedElement);
+			}
+			
+			track.add(new Bar(new BarSignature("4/4"), timedElements));
 		}
 		
-		Bar bar = new Bar(new BarSignature("4/4"), timedElements);
-		
-		System.out.println("Resulting bar: " + bar);
-		System.out.println();
+		return track;
 	}
 }
 
