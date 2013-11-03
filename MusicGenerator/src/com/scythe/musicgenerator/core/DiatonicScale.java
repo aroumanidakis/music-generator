@@ -4,8 +4,10 @@ import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Note.Accidental;
 import com.scythe.musicgenerator.core.Note.Name;
+import com.scythe.musicgenerator.defines.Duration;
 import com.scythe.musicgenerator.defines.Interval;
 import com.scythe.musicgenerator.defines.Mode;
+import com.scythe.musicgenerator.midi.MidiWriter;
 
 public class DiatonicScale
 {
@@ -140,11 +142,22 @@ public class DiatonicScale
 	
 	public int getNoteAtUpperInterval(int baseNoteIndex, int interval, Note note)
 	{
-		Note n = mNotes.get((baseNoteIndex + interval + 1) % mNotes.size());
+		int octaveIncr = 0;
+		int newNoteIndex = baseNoteIndex;
+		for(int i = 0; i < interval + 1; i++)
+		{
+			newNoteIndex++;
+			if(newNoteIndex % mNotes.size() == 0)
+			{
+				octaveIncr++;
+			}
+		}
+		
+		Note n = mNotes.get(newNoteIndex % mNotes.size());
 		
 		note.name(n.name());
 		note.accidental(n.accidental());
-		note.octave(n.octave());
+		note.octave(n.octave() + octaveIncr);
 		
 		int diatHalfToneCnt = 0;
 		int toneCnt = 0;
@@ -281,14 +294,38 @@ public class DiatonicScale
 		return -1;
 	}
 	
+	public void toMidiFile(String fileName)
+	{
+		ArrayList<TimedElement> barContent = new ArrayList<TimedElement>();
+		for(int noteIndex = 0; noteIndex < mNotes.size(); noteIndex++)
+		{
+			TimedElement te = new TimedElement(Duration.SINGLE, false);
+			te.addNote(mNotes.get(noteIndex));
+			barContent.add(te);
+		}
+		
+		Note note = new Note(mNotes.get(0));
+		note.octave(note.octave() + 1);
+		TimedElement te = new TimedElement(Duration.SINGLE, false);
+		te.addNote(note);
+		barContent.add(te);
+		
+		ArrayList<Bar> track = new ArrayList<Bar>();
+		track.add(new Bar(new BarSignature("8/4"), barContent));
+		
+		MidiWriter midiWriter = new MidiWriter(fileName);
+		midiWriter.addTrack(track, "scale");
+		midiWriter.write();
+	}
+	
 	@Override
 	public String toString()
 	{
-		String str = mNotes.get(0) + " " + Mode.toString(mMode) + " (";
+		String str = mNotes.get(0) + " " + Mode.toString(mMode) + " [";
 		
 		for(int i = 0; i < mNotes.size(); i++)
 		{
-			str += mNotes.get(i) + (i == mNotes.size() - 1 ? ")" : " ");
+			str += mNotes.get(i) + (i == mNotes.size() - 1 ? "]" : " ");
 		}
 		
 		if(!mIsValid)

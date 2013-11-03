@@ -39,9 +39,9 @@ public class TimedElement
 		mNotes.remove(index);
 	}
 	
-	public int noteCnt()
+	public ArrayList<Note> notes()
 	{
-		return mNotes.size();
+		return mNotes;
 	}
 	
 	@Override

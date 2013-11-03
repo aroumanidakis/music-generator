@@ -1,7 +1,14 @@
 package com.scythe.musicgenerator.core;
 
 public class Note 
-{	
+{
+	public Note()
+	{
+		mName = Name.C;
+		mAccidental = Accidental.NONE;
+		mOctave = mDefaultOctave;
+	}
+	
 	public Note(int name, int accidental, int octave)
 	{
 		mName = name;
@@ -116,6 +123,71 @@ public class Note
 		}
 	}
 	
+	public byte toMidiNoteNumber()
+	{
+		int noteNumber = 24 + (mOctave * 12);
+		
+		switch(mName)
+		{
+			case Name.D:
+			{
+				noteNumber += 2;
+				break;
+			}
+			case Name.E:
+			{
+				noteNumber += 4;
+				break;
+			}
+			case Name.F:
+			{
+				noteNumber += 5;
+				break;
+			}
+			case Name.G:
+			{
+				noteNumber += 7;
+				break;
+			}
+			case Name.A:
+			{
+				noteNumber += 9;
+				break;
+			}
+			case Name.B:
+			{
+				noteNumber += 11;
+				break;
+			}
+		}
+		
+		switch(mAccidental)
+		{
+			case Accidental.SHARP:
+			{
+				noteNumber++;
+				break;
+			}
+			case Accidental.FLAT:
+			{
+				noteNumber--;
+			}
+		}
+		
+		if(noteNumber < 0)
+		{
+			System.out.println("The note (" + this + ") is to low for midi format.");
+			noteNumber = 0;
+		}
+		else if(noteNumber > 127)
+		{
+			System.out.println("The note (" + this + ") is to high for midi format.");
+			noteNumber = 127;
+		}
+		
+		return (byte)noteNumber;
+	}
+	
 	public static void defaultOctave(int defaultOctave)
 	{
 		mDefaultOctave = defaultOctave;
@@ -170,7 +242,7 @@ public class Note
 		}
 	}
 	
-	private static int mDefaultOctave = 4;
+	private static int mDefaultOctave = 2;
 	private int mName;
 	private int mAccidental;
 	private int mOctave;

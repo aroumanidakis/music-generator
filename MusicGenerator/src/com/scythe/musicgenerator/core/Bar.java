@@ -35,6 +35,11 @@ public class Bar
 		return expectedTotalTime == realTotalTime;
 	}
 	
+	public ArrayList<TimedElement> elements()
+	{
+		return mTimedElements;
+	}
+	
 	@Override
 	public String toString()
 	{
