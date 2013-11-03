@@ -107,14 +107,14 @@ public class BarFactory
 						if(mTimedElement.duration() == Duration.HALF)
 						{
 							timedElement1 = new TimedElement(mTimedElement.duration() + 1, false);
-							timedElement2 = timedElement1;
+							timedElement2 = new TimedElement(timedElement1.duration(), timedElement1.dotted());
 						}
 						else
 						{
 							if(Math.random() < 0.4)
 							{	
 								timedElement1 = new TimedElement(mTimedElement.duration() + 1, false);
-								timedElement2 = timedElement1;
+								timedElement2 = new TimedElement(timedElement1.duration(), timedElement1.dotted());
 							}
 							else
 							{
