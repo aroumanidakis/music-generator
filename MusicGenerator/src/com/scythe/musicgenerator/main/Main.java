@@ -51,7 +51,7 @@ public class Main
 		for(int barCnt = 0; barCnt < rhythmTrack.size(); barCnt++)
 		{
 			Bar bar = null;
-			while(bar == null || bar.elements().size() < 4)
+			while(bar == null || bar.elements().size() < 8)
 			{
 				bar = BarFactory.generateRhythm(new BarSignature("4/4"));
 			}
@@ -60,7 +60,52 @@ public class Main
 			for(int i = 0; i < elements.size(); i++)
 			{
 				TimedElement element = elements.get(i);
-				element.addNote(scale.note((int)(Math.random() * scale.noteCnt())));
+				
+				if(i == 0)
+				{
+					Note firstNote = rhythmTrack.get(barCnt).elements().get(0).notes().get(0);
+					
+					int noteIndex;
+					for(noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
+					{
+						if(scale.note(noteIndex).equals(firstNote))
+						{
+							break;
+						}
+					}
+					
+					if(Math.random() < 0.5)
+					{
+						scale.getNoteAtUpperInterval(noteIndex, Interval.Name.FIFTH, firstNote);
+					}
+					
+					element.addNote(firstNote);
+				}
+				else
+				{
+					Note previousNote = elements.get(i - 1).notes().get(0);
+					int noteIndex;
+					for(noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
+					{
+						if(scale.note(noteIndex).equals(previousNote))
+						{
+							break;
+						}
+					}
+					
+					int indexVar = ((int)(Math.random() * 5)) - 2;
+					
+					noteIndex += indexVar;
+					
+					if(noteIndex < 0)
+					{
+						noteIndex += scale.noteCnt();
+					}
+					
+					noteIndex %= scale.noteCnt();
+					
+					element.addNote(scale.note(noteIndex));
+				}
 			}
 			
 			System.out.println("Modified bar: " + bar);
@@ -127,16 +172,14 @@ public class Main
 			
 			System.out.println("Power chord from degree " + Degree.toString(grid.degree(degreeIndex)) + ": " + fundamental + " " + fifth + " " + octave);
 			
-			TimedElement timedElement = new TimedElement(Duration.SINGLE, false);
+			TimedElement timedElement = new TimedElement(Duration.DOUBLE, false);
 			timedElement.addNote(fundamental);
 			timedElement.addNote(fifth);
 			timedElement.addNote(octave);
 			
 			ArrayList<TimedElement> timedElements = new ArrayList<TimedElement>();
-			for(int i = 0; i < 4; i++)
-			{
-				timedElements.add(timedElement);
-			}
+			timedElements.add(timedElement);
+			timedElements.add(timedElement);
 			
 			track.add(new Bar(new BarSignature("4/4"), timedElements));
 		}
