@@ -2,6 +2,9 @@ package com.scythe.musicgenerator.core;
 
 public class Note 
 {
+	public static final int MIN_OCTAVE = -2;
+	public static final int MAX_OCTAVE = 8;
+	
 	public Note()
 	{
 		mName = Name.C;
@@ -9,23 +12,31 @@ public class Note
 		mOctave = mDefaultOctave;
 	}
 	
+	public Note(int name, int accidental, int octave, int velocity)
+	{
+		name(name);
+		accidental(accidental);
+		octave(octave);
+		velocity(velocity);
+	}
+	
 	public Note(int name, int accidental, int octave)
 	{
-		mName = name;
-		mAccidental = accidental;
-		mOctave = octave;
+		name(name);
+		accidental(accidental);
+		octave(octave);
 	}
 	
 	public Note(int name, int accidental)
 	{
-		mName = name;
-		mAccidental = accidental;
+		name(name);
+		accidental(accidental);
 		mOctave = mDefaultOctave;
 	}
 	
 	public Note(int name)
 	{
-		mName = name;
+		name(name);
 		mAccidental = Accidental.NONE;
 		mOctave = mDefaultOctave;
 	}
@@ -35,6 +46,7 @@ public class Note
 		mName = note.mName;
 		mAccidental = note.mAccidental;
 		mOctave = note.mOctave;
+		mVelocity = note.mVelocity;
 	}
 	
 	public int name()
@@ -44,7 +56,14 @@ public class Note
 	
 	public void name(int name)
 	{
-		mName = name;
+		if(name >= 0 & name < Name.COUNT)
+		{
+			mName = name;
+		}
+		else
+		{
+			mName = Name.C;
+		}
 	}
 	
 	public int accidental()
@@ -54,6 +73,15 @@ public class Note
 	
 	public void accidental(int accidental)
 	{
+		if(accidental >= 0 && accidental < Accidental.COUNT)
+		{
+			mAccidental = accidental;
+		}
+		else
+		{
+			mAccidental = Accidental.NONE;
+		}
+		
 		mAccidental = accidental;
 	}
 	
@@ -64,7 +92,35 @@ public class Note
 	
 	public void octave(int octave)
 	{
-		mOctave = octave;
+		if(octave >= MIN_OCTAVE && octave <= MAX_OCTAVE)
+		{
+			mOctave = octave;
+		}
+		else
+		{
+			mOctave = mDefaultOctave;
+		}
+	}
+	
+	public int velocity()
+	{
+		return mVelocity;
+	}
+	
+	public void velocity(int velocity)
+	{
+		if(velocity < 0)
+		{
+			mVelocity = 0;
+		}
+		else if(velocity > 127)
+		{
+			mVelocity = 127;
+		}
+		else
+		{
+			mVelocity = velocity;
+		}
 	}
 	
 	@Override
@@ -241,9 +297,10 @@ public class Note
 			return "";
 		}
 	}
-	
+	 
 	private static int mDefaultOctave = 2;
 	private int mName;
 	private int mAccidental;
 	private int mOctave;
+	private int mVelocity;
 }
