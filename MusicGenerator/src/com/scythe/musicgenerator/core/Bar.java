@@ -19,12 +19,12 @@ public class Bar
 	
 	private boolean isRhythmSignatureValid()
 	{
-		return (mSignature.timeCnt() == 0 || mSignature.refTime() == 0 || Duration.convertInRhythmSignature(mSignature.refTime()) == 0) ? false : true;
+		return (mSignature.numerator() == 0 || mSignature.denominator() == 0 || Duration.convertInRhythmSignature(mSignature.denominator()) == 0) ? false : true;
 	}
 	
 	private boolean isNotesValid()
 	{
-		float expectedTotalTime = mSignature.timeCnt() * Duration.convertInTime(mSignature.refTime());
+		float expectedTotalTime = mSignature.numerator() * Duration.convertInTime(mSignature.denominator());
 		
 		float realTotalTime = 0;
 		for(int i = 0; i < mTimedElements.size(); i++)
@@ -35,6 +35,11 @@ public class Bar
 		return expectedTotalTime == realTotalTime;
 	}
 	
+	public BarSignature signature()
+	{
+		return mSignature;
+	}
+	
 	public ArrayList<TimedElement> elements()
 	{
 		return mTimedElements;
@@ -43,7 +48,7 @@ public class Bar
 	@Override
 	public String toString()
 	{
-		String str = mSignature.timeCnt() + "/" + Duration.convertInRhythmSignature(mSignature.refTime()) + " ";
+		String str = mSignature.numerator() + "/" + Duration.convertInRhythmSignature(mSignature.denominator()) + " ";
 		for(int i = 0; i < mTimedElements.size(); i++)
 		{
 			str += mTimedElements.get(i) + " ";

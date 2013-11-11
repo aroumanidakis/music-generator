@@ -21,7 +21,7 @@ public class BarSignature
 		int tmp = 0;
 		try
 		{
-			mTimeCnt = Integer.parseInt(fields[0].trim());
+			mNumerator = Integer.parseInt(fields[0].trim());
 			tmp = Integer.parseInt(fields[1].trim());
 		}
 		catch(NumberFormatException e)
@@ -36,24 +36,44 @@ public class BarSignature
 			invalidate();
 		}
 		
-		mRefTime = refTime;
+		mDenominator = refTime;
 	}
 	
 	private void invalidate()
 	{
 		mIsValid = false;
-		mTimeCnt = 0;
-		mRefTime = 0;
+		mNumerator = 0;
+		mDenominator = 0;
 	}
 	
-	public int timeCnt()
+	public int numerator()
 	{
-		return mTimeCnt;
+		return mNumerator;
 	}
 	
-	public int refTime()
+	public int denominator()
 	{
-		return mRefTime;
+		return mDenominator;
+	}
+	
+	public int getNumberOfTimes()
+	{
+		if(mNumerator == 2 || mNumerator == 6)
+		{
+			return 2;
+		}
+		else if(mNumerator == 3 || mNumerator == 9)
+		{
+			return 3;
+		}
+		else if(mNumerator == 4 || mNumerator == 12)
+		{
+			return 4;
+		}
+		else
+		{
+			return -1;
+		}
 	}
 	
 	public boolean isValid()
@@ -61,7 +81,13 @@ public class BarSignature
 		return mIsValid;
 	}
 	
-	private int mTimeCnt;
-	private int mRefTime;
+	@Override
+	public String toString()
+	{
+		return mNumerator + "/" + mDenominator;
+	}
+	
+	private int mNumerator;
+	private int mDenominator;
 	private boolean mIsValid;
 }

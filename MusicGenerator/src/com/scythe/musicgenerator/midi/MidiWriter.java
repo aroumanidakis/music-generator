@@ -98,7 +98,7 @@ public class MidiWriter
 						noteOnEvent[0] = 0;
 						noteOnEvent[1] = (byte)0x90;
 						noteOnEvent[2] = note.toMidiNoteNumber();
-						noteOnEvent[3] = 0x64;
+						noteOnEvent[3] = (byte)note.velocity();
 						
 						events.add(noteOnEvent);
 					}
@@ -117,7 +117,7 @@ public class MidiWriter
 							
 							noteOffEvent[noteOffEvent.length - 3] = (byte)0x80;
 							noteOffEvent[noteOffEvent.length - 2] = element.notes().get(noteIndex).toMidiNoteNumber();
-							noteOffEvent[noteOffEvent.length - 1] = 0x64;
+							noteOffEvent[noteOffEvent.length - 1] = (byte)element.notes().get(noteIndex).velocity();
 							
 							events.add(noteOffEvent);
 						}
@@ -128,7 +128,7 @@ public class MidiWriter
 							noteOffEvent[0] = 0;
 							noteOffEvent[1] = (byte)0x80;
 							noteOffEvent[2] = element.notes().get(noteIndex).toMidiNoteNumber();
-							noteOffEvent[3] = 0x64;
+							noteOffEvent[3] = (byte)element.notes().get(noteIndex).velocity();
 							
 							events.add(noteOffEvent);
 						}

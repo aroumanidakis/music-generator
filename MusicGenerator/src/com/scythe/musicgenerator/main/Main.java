@@ -19,7 +19,8 @@ public class Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		generate();
+		//generate();
+		testBarFactory();
 	}
 	
 	public static void generate()
@@ -53,7 +54,7 @@ public class Main
 			Bar bar = null;
 			while(bar == null || bar.elements().size() < 8)
 			{
-				bar = BarFactory.generateRhythm(new BarSignature("4/4"));
+				bar = BarFactory.Melody.generateRhythm(new BarSignature("4/4"));
 			}
 			
 			ArrayList<TimedElement> elements = bar.elements();
@@ -185,6 +186,24 @@ public class Main
 		}
 		
 		return track;
+	}
+	
+	private static void testBarFactory()
+	{
+		DiatonicScale scale = new DiatonicScale(new Note(), Mode.EOLIAN);
+		
+		ArrayList<Bar> track = new ArrayList<Bar>();
+		
+		for(int noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
+		{
+			track.add(BarFactory.Accompaniment.generateSimple(new BarSignature("4/4"), scale, noteIndex));
+		}
+		
+		MidiWriter midiWriter = new MidiWriter("accompaniment.mid");
+		midiWriter.addTrack(track, "accompaniment");
+		midiWriter.write();
+		
+		System.out.println("accompaniment.mid written.");
 	}
 }
 
