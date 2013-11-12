@@ -139,6 +139,7 @@ public class BarFactory
 		
 		private static ArrayList<TimedElementToCut> createBeginningTimedElements(BarSignature signature)
 		{
+			/*
 			float totalTime = signature.numerator() * Duration.convertInTime(signature.denominator());
 			
 			ArrayList<TimedElementToCut> timedElements = new ArrayList<TimedElementToCut>();
@@ -173,10 +174,42 @@ public class BarFactory
 				timedElements.set(randomIndex, tmp);
 			}
 			
+			*/
+			int numberOfTimes = signature.getNumberOfTimes();
+			if(numberOfTimes == -1)
+			{
+				System.out.println(signature + " not supported yet.");
+				return null;
+			}
+			
+			ArrayList<TimedElementToCut> timedElements = new ArrayList<TimedElementToCut>();
+			
+			switch(signature.getType())
+			{
+				case BarSignature.Type.SIMPLE:
+				{
+					for(int i = 0; i < signature.numerator(); i++)
+					{
+						timedElements.add(new TimedElementToCut(new TimedElement(signature.denominator(), false), cuttingChanceCoeff));
+					}
+					
+					break;
+				}
+				case BarSignature.Type.COMPOSED:
+				{
+					for(int i = 0; i < signature.numerator() / 3; i++)
+					{
+						timedElements.add(new TimedElementToCut(new TimedElement(signature.denominator(), true), cuttingChanceCoeff));
+					}
+					
+					break;
+				}
+			}
+			
 			return timedElements;
 		}
 		
-		private static float cuttingChanceCoeff = 0.85f;
+		private static float cuttingChanceCoeff = 0.65f;
 		
 		private static class TimedElementToCut
 		{

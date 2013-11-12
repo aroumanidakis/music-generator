@@ -76,6 +76,22 @@ public class BarSignature
 		}
 	}
 	
+	public int getType()
+	{
+		if(mNumerator == 2 || mNumerator == 3 || mNumerator == 4)
+		{
+			return Type.SIMPLE;
+		}
+		else if(mNumerator == 6 || mNumerator == 9 || mNumerator == 12)
+		{
+			return Type.COMPOSED;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	
 	public boolean isValid()
 	{
 		return mIsValid;
@@ -85,6 +101,14 @@ public class BarSignature
 	public String toString()
 	{
 		return mNumerator + "/" + Duration.convertInRhythmSignature(mDenominator);
+	}
+	
+	public static class Type
+	{
+		public static final int COUNT = 2;
+		
+		public static final int SIMPLE		= 0;
+		public static final int COMPOSED	= 1;
 	}
 	
 	private int mNumerator;
