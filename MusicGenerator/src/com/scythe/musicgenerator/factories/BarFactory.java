@@ -14,7 +14,7 @@ public class BarFactory
 {
 	public static class Accompaniment
 	{
-		public static Bar generateSimple(BarSignature signature, DiatonicScale scale, int degree)
+		public static Bar generateSimple(BarSignature signature, DiatonicScale scale, int[] degrees)
 		{
 			int numberOfTimes = signature.getNumberOfTimes();
 			if(numberOfTimes == -1)
@@ -23,15 +23,31 @@ public class BarFactory
 				return null;
 			}
 			
+			if(degrees.length > signature.numerator())
+			{
+				System.out.println(degrees.length + " degrees can not be inserted in a " + signature + " bar.");
+				return null;
+			}
+			
+			if(signature.numerator() % degrees.length != 0)
+			{
+				System.out.println("The number of degrees (" + degrees.length + ") is not compatible with the bar structure (" + signature + ")");
+				return null;
+			}
+			
+			int notesPerDegree = signature.numerator() / degrees.length;
+			int currentDegreeIndex = 0;
+			int degreeNotesAdded = 0;
+			
 			int notesPerTime = signature.numerator() / numberOfTimes;
 			int currentTime = 1;
-			int notesAdded = 0;
+			int timeNotesAdded = 0;
 			
 			ArrayList<TimedElement> barContent = new ArrayList<TimedElement>();
 			for(int noteIndex = 0; noteIndex < signature.numerator(); noteIndex++)
 			{
 				int velocity = 50;
-				if(notesAdded == 0)
+				if(timeNotesAdded == 0)
 				{
 					if(currentTime == 1)
 					{
@@ -42,6 +58,8 @@ public class BarFactory
 						velocity = 75;
 					}
 				}
+				
+				int degree = degrees[currentDegreeIndex];
 				
 				Note fundamental = scale.note(degree);
 				fundamental.velocity(velocity);
@@ -66,11 +84,18 @@ public class BarFactory
 				
 				barContent.add(timedElement);
 				
-				notesAdded++;
-				if(notesAdded == notesPerTime)
+				timeNotesAdded++;
+				if(timeNotesAdded == notesPerTime)
 				{
 					currentTime++;
-					notesAdded = 0;
+					timeNotesAdded = 0;
+				}
+				
+				degreeNotesAdded++;
+				if(degreeNotesAdded == notesPerDegree)
+				{
+					currentDegreeIndex++;
+					degreeNotesAdded = 0;
 				}
 			}
 			

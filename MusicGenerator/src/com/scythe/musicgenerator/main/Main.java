@@ -190,13 +190,15 @@ public class Main
 	
 	private static void testBarFactory()
 	{
-		DiatonicScale scale = new DiatonicScale(new Note(), Mode.EOLIAN);
+		DiatonicScale scale = new DiatonicScale(new Note(), Mode.IONIAN);
 		
 		ArrayList<Bar> track = new ArrayList<Bar>();
 		
 		for(int noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
 		{
-			track.add(BarFactory.Accompaniment.generateSimple(new BarSignature("4/4"), scale, noteIndex));
+			int[] degrees = new int[1];
+			degrees[0] = noteIndex;
+			track.add(BarFactory.Accompaniment.generateSimple(new BarSignature("4/4"), scale, degrees));
 		}
 		
 		MidiWriter midiWriter = new MidiWriter("accompaniment.mid");
