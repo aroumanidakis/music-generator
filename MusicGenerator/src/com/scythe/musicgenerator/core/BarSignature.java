@@ -84,7 +84,7 @@ public class BarSignature
 	@Override
 	public String toString()
 	{
-		return mNumerator + "/" + mDenominator;
+		return mNumerator + "/" + Duration.convertInRhythmSignature(mDenominator);
 	}
 	
 	private int mNumerator;
