@@ -10,6 +10,7 @@ public class Note
 		mName = Name.C;
 		mAccidental = Accidental.NONE;
 		mOctave = mDefaultOctave;
+		mVelocity = mDefaultVelocity;
 	}
 	
 	public Note(int name, int accidental, int octave, int velocity)
@@ -25,6 +26,7 @@ public class Note
 		name(name);
 		accidental(accidental);
 		octave(octave);
+		mVelocity = mDefaultVelocity;
 	}
 	
 	public Note(int name, int accidental)
@@ -32,6 +34,7 @@ public class Note
 		name(name);
 		accidental(accidental);
 		mOctave = mDefaultOctave;
+		mVelocity = mDefaultVelocity;
 	}
 	
 	public Note(int name)
@@ -39,6 +42,7 @@ public class Note
 		name(name);
 		mAccidental = Accidental.NONE;
 		mOctave = mDefaultOctave;
+		mVelocity = mDefaultVelocity;
 	}
 	
 	public Note(Note note)
@@ -249,6 +253,22 @@ public class Note
 		mDefaultOctave = defaultOctave;
 	}
 	
+	public static void defaultVelocity(int defaultVelocity)
+	{
+		if(defaultVelocity < 0)
+		{
+			mDefaultVelocity = 0;
+		}
+		else if(defaultVelocity > 127)
+		{
+			mDefaultVelocity = 127;
+		}
+		else
+		{
+			mDefaultVelocity = defaultVelocity;
+		}
+	}
+	
 	public static class Name
 	{
 		public static final int COUNT = 7;
@@ -299,6 +319,8 @@ public class Note
 	}
 	 
 	private static int mDefaultOctave = 2;
+	private static int mDefaultVelocity = 100;
+	
 	private int mName;
 	private int mAccidental;
 	private int mOctave;
