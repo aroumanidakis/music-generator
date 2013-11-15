@@ -8,6 +8,7 @@ import com.scythe.musicgenerator.core.DiatonicScale;
 import com.scythe.musicgenerator.core.Note;
 import com.scythe.musicgenerator.core.TimedElement;
 import com.scythe.musicgenerator.defines.Duration;
+import com.scythe.musicgenerator.defines.Dynamics;
 import com.scythe.musicgenerator.defines.Interval;
 
 public class BarFactory
@@ -46,16 +47,16 @@ public class BarFactory
 			ArrayList<TimedElement> barContent = new ArrayList<TimedElement>();
 			for(int noteIndex = 0; noteIndex < signature.numerator(); noteIndex++)
 			{
-				int velocity = 50;
+				int velocity = Dynamics.MEZZOPIANO;
 				if(timeNotesAdded == 0)
 				{
 					if(currentTime == 1)
 					{
-						velocity = 100;
+						velocity = Dynamics.FORTE;
 					}
 					else if(currentTime == 3 && numberOfTimes == 4)
 					{
-						velocity = 75;
+						velocity = Dynamics.MEZZOFORTE;
 					}
 				}
 				

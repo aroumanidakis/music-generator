@@ -1,5 +1,7 @@
 package com.scythe.musicgenerator.core;
 
+import com.scythe.musicgenerator.defines.Dynamics;
+
 public class Note 
 {
 	public static final int MIN_OCTAVE = -2;
@@ -319,7 +321,7 @@ public class Note
 	}
 	 
 	private static int mDefaultOctave = 2;
-	private static int mDefaultVelocity = 100;
+	private static int mDefaultVelocity = Dynamics.MEZZOFORTE;
 	
 	private int mName;
 	private int mAccidental;
