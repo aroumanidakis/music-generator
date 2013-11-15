@@ -98,6 +98,13 @@ public class BarSignature
 	}
 	
 	@Override
+	public boolean equals(Object signature)
+	{
+		BarSignature sig = (BarSignature)signature;
+		return mNumerator == sig.mNumerator && mDenominator == sig.mDenominator;
+	}
+	
+	@Override
 	public String toString()
 	{
 		return mNumerator + "/" + Duration.convertInRhythmSignature(mDenominator);

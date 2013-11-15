@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
+import com.scythe.musicgenerator.core.BarSignature;
+import com.scythe.musicgenerator.core.DiatonicScale;
 import com.scythe.musicgenerator.core.Note;
 import com.scythe.musicgenerator.core.TimedElement;
+import com.scythe.musicgenerator.defines.Mode;
 
 public class MidiWriter
 {
@@ -16,12 +19,24 @@ public class MidiWriter
 		mFileName = fileName;
 		mTracks = new ArrayList<ArrayList<Bar>>();
 		mTrackNames = new ArrayList<String>();
+		mTempo = 120;
+		mScale = null;
 	}
 	
 	public void addTrack(ArrayList<Bar> track, String trackName)
 	{
 		mTracks.add(track);
 		mTrackNames.add(trackName);
+	}
+	
+	public void tempo(int tempo)
+	{
+		mTempo = tempo;
+	}
+	
+	public void scale(DiatonicScale scale)
+	{
+		mScale = scale;
 	}
 	
 	public void write()
@@ -75,9 +90,20 @@ public class MidiWriter
 			events.add(generateCopyrightEvent());
 			events.add(generateTextInformationEvent());
 			events.add(generateTrackNameEvent(trackIndex));
+			events.add(generateTempoEvent());
+			events.add(generateKeySignatureEvent());
+			
+			BarSignature currentSignature = null;
 			
 			for(Bar bar : mTracks.get(trackIndex))
 			{
+				if(currentSignature == null || !currentSignature.equals(bar.signature()))
+				{
+					System.out.println("writting time sig");
+					currentSignature = bar.signature();
+					events.add(generateTimeSignatureEvent(currentSignature));
+				}
+				
 				for(TimedElement element : bar.elements())
 				{
 					for(Note note : element.notes())
@@ -208,6 +234,69 @@ public class MidiWriter
 		return event;
 	}
 	
+	private byte[] generateTempoEvent()
+	{
+		int microsecPerQuarterNote = 60000000 / mTempo;
+		
+		byte[] event = new byte[7];
+		
+		event[0] = 0x00;
+		event[1] = (byte)0xFF;
+		event[2] = 0x51;
+		event[3] = 0x03;
+		event[4] = (byte)((microsecPerQuarterNote & 0x00FF0000) >> 16);
+		event[5] = (byte)((microsecPerQuarterNote & 0x0000FF00) >> 8);
+		event[6] = (byte)(microsecPerQuarterNote & 0x000000FF);
+		
+		return event;
+	}
+	
+	private byte[] generateTimeSignatureEvent(BarSignature signature)
+	{
+		byte[] event = new byte[8];
+		event[0] = 0x00;
+		event[1] = (byte)0xFF;
+		event[2] = 0x58;
+		event[3] = 0x04;
+		event[4] = (byte)signature.numerator();
+		event[5] = (byte)signature.denominator();
+		event[6] = 0x24;
+		event[7] = 0x8;
+		
+		return event;
+	}
+	
+	private byte[] generateKeySignatureEvent()
+	{
+		byte[] event = new byte[6];
+		
+		event[0] = 0x00;
+		event[1] = (byte)0xFF;
+		event[2] = 0x59;
+		event[3] = 0x02;
+		
+		if(mScale == null)
+		{
+			event[4] = 0x00;
+			event[5] = 0x01;
+		}
+		else
+		{
+			int numberOfAccidental = mScale.getNumberOfAccidental();
+			if(mScale.accidental() == Note.Accidental.FLAT)
+			{
+				numberOfAccidental *= -1;
+			}
+			
+			System.out.println("sf " + numberOfAccidental);
+			
+			event[4] = (byte)numberOfAccidental;
+			event[5] = (mScale.mode() == Mode.IONIAN) ? (byte)0x00 : (byte)0x01;
+		}
+		
+		return event;
+	}
+	
 	private byte[] intToDeltaTime(int time)
 	{
 		int deltaTimeSize = (time > 127) ? 2 : 1;
@@ -232,6 +321,8 @@ public class MidiWriter
 	private ArrayList<ArrayList<Bar>> mTracks;
 	private ArrayList<String> mTrackNames;
 	private String mFileName;
+	private int mTempo;
+	private DiatonicScale mScale;
 	
 	private FileOutputStream mOutputStream;
 }

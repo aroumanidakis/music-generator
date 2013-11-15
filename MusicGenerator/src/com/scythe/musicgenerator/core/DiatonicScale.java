@@ -318,6 +318,20 @@ public class DiatonicScale
 		midiWriter.write();
 	}
 	
+	public int getNumberOfAccidental()
+	{
+		int numberOfAccidental = 0;
+		for(Note note : mNotes)
+		{
+			if(note.accidental() != Note.Accidental.NONE)
+			{
+				numberOfAccidental++;
+			}
+		}
+		
+		return numberOfAccidental;
+	}
+	
 	@Override
 	public String toString()
 	{
