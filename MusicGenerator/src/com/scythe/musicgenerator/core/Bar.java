@@ -2,7 +2,7 @@ package com.scythe.musicgenerator.core;
 
 import java.util.ArrayList;
 
-import com.scythe.musicgenerator.defines.Duration;
+import com.scythe.musicgenerator.core.TimedElement.Duration;
 
 @SuppressWarnings("serial")
 public class Bar extends ArrayList<TimedElement>

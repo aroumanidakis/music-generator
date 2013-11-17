@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.DiatonicScale;
+import com.scythe.musicgenerator.core.DiatonicScale.Mode;
+import com.scythe.musicgenerator.core.Degree;
 import com.scythe.musicgenerator.core.Grid;
+import com.scythe.musicgenerator.core.Interval;
 import com.scythe.musicgenerator.core.Note;
 import com.scythe.musicgenerator.core.TimeSignature;
 import com.scythe.musicgenerator.core.TimedElement;
-import com.scythe.musicgenerator.defines.Degree;
-import com.scythe.musicgenerator.defines.Duration;
-import com.scythe.musicgenerator.defines.Interval;
-import com.scythe.musicgenerator.defines.Mode;
+import com.scythe.musicgenerator.core.TimedElement.Duration;
 import com.scythe.musicgenerator.factories.BarFactory;
 import com.scythe.musicgenerator.midi.MidiWriter;
 

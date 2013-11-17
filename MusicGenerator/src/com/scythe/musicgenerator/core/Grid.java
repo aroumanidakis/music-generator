@@ -2,7 +2,6 @@ package com.scythe.musicgenerator.core;
 
 import java.util.ArrayList;
 
-import com.scythe.musicgenerator.defines.Degree;
 
 @SuppressWarnings("serial")
 public class Grid extends ArrayList<Integer>

@@ -4,12 +4,11 @@ import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.DiatonicScale;
+import com.scythe.musicgenerator.core.Interval;
 import com.scythe.musicgenerator.core.Note;
 import com.scythe.musicgenerator.core.TimeSignature;
 import com.scythe.musicgenerator.core.TimedElement;
-import com.scythe.musicgenerator.defines.Duration;
-import com.scythe.musicgenerator.defines.Dynamics;
-import com.scythe.musicgenerator.defines.Interval;
+import com.scythe.musicgenerator.core.TimedElement.Duration;
 
 public class BarFactory
 {
@@ -47,16 +46,16 @@ public class BarFactory
 			Bar bar = new Bar(signature);
 			for(int noteIndex = 0; noteIndex < signature.numerator(); noteIndex++)
 			{
-				int velocity = Dynamics.MEZZOPIANO;
+				int velocity = Note.Dynamics.MEZZOPIANO;
 				if(timeNotesAdded == 0)
 				{
 					if(currentTime == 1)
 					{
-						velocity = Dynamics.FORTE;
+						velocity = Note.Dynamics.FORTE;
 					}
 					else if(currentTime == 3 && numberOfTimes == 4)
 					{
-						velocity = Dynamics.MEZZOFORTE;
+						velocity = Note.Dynamics.MEZZOFORTE;
 					}
 				}
 				

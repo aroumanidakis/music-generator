@@ -4,12 +4,11 @@ import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Note.Accidental;
 import com.scythe.musicgenerator.core.Note.Name;
-import com.scythe.musicgenerator.defines.Duration;
-import com.scythe.musicgenerator.defines.Interval;
-import com.scythe.musicgenerator.defines.Mode;
+import com.scythe.musicgenerator.core.TimedElement.Duration;
 import com.scythe.musicgenerator.midi.MidiWriter;
 
-public class DiatonicScale
+@SuppressWarnings("serial")
+public class DiatonicScale extends ArrayList<Note>
 {
 	public DiatonicScale(Note tonic, int mode)
 	{
@@ -18,12 +17,11 @@ public class DiatonicScale
 		
 		mIntervals = shift(mMode);
 		
-		mNotes = new ArrayList<Note>();
-		mNotes.add(tonic);
+		add(tonic);
 		
 		for(int i = 1; i < 7; i++)
 		{
-			Note nextNote = getHalfToneUpperNote(mNotes.get(i - 1), mIntervals[i - 1]);
+			Note nextNote = getHalfToneUpperNote(get(i - 1), mIntervals[i - 1]);
 			
 			if(nextNote == null)
 			{
@@ -31,12 +29,12 @@ public class DiatonicScale
 				return;
 			}
 			
-			mNotes.add(nextNote);
+			add(nextNote);
 		}
 		
 		mAccidental = Note.Accidental.NONE;
 		
-		for(Note note : mNotes)
+		for(Note note : this)
 		{
 			if(mAccidental == Note.Accidental.NONE)
 			{
@@ -53,18 +51,18 @@ public class DiatonicScale
 			}
 		}
 		
-		if(mNotes.get(0).name() != Note.Name.C)
+		if(get(0).name() != Note.Name.C)
 		{
-			for(int i = indexOfC(); i < mNotes.size(); i++)
+			for(int i = indexOfC(); i < size(); i++)
 			{
-				mNotes.get(i).octave(mNotes.get(i).octave() + 1);
+				get(i).octave(get(i).octave() + 1);
 			}
 		}
 	}
 	
 	public Note tonic()
 	{
-		return mNotes.get(0);
+		return get(0);
 	}
 	
 	public int mode()
@@ -74,12 +72,12 @@ public class DiatonicScale
 	
 	public Note note(int index)
 	{
-		return mNotes.get(index);
+		return get(index);
 	}
 	
 	public int noteCnt()
 	{
-		return mNotes.size();
+		return size();
 	}
 	
 	public int accidental()
@@ -94,18 +92,18 @@ public class DiatonicScale
 	
 	public boolean isIn(Note note, boolean normalized)
 	{
-		for(int i = 0; i < mNotes.size(); i++)
+		for(int i = 0; i < size(); i++)
 		{
 			if(normalized)
 			{
-				if(mNotes.get(i).equalsNormalized(note))
+				if(get(i).equalsNormalized(note))
 				{
 					return true;
 				}
 			}
 			else
 			{
-				if(mNotes.get(i).equals(note))
+				if(get(i).equals(note))
 				{
 					return true;
 				}
@@ -117,21 +115,21 @@ public class DiatonicScale
 	
 	public boolean hasStrangeNote()
 	{
-		for(int i = 0; i < mNotes.size(); i++)
+		for(int i = 0; i < size(); i++)
 		{
-			if(mNotes.get(i).name() == Note.Name.C && mNotes.get(i).accidental() == Note.Accidental.FLAT)
+			if(get(i).name() == Note.Name.C && get(i).accidental() == Note.Accidental.FLAT)
 			{
 				return true;
 			}
-			else if(mNotes.get(i).name() == Note.Name.E && mNotes.get(i).accidental() == Note.Accidental.SHARP)
+			else if(get(i).name() == Note.Name.E && get(i).accidental() == Note.Accidental.SHARP)
 			{
 				return true;
 			}
-			else if(mNotes.get(i).name() == Note.Name.F && mNotes.get(i).accidental() == Note.Accidental.FLAT)
+			else if(get(i).name() == Note.Name.F && get(i).accidental() == Note.Accidental.FLAT)
 			{
 				return true;
 			}
-			else if(mNotes.get(i).name() == Note.Name.B && mNotes.get(i).accidental() == Note.Accidental.SHARP)
+			else if(get(i).name() == Note.Name.B && get(i).accidental() == Note.Accidental.SHARP)
 			{
 				return true;
 			}
@@ -147,13 +145,13 @@ public class DiatonicScale
 		for(int i = 0; i < interval + 1; i++)
 		{
 			newNoteIndex++;
-			if(newNoteIndex % mNotes.size() == 0)
+			if(newNoteIndex % size() == 0)
 			{
 				octaveIncr++;
 			}
 		}
 		
-		Note n = mNotes.get(newNoteIndex % mNotes.size());
+		Note n = get(newNoteIndex % size());
 		
 		note.name(n.name());
 		note.accidental(n.accidental());
@@ -297,14 +295,14 @@ public class DiatonicScale
 	public void toMidiFile(String fileName)
 	{
 		Bar bar = new Bar(new TimeSignature("8/4"));
-		for(int noteIndex = 0; noteIndex < mNotes.size(); noteIndex++)
+		for(int noteIndex = 0; noteIndex < size(); noteIndex++)
 		{
 			TimedElement te = new TimedElement(Duration.SINGLE, false);
-			te.add(mNotes.get(noteIndex));
+			te.add(get(noteIndex));
 			bar.add(te);
 		}
 		
-		Note note = new Note(mNotes.get(0));
+		Note note = new Note(get(0));
 		note.octave(note.octave() + 1);
 		TimedElement te = new TimedElement(Duration.SINGLE, false);
 		te.add(note);
@@ -321,7 +319,7 @@ public class DiatonicScale
 	public int getNumberOfAccidental()
 	{
 		int numberOfAccidental = 0;
-		for(Note note : mNotes)
+		for(Note note : this)
 		{
 			if(note.accidental() != Note.Accidental.NONE)
 			{
@@ -335,11 +333,11 @@ public class DiatonicScale
 	@Override
 	public String toString()
 	{
-		String str = mNotes.get(0) + " " + Mode.toString(mMode) + " [";
+		String str = get(0) + " " + Mode.toString(mMode) + " [";
 		
-		for(int i = 0; i < mNotes.size(); i++)
+		for(int i = 0; i < size(); i++)
 		{
-			str += mNotes.get(i) + (i == mNotes.size() - 1 ? "]" : " ");
+			str += get(i) + (i == size() - 1 ? "]" : " ");
 		}
 		
 		if(!mIsValid)
@@ -357,7 +355,7 @@ public class DiatonicScale
 	private int indexOfC()
 	{
 		int indexC;
-		for(indexC = 0; mNotes.get(indexC).name() != Note.Name.C; indexC++);
+		for(indexC = 0; get(indexC).name() != Note.Name.C; indexC++);
 		return indexC;
 	}
 	
@@ -482,8 +480,36 @@ public class DiatonicScale
 		return halfToneCnt;
 	}
 	
+	public static class Mode
+	{
+		public static final int COUNT = 7;
+		
+		public static final int IONIAN		= 0;
+		public static final int DORIAN		= 6;
+		public static final int PHRYGIAN	= 5;
+		public static final int LYDIAN		= 4;
+		public static final int MIXOLYDIAN	= 3;
+		public static final int EOLIAN		= 2;
+		public static final int LOCRIAN		= 1;
+		
+		public static String toString(int mode)
+		{
+			switch(mode)
+			{
+				case IONIAN		: return "IONIAN (major)";
+				case DORIAN		: return "DORIAN";
+				case PHRYGIAN	: return "PHRYGIAN";
+				case LYDIAN		: return "LYDIAN";
+				case MIXOLYDIAN	: return "MIXOLYDIAN";
+				case EOLIAN		: return "EOLIAN (minor)";
+				case LOCRIAN	: return "LOCRIAN";
+			}
+			
+			return "";
+		}
+	}
+	
 	private int mMode;
-	private ArrayList<Note> mNotes;
 	private int mAccidental;
 	
 	private boolean mIsValid;

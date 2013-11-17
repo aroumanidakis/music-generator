@@ -7,10 +7,10 @@ import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.DiatonicScale;
+import com.scythe.musicgenerator.core.DiatonicScale.Mode;
 import com.scythe.musicgenerator.core.Note;
 import com.scythe.musicgenerator.core.TimeSignature;
 import com.scythe.musicgenerator.core.TimedElement;
-import com.scythe.musicgenerator.defines.Mode;
 
 public class MidiWriter
 {

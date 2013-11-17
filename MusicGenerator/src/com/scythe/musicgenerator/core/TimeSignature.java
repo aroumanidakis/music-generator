@@ -1,6 +1,6 @@
 package com.scythe.musicgenerator.core;
 
-import com.scythe.musicgenerator.defines.Duration;
+import com.scythe.musicgenerator.core.TimedElement.Duration;
 
 public class TimeSignature
 {

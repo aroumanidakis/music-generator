@@ -1,4 +1,4 @@
-package com.scythe.musicgenerator.defines;
+package com.scythe.musicgenerator.core;
 
 public class Degree
 {
