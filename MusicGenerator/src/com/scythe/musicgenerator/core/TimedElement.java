@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 import com.scythe.musicgenerator.defines.Duration;
 
-public class TimedElement
+@SuppressWarnings("serial")
+public class TimedElement extends ArrayList<Note>
 {
 	public TimedElement(int duration, boolean dotted)
 	{
 		mDuration = duration;
 		mDotted = dotted;
-		mNotes = new ArrayList<Note>();
 	}
 	
 	public int duration()
@@ -29,29 +29,14 @@ public class TimedElement
 		return mDotted;
 	}
 	
-	public void addNote(Note note)
-	{
-		mNotes.add(note);
-	}
-	
-	public void removeNote(int index)
-	{
-		mNotes.remove(index);
-	}
-	
-	public ArrayList<Note> notes()
-	{
-		return mNotes;
-	}
-	
 	@Override
 	public String toString()
 	{
 		String str = durationInTime() + "[";
 		
-		for(int i = 0; i < mNotes.size(); i++)
+		for(int i = 0; i < size(); i++)
 		{
-			str += mNotes.get(i) + (i == mNotes.size() - 1 ? "" : ", ");
+			str += get(i) + (i == size() - 1 ? "" : ", ");
 		}
 		
 		str += "]";
@@ -60,5 +45,4 @@ public class TimedElement
 	
 	private int mDuration;
 	private boolean mDotted;
-	private ArrayList<Note> mNotes;
 }

@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
-import com.scythe.musicgenerator.core.BarSignature;
 import com.scythe.musicgenerator.core.DiatonicScale;
 import com.scythe.musicgenerator.core.Note;
+import com.scythe.musicgenerator.core.TimeSignature;
 import com.scythe.musicgenerator.core.TimedElement;
 import com.scythe.musicgenerator.defines.Mode;
 
@@ -93,20 +93,19 @@ public class MidiWriter
 			events.add(generateTempoEvent());
 			events.add(generateKeySignatureEvent());
 			
-			BarSignature currentSignature = null;
+			TimeSignature currentSignature = null;
 			
 			for(Bar bar : mTracks.get(trackIndex))
 			{
 				if(currentSignature == null || !currentSignature.equals(bar.signature()))
 				{
-					System.out.println("writting time sig");
 					currentSignature = bar.signature();
 					events.add(generateTimeSignatureEvent(currentSignature));
 				}
 				
-				for(TimedElement element : bar.elements())
+				for(TimedElement element : bar)
 				{
-					for(Note note : element.notes())
+					for(Note note : element)
 					{
 						byte[] noteOnEvent = new byte[4];
 						noteOnEvent[0] = 0;
@@ -117,7 +116,7 @@ public class MidiWriter
 						events.add(noteOnEvent);
 					}
 					
-					for(int noteIndex = 0; noteIndex < element.notes().size(); noteIndex++)
+					for(int noteIndex = 0; noteIndex < element.size(); noteIndex++)
 					{
 						if(noteIndex == 0)
 						{
@@ -130,8 +129,8 @@ public class MidiWriter
 							}
 							
 							noteOffEvent[noteOffEvent.length - 3] = (byte)0x80;
-							noteOffEvent[noteOffEvent.length - 2] = element.notes().get(noteIndex).toMidiNoteNumber();
-							noteOffEvent[noteOffEvent.length - 1] = (byte)element.notes().get(noteIndex).velocity();
+							noteOffEvent[noteOffEvent.length - 2] = element.get(noteIndex).toMidiNoteNumber();
+							noteOffEvent[noteOffEvent.length - 1] = (byte)element.get(noteIndex).velocity();
 							
 							events.add(noteOffEvent);
 						}
@@ -141,8 +140,8 @@ public class MidiWriter
 							
 							noteOffEvent[0] = 0;
 							noteOffEvent[1] = (byte)0x80;
-							noteOffEvent[2] = element.notes().get(noteIndex).toMidiNoteNumber();
-							noteOffEvent[3] = (byte)element.notes().get(noteIndex).velocity();
+							noteOffEvent[2] = element.get(noteIndex).toMidiNoteNumber();
+							noteOffEvent[3] = (byte)element.get(noteIndex).velocity();
 							
 							events.add(noteOffEvent);
 						}
@@ -251,7 +250,7 @@ public class MidiWriter
 		return event;
 	}
 	
-	private byte[] generateTimeSignatureEvent(BarSignature signature)
+	private byte[] generateTimeSignatureEvent(TimeSignature signature)
 	{
 		byte[] event = new byte[8];
 		event[0] = 0x00;
@@ -287,8 +286,6 @@ public class MidiWriter
 			{
 				numberOfAccidental *= -1;
 			}
-			
-			System.out.println("sf " + numberOfAccidental);
 			
 			event[4] = (byte)numberOfAccidental;
 			event[5] = (mScale.mode() == Mode.IONIAN) ? (byte)0x00 : (byte)0x01;

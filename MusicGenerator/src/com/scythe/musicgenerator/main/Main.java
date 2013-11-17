@@ -3,10 +3,10 @@ package com.scythe.musicgenerator.main;
 import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
-import com.scythe.musicgenerator.core.BarSignature;
 import com.scythe.musicgenerator.core.DiatonicScale;
 import com.scythe.musicgenerator.core.Grid;
 import com.scythe.musicgenerator.core.Note;
+import com.scythe.musicgenerator.core.TimeSignature;
 import com.scythe.musicgenerator.core.TimedElement;
 import com.scythe.musicgenerator.defines.Degree;
 import com.scythe.musicgenerator.defines.Duration;
@@ -19,7 +19,7 @@ public class Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		//generate();
+		generate();
 		testBarFactory();
 	}
 	
@@ -52,19 +52,18 @@ public class Main
 		for(int barCnt = 0; barCnt < rhythmTrack.size(); barCnt++)
 		{
 			Bar bar = null;
-			while(bar == null || bar.elements().size() < 8)
+			while(bar == null || bar.size() < 8)
 			{
-				bar = BarFactory.Melody.generateRhythm(new BarSignature("4/4"));
+				bar = BarFactory.Melody.generateRhythm(new TimeSignature("4/4"));
 			}
 			
-			ArrayList<TimedElement> elements = bar.elements();
-			for(int i = 0; i < elements.size(); i++)
+			for(int i = 0; i < bar.size(); i++)
 			{
-				TimedElement element = elements.get(i);
+				TimedElement element = bar.get(i);
 				
 				if(i == 0)
 				{
-					Note firstNote = rhythmTrack.get(barCnt).elements().get(0).notes().get(0);
+					Note firstNote = rhythmTrack.get(barCnt).get(0).get(0);
 					
 					int noteIndex;
 					for(noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
@@ -80,11 +79,11 @@ public class Main
 						scale.getNoteAtUpperInterval(noteIndex, Interval.Name.FIFTH, firstNote);
 					}
 					
-					element.addNote(firstNote);
+					element.add(firstNote);
 				}
 				else
 				{
-					Note previousNote = elements.get(i - 1).notes().get(0);
+					Note previousNote = bar.get(i - 1).get(0);
 					int noteIndex;
 					for(noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
 					{
@@ -105,7 +104,7 @@ public class Main
 					
 					noteIndex %= scale.noteCnt();
 					
-					element.addNote(scale.note(noteIndex));
+					element.add(scale.note(noteIndex));
 				}
 			}
 			
@@ -129,24 +128,24 @@ public class Main
 	
 	public static Grid generateRandomGrid()
 	{
-		ArrayList<Integer> degrees = new ArrayList<Integer>();
+		Grid grid = new Grid();
 		
-		degrees.add(Degree.I);
+		grid.add(Degree.I);
 		for(int i = 0; i < 3; i++)
 		{
 			int degree = (int)(Math.random() * Degree.COUNT);
-			degrees.add(degree);
+			grid.add(degree);
 		}
 		
-		return new Grid(degrees);
+		return grid;
 	}
 	
 	public static boolean validateGridForScale(Grid grid, DiatonicScale scale)
 	{
-		for(int degreeIndex = 0; degreeIndex < grid.degreesCnt(); degreeIndex++)
+		for(int degreeIndex = 0; degreeIndex < grid.size(); degreeIndex++)
 		{
 			Note fifth = new Note();
-			int qualification = scale.getNoteAtUpperInterval(grid.degree(degreeIndex), Interval.Name.FIFTH, fifth);
+			int qualification = scale.getNoteAtUpperInterval(grid.get(degreeIndex), Interval.Name.FIFTH, fifth);
 			
 			if(qualification != Interval.Qualification.PERFECT)
 			{
@@ -161,28 +160,28 @@ public class Main
 	{
 		ArrayList<Bar> track = new ArrayList<Bar>();
 		
-		for(int degreeIndex = 0; degreeIndex < grid.degreesCnt(); degreeIndex++)
+		for(int degreeIndex = 0; degreeIndex < grid.size(); degreeIndex++)
 		{
-			Note fundamental = scale.note(grid.degree(degreeIndex));
+			Note fundamental = scale.note(grid.get(degreeIndex));
 			
 			Note fifth = new Note();
-			scale.getNoteAtUpperInterval(grid.degree(degreeIndex), Interval.Name.FIFTH, fifth);
+			scale.getNoteAtUpperInterval(grid.get(degreeIndex), Interval.Name.FIFTH, fifth);
 			
 			Note octave = new Note(fundamental);
 			octave.octave(octave.octave() + 1);
 			
-			System.out.println("Power chord from degree " + Degree.toString(grid.degree(degreeIndex)) + ": " + fundamental + " " + fifth + " " + octave);
+			System.out.println("Power chord from degree " + Degree.toString(grid.get(degreeIndex)) + ": " + fundamental + " " + fifth + " " + octave);
 			
 			TimedElement timedElement = new TimedElement(Duration.DOUBLE, false);
-			timedElement.addNote(fundamental);
-			timedElement.addNote(fifth);
-			timedElement.addNote(octave);
+			timedElement.add(fundamental);
+			timedElement.add(fifth);
+			timedElement.add(octave);
 			
-			ArrayList<TimedElement> timedElements = new ArrayList<TimedElement>();
-			timedElements.add(timedElement);
-			timedElements.add(timedElement);
+			Bar bar = new Bar(new TimeSignature("4/4"));
+			bar.add(timedElement);
+			bar.add(timedElement);
 			
-			track.add(new Bar(new BarSignature("4/4"), timedElements));
+			track.add(bar);
 		}
 		
 		return track;
@@ -206,7 +205,7 @@ public class Main
 		{
 			int[] degrees = new int[1];
 			degrees[0] = noteIndex;
-			track.add(BarFactory.Accompaniment.generateSimple(new BarSignature("6/8"), scale, degrees));
+			track.add(BarFactory.Accompaniment.generateSimple(new TimeSignature("6/8"), scale, degrees));
 		}
 		
 		MidiWriter midiWriter = new MidiWriter("accompaniment.mid");

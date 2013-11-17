@@ -2,9 +2,9 @@ package com.scythe.musicgenerator.core;
 
 import com.scythe.musicgenerator.defines.Duration;
 
-public class BarSignature
+public class TimeSignature
 {
-	public BarSignature(String signature)
+	public TimeSignature(String signature)
 	{
 		if(!signature.contains("/"))
 		{
@@ -100,7 +100,7 @@ public class BarSignature
 	@Override
 	public boolean equals(Object signature)
 	{
-		BarSignature sig = (BarSignature)signature;
+		TimeSignature sig = (TimeSignature)signature;
 		return mNumerator == sig.mNumerator && mDenominator == sig.mDenominator;
 	}
 	

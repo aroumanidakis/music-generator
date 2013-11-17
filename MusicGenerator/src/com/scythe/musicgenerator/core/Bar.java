@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 import com.scythe.musicgenerator.defines.Duration;
 
-public class Bar
+@SuppressWarnings("serial")
+public class Bar extends ArrayList<TimedElement>
 {
-	public Bar(BarSignature signature, ArrayList<TimedElement> timedElements)
+	public Bar(TimeSignature signature)
 	{
 		mSignature = signature;
-		mTimedElements = timedElements;
 	}
 	
 	public boolean isValid()
@@ -27,36 +27,30 @@ public class Bar
 		float expectedTotalTime = mSignature.numerator() * Duration.convertInTime(mSignature.denominator());
 		
 		float realTotalTime = 0;
-		for(int i = 0; i < mTimedElements.size(); i++)
+		for(int i = 0; i < size(); i++)
 		{
-			realTotalTime += mTimedElements.get(i).durationInTime();
+			realTotalTime += get(i).durationInTime();
 		}
 		
 		return expectedTotalTime == realTotalTime;
 	}
 	
-	public BarSignature signature()
+	public TimeSignature signature()
 	{
 		return mSignature;
-	}
-	
-	public ArrayList<TimedElement> elements()
-	{
-		return mTimedElements;
 	}
 	
 	@Override
 	public String toString()
 	{
 		String str = mSignature.numerator() + "/" + Duration.convertInRhythmSignature(mSignature.denominator()) + " ";
-		for(int i = 0; i < mTimedElements.size(); i++)
+		for(int i = 0; i < size(); i++)
 		{
-			str += mTimedElements.get(i) + " ";
+			str += get(i) + " ";
 		}
 		
 		return str;
 	}
 	
-	private BarSignature mSignature;
-	private ArrayList<TimedElement> mTimedElements;
+	private TimeSignature mSignature;
 }

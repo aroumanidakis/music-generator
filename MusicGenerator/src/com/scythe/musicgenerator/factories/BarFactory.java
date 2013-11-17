@@ -3,9 +3,9 @@ package com.scythe.musicgenerator.factories;
 import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
-import com.scythe.musicgenerator.core.BarSignature;
 import com.scythe.musicgenerator.core.DiatonicScale;
 import com.scythe.musicgenerator.core.Note;
+import com.scythe.musicgenerator.core.TimeSignature;
 import com.scythe.musicgenerator.core.TimedElement;
 import com.scythe.musicgenerator.defines.Duration;
 import com.scythe.musicgenerator.defines.Dynamics;
@@ -15,7 +15,7 @@ public class BarFactory
 {
 	public static class Accompaniment
 	{
-		public static Bar generateSimple(BarSignature signature, DiatonicScale scale, int[] degrees)
+		public static Bar generateSimple(TimeSignature signature, DiatonicScale scale, int[] degrees)
 		{
 			int numberOfTimes = signature.getNumberOfTimes();
 			if(numberOfTimes == -1)
@@ -44,7 +44,7 @@ public class BarFactory
 			int currentTime = 1;
 			int timeNotesAdded = 0;
 			
-			ArrayList<TimedElement> barContent = new ArrayList<TimedElement>();
+			Bar bar = new Bar(signature);
 			for(int noteIndex = 0; noteIndex < signature.numerator(); noteIndex++)
 			{
 				int velocity = Dynamics.MEZZOPIANO;
@@ -78,12 +78,12 @@ public class BarFactory
 				octave.velocity(velocity);
 				
 				TimedElement timedElement = new TimedElement(signature.denominator(), false);
-				timedElement.addNote(fundamental);
-				timedElement.addNote(third);
-				timedElement.addNote(fifth);
-				timedElement.addNote(octave);
+				timedElement.add(fundamental);
+				timedElement.add(third);
+				timedElement.add(fifth);
+				timedElement.add(octave);
 				
-				barContent.add(timedElement);
+				bar.add(timedElement);
 				
 				timeNotesAdded++;
 				if(timeNotesAdded == notesPerTime)
@@ -100,13 +100,13 @@ public class BarFactory
 				}
 			}
 			
-			return new Bar(signature, barContent);
+			return bar;
 		}
 	}
 	
 	public static class Melody
 	{
-		public static Bar generateRhythm(BarSignature signature)
+		public static Bar generateRhythm(TimeSignature signature)
 		{
 			ArrayList<TimedElementToCut> timedElementsToCut = createBeginningTimedElements(signature);
 			
@@ -129,16 +129,16 @@ public class BarFactory
 				}
 			}
 			
-			ArrayList<TimedElement> timedElements = new ArrayList<TimedElement>();
+			Bar bar = new Bar(signature);
 			for(TimedElementToCut element : timedElementsToCut)
 			{
-				timedElements.add(element.timedElement());
+				bar.add(element.timedElement());
 			}
 			
-			return new Bar(signature, timedElements);
+			return bar;
 		}
 		
-		private static ArrayList<TimedElementToCut> createBeginningTimedElements(BarSignature signature)
+		private static ArrayList<TimedElementToCut> createBeginningTimedElements(TimeSignature signature)
 		{
 			/*
 			float totalTime = signature.numerator() * Duration.convertInTime(signature.denominator());
@@ -187,7 +187,7 @@ public class BarFactory
 			
 			switch(signature.getType())
 			{
-				case BarSignature.Type.SIMPLE:
+				case TimeSignature.Type.SIMPLE:
 				{
 					for(int i = 0; i < signature.numerator(); i++)
 					{
@@ -196,7 +196,7 @@ public class BarFactory
 					
 					break;
 				}
-				case BarSignature.Type.COMPOSED:
+				case TimeSignature.Type.COMPOSED:
 				{
 					for(int i = 0; i < signature.numerator() / 3; i++)
 					{
