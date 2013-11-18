@@ -19,8 +19,9 @@ public class Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		generate();
-		testBarFactory();
+		//generate();
+		//testBarFactory();
+		testFourChords();
 	}
 	
 	public static void generate()
@@ -215,6 +216,40 @@ public class Main
 		midiWriter.write();
 		
 		System.out.println("accompaniment.mid written.");
+	}
+	
+	private static void testFourChords()
+	{
+		Note.defaultOctave(2);
+		
+		Note tonic = new Note(Note.Name.F, Note.Accidental.SHARP);
+		int mode = Mode.EOLIAN;
+		TimeSignature signature = new TimeSignature("4/4");
+		
+		DiatonicScale scale = new DiatonicScale(tonic, mode);
+		
+		Bar bar = new Bar(signature);
+		for(int degree : new int[]{Degree.I, Degree.VI, Degree.IV, Degree.V})
+		{
+			Note fundamental = scale.get(degree);
+			
+			Note fifth = new Note();
+			scale.getNoteAtUpperInterval(degree, Interval.Name.FIFTH, fifth);
+			
+			TimedElement te = new TimedElement(Duration.SINGLE, false);
+			te.add(fundamental);
+			te.add(fifth);
+			
+			bar.add(te);
+		}
+		
+		ArrayList<Bar> track = new ArrayList<Bar>();
+		track.add(bar);
+		
+		MidiWriter midiWriter = new MidiWriter("fourChords.mid");
+		midiWriter.tempo(60);
+		midiWriter.addTrack(track, "intru");
+		midiWriter.write();
 	}
 }
 
