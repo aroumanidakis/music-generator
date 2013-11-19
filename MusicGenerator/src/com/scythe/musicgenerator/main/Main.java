@@ -20,8 +20,8 @@ public class Main
 	public static void main(String[] args) throws Exception
 	{
 		//generate();
-		//testBarFactory();
-		testFourChords();
+		testBarFactory();
+		//testFourChords();
 	}
 	
 	public static void generate()
@@ -200,19 +200,48 @@ public class Main
 
 		System.out.println(scale);
 		
-		ArrayList<Bar> track = new ArrayList<Bar>();
+		Grid grid = new Grid();
+		grid.add(Degree.I);
+		grid.add(Degree.VI);
+		grid.add(Degree.IV);
+		grid.add(Degree.V);
 		
-		for(int noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
+		ArrayList<Bar> track = new ArrayList<Bar>();
+		ArrayList<Bar> track2 = new ArrayList<Bar>();
+		
+		for(int i = 0; i < 4; i++)
 		{
-			int[] degrees = new int[1];
-			degrees[0] = noteIndex;
-			track.add(BarFactory.Accompaniment.generateSimple(new TimeSignature("6/8"), scale, degrees));
+			for(int degree : grid)
+			{
+				int[] degrees = new int[1];
+				degrees[0] = degree;
+				Bar bar = BarFactory.Accompaniment.generateSimple(new TimeSignature("4/4"), scale, degrees);
+				track.add(bar);
+				
+				Bar bar2 = new Bar(new TimeSignature("4/4"));
+				
+				TimedElement te = bar.get(0);
+				Note note = new Note(te.get(0));
+				note.octave(0);
+				note.velocity(Note.Dynamics.FORTISSISSIMO);
+				
+				te = new TimedElement(Duration.SINGLE, false);
+				te.add(note);
+				
+				for(int j = 0; j < 4; j++)
+				{
+					bar2.add(te);
+				}
+				
+				track2.add(bar2);
+			}
 		}
 		
 		MidiWriter midiWriter = new MidiWriter("accompaniment.mid");
-		midiWriter.tempo(100);
+		midiWriter.tempo(140);
 		midiWriter.scale(scale);
 		midiWriter.addTrack(track, "accompaniment");
+		midiWriter.addTrack(track2, "bass");
 		midiWriter.write();
 		
 		System.out.println("accompaniment.mid written.");
