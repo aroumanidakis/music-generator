@@ -20,8 +20,9 @@ public class Main
 	public static void main(String[] args) throws Exception
 	{
 		//generate();
-		testBarFactory();
+		//testBarFactory();
 		//testFourChords();
+		testSimpleMelody();
 	}
 	
 	public static void generate()
@@ -278,6 +279,101 @@ public class Main
 		MidiWriter midiWriter = new MidiWriter("fourChords.mid");
 		midiWriter.tempo(60);
 		midiWriter.addTrack(track, "intru");
+		midiWriter.write();
+	}
+	
+	private static void testSimpleMelody()
+	{
+		DiatonicScale scale = null;
+		
+		while(scale == null || scale.hasStrangeNote() || !scale.isValid())
+		{
+			Note tonic = new Note((int)(Math.random() * Note.Name.COUNT), (int)(Math.random() * Note.Accidental.COUNT));
+			int mode = (Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN;
+			scale = new DiatonicScale(tonic, mode);
+		}
+		
+		System.out.println("Selected scale: " + scale);
+		
+		Grid grid = new Grid();
+		grid.add(Degree.I);
+		grid.add((int)(Math.random() * Degree.COUNT));
+		grid.add((int)(Math.random() * Degree.COUNT));
+		grid.add((Math.random() < 0.5) ? Degree.I : Degree.V);
+		
+		System.out.println("Selected grid: " + grid);
+		
+		TimeSignature signature = new TimeSignature((Math.random() < 0.5) ? "4/4" : "6/8");
+		
+		System.out.println("Selected time signature: " + signature);
+		
+		
+		ArrayList<Bar> bassTrack = new ArrayList<Bar>();
+		ArrayList<Bar> accompanimentTrack = new ArrayList<Bar>();
+		ArrayList<Bar> melodyTrack = new ArrayList<Bar>();
+		
+		int nbQuarterNotePerDegree = (signature.equals(new TimeSignature("4/4"))) ? 4 : 3;
+		
+		int[] degrees = new int[2];
+		for(int i = 0; i < 2; i++)
+		{
+			Bar bar;
+			
+			degrees[0] = grid.get((2 * i));
+			degrees[1] = grid.get((2 * i) + 1);
+			
+			bar = BarFactory.Bass.generateSimple(signature, scale, degrees);
+			bassTrack.add(bar);
+			
+			bar = BarFactory.Accompaniment.generateSimple(signature, scale, degrees);
+			accompanimentTrack.add(bar);
+
+			bar = new Bar(signature);
+			
+			for(int currentDegree = 2 * i; currentDegree <= (2 * i) + 1; currentDegree++)
+			{
+				for(int noteIndex = 0; noteIndex < nbQuarterNotePerDegree; noteIndex++)
+				{
+					TimedElement te = new TimedElement(Duration.HALF, false);
+					if(true)//noteIndex == 0)
+					{
+						Note baseNote;
+						
+						if(Math.random() < 0.5)
+						{
+							baseNote = new Note(scale.get(currentDegree));
+						}
+						else
+						{
+							baseNote = new Note();
+							scale.getNoteAtUpperInterval(currentDegree, Interval.Name.FIFTH, baseNote);
+						}
+						
+						baseNote.octave(baseNote.octave() + 2);
+						te.add(baseNote);
+					}
+					
+					bar.add(te);
+				}
+			}
+			
+			melodyTrack.add(bar);
+		}
+		
+		int tempo = (int)(Math.random() * 100) + 60;
+		System.out.println("Selected tempo: " + tempo);
+		
+		MidiWriter midiWriter = new MidiWriter("SimpleMelody.mid");
+		midiWriter.tempo(tempo);
+		midiWriter.scale(scale);
+		
+		bassTrack.addAll(bassTrack);
+		accompanimentTrack.addAll(accompanimentTrack);
+		melodyTrack.addAll(melodyTrack);
+		
+		midiWriter.addTrack(bassTrack, "bass");
+		midiWriter.addTrack(accompanimentTrack, "accompaniment");
+		midiWriter.addTrack(melodyTrack, "melody");
 		midiWriter.write();
 	}
 }
