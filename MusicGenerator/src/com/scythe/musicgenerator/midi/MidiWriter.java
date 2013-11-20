@@ -55,6 +55,8 @@ public class MidiWriter
 			writeMidiTracks();
 		
 			mOutputStream.close();
+			
+			System.out.println(mFileName + " successfuly written.");
 		}
 		catch(IOException e)
 		{
