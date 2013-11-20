@@ -61,7 +61,7 @@ public class BarFactory
 				
 				int degree = degrees[currentDegreeIndex];
 				
-				Note fundamental = scale.note(degree);
+				Note fundamental = new Note(scale.note(degree));
 				fundamental.velocity(velocity);
 				
 				Note third = new Note();
@@ -81,6 +81,83 @@ public class BarFactory
 				timedElement.add(third);
 				timedElement.add(fifth);
 				timedElement.add(octave);
+				
+				bar.add(timedElement);
+				
+				timeNotesAdded++;
+				if(timeNotesAdded == notesPerTime)
+				{
+					currentTime++;
+					timeNotesAdded = 0;
+				}
+				
+				degreeNotesAdded++;
+				if(degreeNotesAdded == notesPerDegree)
+				{
+					currentDegreeIndex++;
+					degreeNotesAdded = 0;
+				}
+			}
+			
+			return bar;
+		}
+	}
+	
+	public static class Bass
+	{
+		public static Bar generateSimple(TimeSignature signature, DiatonicScale scale, int[] degrees)
+		{
+			int numberOfTimes = signature.getNumberOfTimes();
+			if(numberOfTimes == -1)
+			{
+				System.out.println(signature + " not supported yet.");
+				return null;
+			}
+			
+			if(degrees.length > signature.numerator())
+			{
+				System.out.println(degrees.length + " degrees can not be inserted in a " + signature + " bar.");
+				return null;
+			}
+			
+			if(signature.numerator() % degrees.length != 0)
+			{
+				System.out.println("The number of degrees (" + degrees.length + ") is not compatible with the bar structure (" + signature + ")");
+				return null;
+			}
+			
+			int notesPerDegree = signature.numerator() / degrees.length;
+			int currentDegreeIndex = 0;
+			int degreeNotesAdded = 0;
+			
+			int notesPerTime = signature.numerator() / numberOfTimes;
+			int currentTime = 1;
+			int timeNotesAdded = 0;
+			
+			Bar bar = new Bar(signature);
+			for(int noteIndex = 0; noteIndex < signature.numerator(); noteIndex++)
+			{
+				int velocity = Note.Dynamics.MEZZOPIANO;
+				if(timeNotesAdded == 0)
+				{
+					if(currentTime == 1)
+					{
+						velocity = Note.Dynamics.FORTE;
+					}
+					else if(currentTime == 3 && numberOfTimes == 4)
+					{
+						velocity = Note.Dynamics.MEZZOFORTE;
+					}
+				}
+				
+				int degree = degrees[currentDegreeIndex];
+				
+				Note fundamental = new Note(scale.note(degree));
+				fundamental.velocity(velocity);
+				fundamental.octave(1);
+				
+				TimedElement timedElement = new TimedElement(signature.denominator(), false);
+				timedElement.add(fundamental);
 				
 				bar.add(timedElement);
 				
