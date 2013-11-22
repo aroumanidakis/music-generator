@@ -5,8 +5,6 @@ import java.util.ArrayList;
 @SuppressWarnings("serial")
 public class Chord extends TimedElement
 {
-	public static final int NOTE_CNT_MAX = 5;
-	
 	public Chord(int duration, boolean dotted)
 	{
 		super(duration, dotted);
@@ -37,41 +35,44 @@ public class Chord extends TimedElement
 		return true;
 	}
 
-	public void reverse(int inversion)
+	public boolean reverse(int inversion)
 	{
-		if(size() < 3 || (size() < 4 && inversion == Inversion.THIRD) || (size() < 5 && inversion == Inversion.FOURTH))
+		if(inversion <= 0)
 		{
-			System.out.println("The number of notes (" + size() + ") of chord is too smal to process " + Inversion.toString(inversion));
-			return;
+			return false;
 		}
 		
 		for(int i = 0; i <= inversion; i++)
 		{
 			Note firstNote = get(0);
+			if(!firstNote.octave(firstNote.octave() + 1))
+			{
+				System.out.println("The inversion can not be done. The chord would be too high.");
+				return false;
+			}
+			
 			for(int j = 0; j < size() - 1; j++)
 			{
 				set(j, get(j + 1));
 			}
 			
-			firstNote.octave(firstNote.octave() + 1);
 			set(size() - 1, firstNote);
 		}
+		
+		return true;
 	}
 	
 	@Override
 	public boolean add(Note element)
 	{
-		if(size() < NOTE_CNT_MAX)
+		boolean changed = super.add(new Note(element));
+		
+		if(changed)
 		{
-			boolean changed = super.add(new Note(element));
-			if(changed)
-			{
-				checkOctaves();
-				return true;
-			}
+			checkOctaves();
 		}
 		
-		return false;
+		return changed;
 	}
 	
 	private void checkOctaves()
@@ -86,29 +87,6 @@ public class Chord extends TimedElement
 			{
 				get(i + 1).octave(get(i).octave());
 			}
-		}
-	}
-	
-	public static class Inversion
-	{
-		public static final int COUNT = 4;
-		
-		public static final int FIRST = 0;
-		public static final int SECOND = 1;
-		public static final int THIRD = 2;
-		public static final int FOURTH = 3;
-		
-		public static String toString(int inversion)
-		{
-			switch(inversion)
-			{
-				case FIRST: return "First inversion";
-				case SECOND: return "Second inversion";
-				case THIRD: return "Third inversion";
-				case FOURTH: return "Fourth inversion";
-			}
-			
-			return "Unknown inversion";
 		}
 	}
 }
