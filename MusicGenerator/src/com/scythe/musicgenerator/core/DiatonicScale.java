@@ -261,7 +261,7 @@ public class DiatonicScale extends ArrayList<Note>
 	
 	public void toMidiFile(String fileName)
 	{
-		Bar bar = new Bar(new TimeSignature("8/4"));
+		Bar bar = new Bar("8/4");
 		for(int noteIndex = 0; noteIndex < size(); noteIndex++)
 		{
 			TimedElement te = new TimedElement(Duration.SINGLE);

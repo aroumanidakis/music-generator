@@ -7,9 +7,19 @@ import com.scythe.musicgenerator.core.TimedElement.Duration;
 @SuppressWarnings("serial")
 public class Bar extends ArrayList<TimedElement>
 {
+	public Bar()
+	{
+		mSignature = new TimeSignature("4/4");
+	}
+	
 	public Bar(TimeSignature signature)
 	{
 		mSignature = signature;
+	}
+	
+	public Bar(String timeSignature)
+	{
+		mSignature = new TimeSignature(timeSignature);
 	}
 	
 	public boolean isValid()
