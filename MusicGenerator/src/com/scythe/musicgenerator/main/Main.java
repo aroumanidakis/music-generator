@@ -555,13 +555,18 @@ public class Main
 	
 	public static void testChordGeneration()
 	{
-		Note.defaultOctave(3);
+		DiatonicScale scale = null;
 		
-		DiatonicScale scale = new DiatonicScale(new Note(), Mode.IONIAN);
+		while(scale == null || scale.hasStrangeNote() || !scale.isValid())
+		{
+			Note tonic = new Note((int)(Math.random() * Note.Name.COUNT), (int)(Math.random() * Note.Accidental.COUNT));
+			int mode = (Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN;
+			scale = new DiatonicScale(tonic, mode);
+		}
 		
 		System.out.println("Selected scale: " + scale);
 		
-		int degree = Degree.I;
+		int degree = (int)(Math.random() * Degree.COUNT);
 		
 		System.out.println("Selected degree: " + Degree.toString(degree));
 		
@@ -570,7 +575,7 @@ public class Main
 		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.FIFTH));
 		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH));
 		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.SEVENTH));
-		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.FIFTH | Chord.OCTAVE));
+		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.FIFTH | Chord.OCTAVE | Chord.THIRD));
 		
 		System.out.println("bar: " + bar);
 		

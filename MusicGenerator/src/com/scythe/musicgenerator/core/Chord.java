@@ -102,42 +102,31 @@ public class Chord extends TimedElement
 		Note fundamental = scale.get(degree);
 		chord.add(fundamental);
 		
-		if((notes & THIRD) == THIRD)
+		for(int note : new int[]{THIRD, FIFTH, SEVENTH, OCTAVE})
 		{
-			System.out.println("Adding THIRD");
-			
-			Note note = new Note();
-			scale.getNoteAtUpperInterval(degree, Interval.Name.THIRD, note);
-			chord.add(note);
-		}
-		
-		if((notes & FIFTH) == FIFTH)
-		{
-			System.out.println("Adding FIFTH");
-			
-			Note note = new Note();
-			scale.getNoteAtUpperInterval(degree, Interval.Name.FIFTH, note);
-			chord.add(note);
-		}
-		
-		if((notes & SEVENTH) == SEVENTH)
-		{
-			System.out.println("Adding SEVENTH");
-			
-			Note note = new Note();
-			scale.getNoteAtUpperInterval(degree, Interval.Name.SEVENTH, note);
-			chord.add(note);
-		}
-		
-		if((notes & OCTAVE) == OCTAVE)
-		{
-			System.out.println("Adding OCTAVE");
-			
-			Note note = new Note();
-			scale.getNoteAtUpperInterval(degree, Interval.Name.OCTAVE, note);
-			chord.add(note);
+			if((notes & note) == note)
+			{
+				System.out.println("Adding " + Interval.Name.toString(toStdInterval(note)));
+				
+				Note n = new Note();
+				scale.getNoteAtUpperInterval(degree, toStdInterval(note), n);
+				chord.add(n);
+			}
 		}
 		
 		return chord;
+	}
+	
+	private static int toStdInterval(int chordInterval)
+	{
+		switch(chordInterval)
+		{
+			case THIRD: return Interval.Name.THIRD;
+			case FIFTH: return Interval.Name.FIFTH;
+			case SEVENTH: return Interval.Name.SEVENTH;
+			case OCTAVE: return Interval.Name.OCTAVE;
+		}
+		
+		return Interval.Name.OCTAVE;
 	}
 }
