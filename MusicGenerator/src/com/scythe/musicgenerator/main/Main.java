@@ -19,9 +19,9 @@ public class Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		//generate();
-		//testBarFactory();
-		//testFourChords();
+		generate();
+		testBarFactory();
+		testFourChords();
 		testSimpleMelody();
 	}
 	
@@ -68,9 +68,9 @@ public class Main
 					Note firstNote = rhythmTrack.get(barCnt).get(0).get(0);
 					
 					int noteIndex;
-					for(noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
+					for(noteIndex = 0; noteIndex < scale.size(); noteIndex++)
 					{
-						if(scale.note(noteIndex).equals(firstNote))
+						if(scale.get(noteIndex).equals(firstNote))
 						{
 							break;
 						}
@@ -87,9 +87,9 @@ public class Main
 				{
 					Note previousNote = bar.get(i - 1).get(0);
 					int noteIndex;
-					for(noteIndex = 0; noteIndex < scale.noteCnt(); noteIndex++)
+					for(noteIndex = 0; noteIndex < scale.size(); noteIndex++)
 					{
-						if(scale.note(noteIndex).equals(previousNote))
+						if(scale.get(noteIndex).equals(previousNote))
 						{
 							break;
 						}
@@ -101,12 +101,12 @@ public class Main
 					
 					if(noteIndex < 0)
 					{
-						noteIndex += scale.noteCnt();
+						noteIndex += scale.size();
 					}
 					
-					noteIndex %= scale.noteCnt();
+					noteIndex %= scale.size();
 					
-					element.add(scale.note(noteIndex));
+					element.add(scale.get(noteIndex));
 				}
 			}
 			
@@ -164,7 +164,7 @@ public class Main
 		
 		for(int degreeIndex = 0; degreeIndex < grid.size(); degreeIndex++)
 		{
-			Note fundamental = scale.note(grid.get(degreeIndex));
+			Note fundamental = scale.get(grid.get(degreeIndex));
 			
 			Note fifth = new Note();
 			scale.getNoteAtUpperInterval(grid.get(degreeIndex), Interval.Name.FIFTH, fifth);
@@ -224,7 +224,7 @@ public class Main
 				TimedElement te = bar.get(0);
 				Note note = new Note(te.get(0));
 				note.octave(0);
-				note.velocity(Note.Dynamics.FORTISSISSIMO);
+				note.dynamics(Note.Dynamics.FORTISSISSIMO);
 				
 				te = new TimedElement(Duration.SINGLE, false);
 				te.add(note);

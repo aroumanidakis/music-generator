@@ -107,15 +107,15 @@ public class TimeSignature
 	@Override
 	public String toString()
 	{
-		return mNumerator + "/" + Duration.convertInRhythmSignature(mDenominator);
+		return mNumerator + "/" + Duration.convertInTimeSignature(mDenominator);
 	}
 	
 	public static class Type
 	{
 		public static final int COUNT = 2;
 		
-		public static final int SIMPLE		= 0;
-		public static final int COMPOSED	= 1;
+		public static final int SIMPLE = 0;
+		public static final int COMPOSED = 1;
 	}
 	
 	private int mNumerator;

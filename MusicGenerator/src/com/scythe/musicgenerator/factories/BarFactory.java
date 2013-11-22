@@ -61,20 +61,20 @@ public class BarFactory
 				
 				int degree = degrees[currentDegreeIndex];
 				
-				Note fundamental = new Note(scale.note(degree));
-				fundamental.velocity(velocity);
+				Note fundamental = new Note(scale.get(degree));
+				fundamental.dynamics(velocity);
 				
 				Note third = new Note();
 				scale.getNoteAtUpperInterval(degree, Interval.Name.THIRD, third);
-				third.velocity(velocity);
+				third.dynamics(velocity);
 				
 				Note fifth = new Note();
 				scale.getNoteAtUpperInterval(degree, Interval.Name.FIFTH, fifth);
-				fifth.velocity(velocity);
+				fifth.dynamics(velocity);
 				
 				Note octave = new Note();
 				scale.getNoteAtUpperInterval(degree, Interval.Name.OCTAVE, octave);
-				octave.velocity(velocity);
+				octave.dynamics(velocity);
 				
 				TimedElement timedElement = new TimedElement(signature.denominator(), false);
 				timedElement.add(fundamental);
@@ -152,8 +152,8 @@ public class BarFactory
 				
 				int degree = degrees[currentDegreeIndex];
 				
-				Note fundamental = new Note(scale.note(degree));
-				fundamental.velocity(velocity);
+				Note fundamental = new Note(scale.get(degree));
+				fundamental.dynamics(velocity);
 				fundamental.octave(1);
 				
 				TimedElement timedElement = new TimedElement(signature.denominator(), false);

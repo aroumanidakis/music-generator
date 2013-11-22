@@ -19,7 +19,7 @@ public class Bar extends ArrayList<TimedElement>
 	
 	private boolean isRhythmSignatureValid()
 	{
-		return (mSignature.numerator() == 0 || mSignature.denominator() == 0 || Duration.convertInRhythmSignature(mSignature.denominator()) == 0) ? false : true;
+		return (mSignature.numerator() == 0 || mSignature.denominator() == 0 || Duration.convertInTimeSignature(mSignature.denominator()) == 0) ? false : true;
 	}
 	
 	private boolean isNotesValid()
@@ -43,7 +43,7 @@ public class Bar extends ArrayList<TimedElement>
 	@Override
 	public String toString()
 	{
-		String str = mSignature.numerator() + "/" + Duration.convertInRhythmSignature(mSignature.denominator()) + " ";
+		String str = mSignature.numerator() + "/" + Duration.convertInTimeSignature(mSignature.denominator()) + " ";
 		for(int i = 0; i < size(); i++)
 		{
 			str += get(i) + " ";

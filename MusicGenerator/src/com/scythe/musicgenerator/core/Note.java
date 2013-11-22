@@ -1,6 +1,5 @@
 package com.scythe.musicgenerator.core;
 
-
 public class Note 
 {
 	public static final int MIN_OCTAVE = -2;
@@ -11,15 +10,15 @@ public class Note
 		mName = Name.C;
 		mAccidental = Accidental.NONE;
 		mOctave = mDefaultOctave;
-		mVelocity = mDefaultVelocity;
+		mDynamics = mDefaultDynamics;
 	}
 	
-	public Note(int name, int accidental, int octave, int velocity)
+	public Note(int name, int accidental, int octave, int dynamics)
 	{
 		name(name);
 		accidental(accidental);
 		octave(octave);
-		velocity(velocity);
+		dynamics(dynamics);
 	}
 	
 	public Note(int name, int accidental, int octave)
@@ -27,7 +26,7 @@ public class Note
 		name(name);
 		accidental(accidental);
 		octave(octave);
-		mVelocity = mDefaultVelocity;
+		mDynamics = mDefaultDynamics;
 	}
 	
 	public Note(int name, int accidental)
@@ -35,7 +34,7 @@ public class Note
 		name(name);
 		accidental(accidental);
 		mOctave = mDefaultOctave;
-		mVelocity = mDefaultVelocity;
+		mDynamics = mDefaultDynamics;
 	}
 	
 	public Note(int name)
@@ -43,7 +42,7 @@ public class Note
 		name(name);
 		mAccidental = Accidental.NONE;
 		mOctave = mDefaultOctave;
-		mVelocity = mDefaultVelocity;
+		mDynamics = mDefaultDynamics;
 	}
 	
 	public Note(Note note)
@@ -51,7 +50,7 @@ public class Note
 		mName = note.mName;
 		mAccidental = note.mAccidental;
 		mOctave = note.mOctave;
-		mVelocity = note.mVelocity;
+		mDynamics = note.mDynamics;
 	}
 	
 	public int name()
@@ -61,7 +60,7 @@ public class Note
 	
 	public void name(int name)
 	{
-		if(name >= 0 & name < Name.COUNT)
+		if(name >= 0 && name < Name.COUNT)
 		{
 			mName = name;
 		}
@@ -107,24 +106,24 @@ public class Note
 		}
 	}
 	
-	public int velocity()
+	public int dynamics()
 	{
-		return mVelocity;
+		return mDynamics;
 	}
 	
-	public void velocity(int velocity)
+	public void dynamics(int dynamics)
 	{
-		if(velocity < 0)
+		if(dynamics < 0)
 		{
-			mVelocity = 0;
+			mDynamics = 0;
 		}
-		else if(velocity > 127)
+		else if(dynamics > 127)
 		{
-			mVelocity = 127;
+			mDynamics = 127;
 		}
 		else
 		{
-			mVelocity = velocity;
+			mDynamics = dynamics;
 		}
 	}
 	
@@ -140,48 +139,6 @@ public class Note
 		Note note = (Note) obj;
 		
 		return mName == note.name() && mAccidental == note.accidental() ? true : false;
-	}
-	
-	public boolean equalsOctave(Note note)
-	{
-		return mName == note.name() && mAccidental == note.accidental() && mOctave == note.mOctave ? true : false;
-	}
-	
-	public boolean equalsNormalized(Note note)
-	{
-		Note note1 = new Note(note);
-		Note note2 = new Note(this);
-		
-		note1.normalize();
-		note2.normalize();
-		
-		return note1.name() == note2.name() && note1.accidental() == note2.accidental() ? true : false;
-	}
-	
-	public void normalize()
-	{
-		if(mName == Name.C && mAccidental == Accidental.FLAT)
-		{
-			mName = Name.B;
-			mAccidental = Accidental.NONE;
-			mOctave--;
-		}
-		else if(mName == Name.E && mAccidental == Accidental.SHARP)
-		{
-			mName = Name.F;
-			mAccidental = Accidental.NONE;
-		}
-		else if(mName == Name.F && mAccidental == Accidental.FLAT)
-		{
-			mName = Name.E;
-			mAccidental = Accidental.NONE;
-		}
-		else if(mName == Name.B && mAccidental == Accidental.SHARP)
-		{
-			mName = Name.C;
-			mAccidental = Accidental.NONE;
-			mOctave++;
-		}
 	}
 	
 	public byte toMidiNoteNumber()
@@ -251,22 +208,25 @@ public class Note
 	
 	public static void defaultOctave(int defaultOctave)
 	{
-		mDefaultOctave = defaultOctave;
+		if(defaultOctave >= MIN_OCTAVE && defaultOctave <= MAX_OCTAVE)
+		{
+			mDefaultOctave = defaultOctave;
+		}
 	}
 	
-	public static void defaultVelocity(int defaultVelocity)
+	public static void defaultDynamics(int defaultDynamics)
 	{
-		if(defaultVelocity < 0)
+		if(defaultDynamics < 0)
 		{
-			mDefaultVelocity = 0;
+			mDefaultDynamics = 0;
 		}
-		else if(defaultVelocity > 127)
+		else if(defaultDynamics > 127)
 		{
-			mDefaultVelocity = 127;
+			mDefaultDynamics = 127;
 		}
 		else
 		{
-			mDefaultVelocity = defaultVelocity;
+			mDefaultDynamics = defaultDynamics;
 		}
 	}
 	
@@ -349,10 +309,10 @@ public class Note
 	}
 	 
 	private static int mDefaultOctave = 2;
-	private static int mDefaultVelocity = Dynamics.MEZZOFORTE;
+	private static int mDefaultDynamics = Dynamics.MEZZOFORTE;
 	
 	private int mName;
 	private int mAccidental;
 	private int mOctave;
-	private int mVelocity;
+	private int mDynamics;
 }

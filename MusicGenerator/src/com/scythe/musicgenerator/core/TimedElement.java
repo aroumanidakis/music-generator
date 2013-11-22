@@ -55,17 +55,17 @@ public class TimedElement extends ArrayList<Note>
 		{
 			switch(duration)
 			{
-				case QUADRUPLE:	return 4;
-				case DOUBLE:	return 2;
-				case SINGLE:	return 1;
-				case HALF:		return 0.5f;
-				case QUARTER:	return 0.25f;
+				case QUADRUPLE: return 4;
+				case DOUBLE: return 2;
+				case SINGLE: return 1;
+				case HALF: return 0.5f;
+				case QUARTER: return 0.25f;
 			}
 			
 			return 0;
 		}
 		
-		public static int convertInRhythmSignature(int duration)
+		public static int convertInTimeSignature(int duration)
 		{
 			switch(duration)
 			{
@@ -79,9 +79,9 @@ public class TimedElement extends ArrayList<Note>
 			return 0;
 		}
 		
-		public static int reverseConvert(int rhythmSignature)
+		public static int reverseConvert(int timeSignature)
 		{
-			switch(rhythmSignature)
+			switch(timeSignature)
 			{
 				case 1:		return QUADRUPLE;
 				case 2:		return DOUBLE;
