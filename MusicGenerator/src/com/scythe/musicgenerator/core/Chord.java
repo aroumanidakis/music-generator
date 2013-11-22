@@ -12,6 +12,11 @@ public class Chord extends TimedElement
 		super(duration, dotted);
 	}
 	
+	public Chord(int duration)
+	{
+		super(duration);
+	}
+	
 	public boolean transpose(int transposition)
 	{
 		ArrayList<Note> notes = new ArrayList<Note>(this);

@@ -11,6 +11,12 @@ public class TimedElement extends ArrayList<Note>
 		mDotted = dotted;
 	}
 	
+	public TimedElement(int duration)
+	{
+		mDuration = duration;
+		mDotted = false;
+	}
+	
 	public int duration()
 	{
 		return mDuration;

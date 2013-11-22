@@ -76,7 +76,7 @@ public class BarFactory
 				scale.getNoteAtUpperInterval(degree, Interval.Name.OCTAVE, octave);
 				octave.dynamics(velocity);
 				
-				TimedElement timedElement = new TimedElement(signature.denominator(), false);
+				TimedElement timedElement = new TimedElement(signature.denominator());
 				timedElement.add(fundamental);
 				timedElement.add(third);
 				timedElement.add(fifth);
@@ -156,7 +156,7 @@ public class BarFactory
 				fundamental.dynamics(velocity);
 				fundamental.octave(1);
 				
-				TimedElement timedElement = new TimedElement(signature.denominator(), false);
+				TimedElement timedElement = new TimedElement(signature.denominator());
 				timedElement.add(fundamental);
 				
 				bar.add(timedElement);
@@ -267,7 +267,7 @@ public class BarFactory
 				{
 					for(int i = 0; i < signature.numerator(); i++)
 					{
-						timedElements.add(new TimedElementToCut(new TimedElement(signature.denominator(), false), cuttingChanceCoeff));
+						timedElements.add(new TimedElementToCut(new TimedElement(signature.denominator()), cuttingChanceCoeff));
 					}
 					
 					break;
@@ -307,27 +307,27 @@ public class BarFactory
 					{
 						if(mTimedElement.dotted())
 						{
-							timedElement1 = new TimedElement(mTimedElement.duration(), false);
-							timedElement2 = new TimedElement(mTimedElement.duration() + 1, false);
+							timedElement1 = new TimedElement(mTimedElement.duration());
+							timedElement2 = new TimedElement(mTimedElement.duration() + 1);
 						}
 						else
 						{
 							if(mTimedElement.duration() == Duration.HALF)
 							{
-								timedElement1 = new TimedElement(mTimedElement.duration() + 1, false);
+								timedElement1 = new TimedElement(mTimedElement.duration() + 1);
 								timedElement2 = new TimedElement(timedElement1.duration(), timedElement1.dotted());
 							}
 							else
 							{
 								if(Math.random() < 0.4)
 								{	
-									timedElement1 = new TimedElement(mTimedElement.duration() + 1, false);
+									timedElement1 = new TimedElement(mTimedElement.duration() + 1);
 									timedElement2 = new TimedElement(timedElement1.duration(), timedElement1.dotted());
 								}
 								else
 								{
 									timedElement1 = new TimedElement(mTimedElement.duration() + 1, true);
-									timedElement2 = new TimedElement(mTimedElement.duration() + 2, false);
+									timedElement2 = new TimedElement(mTimedElement.duration() + 2);
 								}
 							}
 						}

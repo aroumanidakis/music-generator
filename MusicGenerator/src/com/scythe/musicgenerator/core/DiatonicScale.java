@@ -264,14 +264,14 @@ public class DiatonicScale extends ArrayList<Note>
 		Bar bar = new Bar(new TimeSignature("8/4"));
 		for(int noteIndex = 0; noteIndex < size(); noteIndex++)
 		{
-			TimedElement te = new TimedElement(Duration.SINGLE, false);
+			TimedElement te = new TimedElement(Duration.SINGLE);
 			te.add(get(noteIndex));
 			bar.add(te);
 		}
 		
 		Note note = new Note(get(0));
 		note.octave(note.octave() + 1);
-		TimedElement te = new TimedElement(Duration.SINGLE, false);
+		TimedElement te = new TimedElement(Duration.SINGLE);
 		te.add(note);
 		bar.add(te);
 		

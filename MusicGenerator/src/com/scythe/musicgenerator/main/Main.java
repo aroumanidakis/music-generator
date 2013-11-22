@@ -178,7 +178,7 @@ public class Main
 			
 			System.out.println("Power chord from degree " + Degree.toString(grid.get(degreeIndex)) + ": " + fundamental + " " + fifth + " " + octave);
 			
-			TimedElement timedElement = new TimedElement(Duration.DOUBLE, false);
+			TimedElement timedElement = new TimedElement(Duration.DOUBLE);
 			timedElement.add(fundamental);
 			timedElement.add(fifth);
 			timedElement.add(octave);
@@ -230,7 +230,7 @@ public class Main
 				note.octave(0);
 				note.dynamics(Note.Dynamics.FORTISSISSIMO);
 				
-				te = new TimedElement(Duration.SINGLE, false);
+				te = new TimedElement(Duration.SINGLE);
 				te.add(note);
 				
 				for(int j = 0; j < 4; j++)
@@ -276,7 +276,7 @@ public class Main
 			Note seventh = new Note();
 			scale.getNoteAtUpperInterval(degree, Interval.Name.SEVENTH, seventh);
 			
-			TimedElement te = new TimedElement(Duration.SINGLE, false);
+			TimedElement te = new TimedElement(Duration.SINGLE);
 			te.add(fundamental);
 			te.add(third);
 			te.add(fifth);
@@ -346,7 +346,7 @@ public class Main
 			{
 				for(int noteIndex = 0; noteIndex < nbQuarterNotePerDegree; noteIndex++)
 				{
-					TimedElement te = new TimedElement(Duration.HALF, false);
+					TimedElement te = new TimedElement(Duration.HALF);
 					if(true)//noteIndex == 0)
 					{
 						Note baseNote;
