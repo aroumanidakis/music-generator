@@ -64,10 +64,6 @@ public class Note
 		{
 			mName = name;
 		}
-		else
-		{
-			mName = Name.C;
-		}
 	}
 	
 	public int accidental()
@@ -81,12 +77,6 @@ public class Note
 		{
 			mAccidental = accidental;
 		}
-		else
-		{
-			mAccidental = Accidental.NONE;
-		}
-		
-		mAccidental = accidental;
 	}
 	
 	public int octave()
@@ -94,15 +84,25 @@ public class Note
 		return mOctave;
 	}
 	
-	public void octave(int octave)
+	public boolean octave(int octave)
 	{
 		if(octave >= MIN_OCTAVE && octave <= MAX_OCTAVE)
 		{
-			mOctave = octave;
+			if(octave == MAX_OCTAVE && (mName > Name.G || (mName == Name.G && mAccidental == Accidental.SHARP) || (mName == Name.A && mAccidental == Accidental.FLAT)))
+			{
+				System.out.println(Name.toString(mName) + Accidental.toString(mAccidental) + octave + " is not supported.");
+				return false;
+			}
+			else
+			{
+				mOctave = octave;
+				return true;
+			}
 		}
 		else
 		{
-			mOctave = mDefaultOctave;
+			System.out.println(Name.toString(mName) + Accidental.toString(mAccidental) + octave + " is not supported.");
+			return false;
 		}
 	}
 	
@@ -234,25 +234,25 @@ public class Note
 	{
 		public static final int COUNT = 7;
 		
-		public static final int A = 0;
-		public static final int B = 1;
-		public static final int C = 2;
-		public static final int D = 3;
-		public static final int E = 4;
-		public static final int F = 5;
-		public static final int G = 6;
+		public static final int C = 0;
+		public static final int D = 1;
+		public static final int E = 2;
+		public static final int F = 3;
+		public static final int G = 4;
+		public static final int A = 5;
+		public static final int B = 6;
 		
 		public static String toString(int note)
 		{
 			switch(note)
 			{
-				case A: return "A";
-				case B: return "B";
 				case C: return "C";
 				case D: return "D";
 				case E: return "E";
 				case F: return "F";
 				case G: return "G";
+				case A: return "A";
+				case B: return "B";
 			}
 			
 			return "";

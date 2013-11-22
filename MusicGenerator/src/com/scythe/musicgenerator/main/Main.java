@@ -3,9 +3,11 @@ package com.scythe.musicgenerator.main;
 import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.Bar;
+import com.scythe.musicgenerator.core.Chord;
+import com.scythe.musicgenerator.core.Chord.Inversion;
+import com.scythe.musicgenerator.core.Degree;
 import com.scythe.musicgenerator.core.DiatonicScale;
 import com.scythe.musicgenerator.core.DiatonicScale.Mode;
-import com.scythe.musicgenerator.core.Degree;
 import com.scythe.musicgenerator.core.Grid;
 import com.scythe.musicgenerator.core.Interval;
 import com.scythe.musicgenerator.core.Note;
@@ -19,10 +21,12 @@ public class Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		generate();
-		testBarFactory();
-		testFourChords();
-		testSimpleMelody();
+		//generate();
+		//testBarFactory();
+		//testFourChords();
+		//testSimpleMelody();
+		testChordInversion();
+		testChordTransposition();
 	}
 	
 	public static void generate()
@@ -263,12 +267,20 @@ public class Main
 		{
 			Note fundamental = scale.get(degree);
 			
+			Note third = new Note();
+			scale.getNoteAtUpperInterval(degree, Interval.Name.THIRD, third);
+			
 			Note fifth = new Note();
 			scale.getNoteAtUpperInterval(degree, Interval.Name.FIFTH, fifth);
 			
+			Note seventh = new Note();
+			scale.getNoteAtUpperInterval(degree, Interval.Name.SEVENTH, seventh);
+			
 			TimedElement te = new TimedElement(Duration.SINGLE, false);
 			te.add(fundamental);
+			te.add(third);
 			te.add(fifth);
+			te.add(seventh);
 			
 			bar.add(te);
 		}
@@ -375,6 +387,113 @@ public class Main
 		midiWriter.addTrack(accompanimentTrack, "accompaniment");
 		midiWriter.addTrack(melodyTrack, "melody");
 		midiWriter.write();
+	}
+	
+	public static void testChordInversion()
+	{
+		DiatonicScale scale = null;
+		
+		while(scale == null || scale.hasStrangeNote() || !scale.isValid())
+		{
+			Note tonic = new Note((int)(Math.random() * Note.Name.COUNT), (int)(Math.random() * Note.Accidental.COUNT));
+			int mode = (Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN;
+			scale = new DiatonicScale(tonic, mode);
+		}
+		
+		System.out.println("Selected scale: " + scale);
+		
+		int degree = (int)(Math.random() * Degree.COUNT);
+		
+		System.out.println("Selected degree: " + Degree.toString(degree));
+		
+		Note fundamental = scale.get(degree);
+		
+		Note third = new Note();
+		scale.getNoteAtUpperInterval(degree, Interval.Name.THIRD, third);
+		
+		Note fifth = new Note();
+		scale.getNoteAtUpperInterval(degree, Interval.Name.FIFTH, fifth);
+		
+		Note seventh = new Note();
+		scale.getNoteAtUpperInterval(degree, Interval.Name.SEVENTH, seventh);
+		
+		Bar bar = new Bar(new TimeSignature("4/4"));
+		
+		Chord chord = new Chord(Duration.SINGLE, false);
+		
+		chord.add(fundamental);
+		chord.add(third);
+		chord.add(fifth);
+		chord.add(seventh);
+		System.out.println(chord);
+		
+		bar.add(chord);
+		
+		for(int inversion = 0; inversion < Inversion.COUNT - 1; inversion++)
+		{
+			chord = new Chord(Duration.SINGLE, false);
+			
+			chord.add(fundamental);
+			chord.add(third);
+			chord.add(fifth);
+			chord.add(seventh);
+			
+			chord.reverse(inversion);
+			System.out.println(chord);
+			
+			bar.add(chord);
+		}
+		
+		ArrayList<Bar> track = new ArrayList<Bar>();
+		track.add(bar);
+		
+		MidiWriter midiWriter = new MidiWriter("chords.mid");
+		midiWriter.addTrack(track);
+		midiWriter.write();
+	}
+	
+	public static void testChordTransposition()
+	{
+		DiatonicScale scale = null;
+		
+		while(scale == null || scale.hasStrangeNote() || !scale.isValid())
+		{
+			Note tonic = new Note((int)(Math.random() * Note.Name.COUNT), (int)(Math.random() * Note.Accidental.COUNT));
+			int mode = (Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN;
+			scale = new DiatonicScale(tonic, mode);
+		}
+		
+		System.out.println("Selected scale: " + scale);
+		
+		int degree = (int)(Math.random() * Degree.COUNT);
+		
+		System.out.println("Selected degree: " + Degree.toString(degree));
+		
+		Note fundamental = scale.get(degree);
+		
+		Note third = new Note();
+		scale.getNoteAtUpperInterval(degree, Interval.Name.THIRD, third);
+		
+		Note fifth = new Note();
+		scale.getNoteAtUpperInterval(degree, Interval.Name.FIFTH, fifth);
+		
+		Chord chord = new Chord(Duration.SINGLE, false);
+		
+		chord.add(fundamental);
+		chord.add(third);
+		chord.add(fifth);
+		System.out.println(chord);
+		
+		int transp = (Math.random() < 0.5) ? 1 : -1;
+		while(true)
+		{
+			if(!chord.transpose(transp))
+			{
+				break;
+			}
+			
+			System.out.println("transp. " + chord);
+		}
 	}
 }
 
