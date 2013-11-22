@@ -27,6 +27,7 @@ public class Main
 		//testChordInversion();
 		//testChordTransposition();
 		testAutomaticChordInversionAndTransposition();
+		testChordGeneration();
 	}
 	
 	public static void generate()
@@ -548,6 +549,35 @@ public class Main
 		track.add(bar);
 		
 		MidiWriter writer = new MidiWriter("automatic.mid");
+		writer.addTrack(track);
+		writer.write();
+	}
+	
+	public static void testChordGeneration()
+	{
+		Note.defaultOctave(3);
+		
+		DiatonicScale scale = new DiatonicScale(new Note(), Mode.IONIAN);
+		
+		System.out.println("Selected scale: " + scale);
+		
+		int degree = Degree.I;
+		
+		System.out.println("Selected degree: " + Degree.toString(degree));
+		
+		Bar bar = new Bar();
+
+		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.FIFTH));
+		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH));
+		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.SEVENTH));
+		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.FIFTH | Chord.OCTAVE));
+		
+		System.out.println("bar: " + bar);
+		
+		ArrayList<Bar> track = new ArrayList<Bar>();
+		track.add(bar);
+		
+		MidiWriter writer = new MidiWriter("chordGeneration.mid");
 		writer.addTrack(track);
 		writer.write();
 	}

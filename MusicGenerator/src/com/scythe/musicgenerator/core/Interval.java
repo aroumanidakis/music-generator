@@ -24,7 +24,7 @@ public class Interval
 				case FIFTH: return "5th";
 				case SIXTH: return "6th";
 				case SEVENTH: return "7th";
-				case OCTAVE: return "Ove";
+				case OCTAVE: return "8ve";
 			}
 			
 			return "";

@@ -5,6 +5,11 @@ import java.util.ArrayList;
 @SuppressWarnings("serial")
 public class Chord extends TimedElement
 {
+	public static final int THIRD = 0x01;
+	public static final int FIFTH = 0x02;
+	public static final int SEVENTH = 0x04;
+	public static final int OCTAVE = 0x08;
+	
 	public Chord(int duration, boolean dotted)
 	{
 		super(duration, dotted);
@@ -88,5 +93,51 @@ public class Chord extends TimedElement
 				get(i + 1).octave(get(i).octave());
 			}
 		}
+	}
+	
+	public static Chord generate(int duration, boolean dotted, DiatonicScale scale, int degree, int notes)
+	{
+		Chord chord = new Chord(duration, dotted);
+		
+		Note fundamental = scale.get(degree);
+		chord.add(fundamental);
+		
+		if((notes & THIRD) == THIRD)
+		{
+			System.out.println("Adding THIRD");
+			
+			Note note = new Note();
+			scale.getNoteAtUpperInterval(degree, Interval.Name.THIRD, note);
+			chord.add(note);
+		}
+		
+		if((notes & FIFTH) == FIFTH)
+		{
+			System.out.println("Adding FIFTH");
+			
+			Note note = new Note();
+			scale.getNoteAtUpperInterval(degree, Interval.Name.FIFTH, note);
+			chord.add(note);
+		}
+		
+		if((notes & SEVENTH) == SEVENTH)
+		{
+			System.out.println("Adding SEVENTH");
+			
+			Note note = new Note();
+			scale.getNoteAtUpperInterval(degree, Interval.Name.SEVENTH, note);
+			chord.add(note);
+		}
+		
+		if((notes & OCTAVE) == OCTAVE)
+		{
+			System.out.println("Adding OCTAVE");
+			
+			Note note = new Note();
+			scale.getNoteAtUpperInterval(degree, Interval.Name.OCTAVE, note);
+			chord.add(note);
+		}
+		
+		return chord;
 	}
 }
