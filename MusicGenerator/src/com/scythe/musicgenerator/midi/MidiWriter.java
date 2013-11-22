@@ -29,6 +29,11 @@ public class MidiWriter
 		mTrackNames.add(trackName);
 	}
 	
+	public void addTrack(ArrayList<Bar> track)
+	{
+		addTrack(track, "trackName");
+	}
+	
 	public void tempo(int tempo)
 	{
 		mTempo = tempo;
