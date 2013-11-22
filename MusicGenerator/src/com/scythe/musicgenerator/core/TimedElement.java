@@ -70,10 +70,10 @@ public class TimedElement extends ArrayList<Note>
 			switch(duration)
 			{
 				case QUADRUPLE:	return 1;
-				case DOUBLE:	return 2;
-				case SINGLE:	return 4;
-				case HALF:		return 8;
-				case QUARTER:	return 16;
+				case DOUBLE: return 2;
+				case SINGLE: return 4;
+				case HALF: return 8;
+				case QUARTER: return 16;
 			}
 			
 			return 0;
@@ -83,11 +83,11 @@ public class TimedElement extends ArrayList<Note>
 		{
 			switch(timeSignature)
 			{
-				case 1:		return QUADRUPLE;
-				case 2:		return DOUBLE;
-				case 4:		return SINGLE;
-				case 8:		return HALF;
-				case 16:	return QUARTER;
+				case 1: return QUADRUPLE;
+				case 2: return DOUBLE;
+				case 4: return SINGLE;
+				case 8: return HALF;
+				case 16: return QUARTER;
 			}
 			
 			return 0;
