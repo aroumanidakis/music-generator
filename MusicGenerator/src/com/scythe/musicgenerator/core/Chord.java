@@ -47,7 +47,7 @@ public class Chord extends TimedElement
 			return false;
 		}
 		
-		for(int i = 0; i <= inversion; i++)
+		for(int i = 0; i < inversion; i++)
 		{
 			Note firstNote = get(0);
 			if(!firstNote.octave(firstNote.octave() + 1))
@@ -106,8 +106,6 @@ public class Chord extends TimedElement
 		{
 			if((notes & note) == note)
 			{
-				System.out.println("Adding " + Interval.Name.toString(toStdInterval(note)));
-				
 				Note n = new Note();
 				scale.getNoteAtUpperInterval(degree, toStdInterval(note), n);
 				chord.add(n);
