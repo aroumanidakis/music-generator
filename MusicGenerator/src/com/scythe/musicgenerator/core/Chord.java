@@ -13,11 +13,18 @@ public class Chord extends TimedElement
 	public Chord(int duration, boolean dotted)
 	{
 		super(duration, dotted);
+		mFundamentalIndex = 0;
 	}
 	
 	public Chord(int duration)
 	{
 		super(duration);
+		mFundamentalIndex = 0;
+	}
+	
+	public Note fundamental()
+	{
+		return isEmpty() ? null : get(mFundamentalIndex);
 	}
 	
 	public boolean transpose(int transposition)
@@ -40,12 +47,14 @@ public class Chord extends TimedElement
 		return true;
 	}
 
-	public boolean reverse(int inversion)
+	public boolean reverseByBottom(int inversion)
 	{
-		if(inversion <= 0)
+		if(size() < 2 || inversion <= 0)
 		{
 			return false;
 		}
+		
+		Note fundamental = fundamental();
 		
 		for(int i = 0; i < inversion; i++)
 		{
@@ -64,6 +73,39 @@ public class Chord extends TimedElement
 			set(size() - 1, firstNote);
 		}
 		
+		updateFundementalIndex(fundamental);
+		
+		return true;
+	}
+	
+	public boolean reverseByTop(int inversion)
+	{
+		if(size() < 2 || inversion <= 0)
+		{
+			return false;
+		}
+		
+		Note fundamental = fundamental();
+		
+		for(int i = 0; i < inversion; i++)
+		{
+			Note lastNote = get(size() - 1);
+			if(!lastNote.octave(lastNote.octave() - 1))
+			{
+				System.out.println("The inversion can not be done. The chord would be too low.");
+				return false;
+			}
+			
+			for(int j = size() - 1; j > 0; j--)
+			{
+				set(j, get(j - 1));
+			}
+			
+			set(0, lastNote);
+		}
+		
+		updateFundementalIndex(fundamental);
+		
 		return true;
 	}
 	
@@ -73,7 +115,7 @@ public class Chord extends TimedElement
 		boolean changed = super.add(new Note(element));
 		
 		if(changed)
-		{
+		{	
 			checkOctaves();
 		}
 		
@@ -127,4 +169,18 @@ public class Chord extends TimedElement
 		
 		return Interval.Name.OCTAVE;
 	}
+	
+	private void updateFundementalIndex(Note fundamental)
+	{
+		for(int i = 0; i < size(); i++)
+		{
+			if(get(i).equals(fundamental))
+			{
+				mFundamentalIndex = i;
+				break;
+			}
+		}
+	}
+	
+	private int mFundamentalIndex;
 }

@@ -24,7 +24,7 @@ public class Main
 		//testSimpleMelody();
 		testChordInversion();
 		testChordTransposition();
-		testAutomaticChordInversionAndTransposition();
+		testAutomaticChordTransposition();
 		testChordGeneration();
 	}
 	
@@ -255,9 +255,11 @@ public class Main
 		for(int inversion = 1; inversion < 8; inversion++)
 		{
 			chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH);
-			if(chord.reverse(inversion))
+			if(chord.reverseByTop(inversion))
 			{
 				System.out.println("inv " + chord);
+				System.out.println("fundamental: " + chord.fundamental());
+				
 				bar.add(chord);
 			}
 		}
@@ -310,7 +312,7 @@ public class Main
 		bar.toMidiFile("transp.mid");
 	}
 	
-	public static void testAutomaticChordInversionAndTransposition()
+	public static void testAutomaticChordTransposition()
 	{
 		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
@@ -322,7 +324,7 @@ public class Main
 		
 		for(int degree : grid)
 		{
-			Chord chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH | Chord.SEVENTH);
+			Chord chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH);
 			System.out.println("Chord: " + chord);
 			bar.add(chord);
 		}
