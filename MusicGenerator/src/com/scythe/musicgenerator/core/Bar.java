@@ -3,6 +3,7 @@ package com.scythe.musicgenerator.core;
 import java.util.ArrayList;
 
 import com.scythe.musicgenerator.core.TimedElement.Duration;
+import com.scythe.musicgenerator.midi.MidiWriter;
 
 @SuppressWarnings("serial")
 public class Bar extends ArrayList<TimedElement>
@@ -60,6 +61,16 @@ public class Bar extends ArrayList<TimedElement>
 		}
 		
 		return str;
+	}
+	
+	public void toMidiFile(String fileName)
+	{
+		ArrayList<Bar> track = new ArrayList<Bar>();
+		track.add(this);
+		
+		MidiWriter midiWriter = new MidiWriter(fileName);
+		midiWriter.addTrack(track, "Bar");
+		midiWriter.write();
 	}
 	
 	private TimeSignature mSignature;

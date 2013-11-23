@@ -260,17 +260,17 @@ public class DiatonicScale extends ArrayList<Note>
 	
 	public void toMidiFile(String fileName)
 	{
-		Bar bar = new Bar("8/4");
+		Bar bar = new Bar("4/4");
 		for(int noteIndex = 0; noteIndex < size(); noteIndex++)
 		{
-			TimedElement te = new TimedElement(Duration.SINGLE);
+			TimedElement te = new TimedElement(Duration.HALF);
 			te.add(get(noteIndex));
 			bar.add(te);
 		}
 		
 		Note note = new Note(get(0));
 		note.octave(note.octave() + 1);
-		TimedElement te = new TimedElement(Duration.SINGLE);
+		TimedElement te = new TimedElement(Duration.HALF);
 		te.add(note);
 		bar.add(te);
 		
@@ -278,7 +278,7 @@ public class DiatonicScale extends ArrayList<Note>
 		track.add(bar);
 		
 		MidiWriter midiWriter = new MidiWriter(fileName);
-		midiWriter.addTrack(track, "scale");
+		midiWriter.addTrack(track, this.toString());
 		midiWriter.write();
 	}
 	

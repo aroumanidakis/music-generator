@@ -1,5 +1,7 @@
 package com.scythe.musicgenerator.core;
 
+import com.scythe.musicgenerator.core.TimedElement.Duration;
+
 public class Note 
 {
 	public static final int MIN_OCTAVE = -2;
@@ -130,6 +132,13 @@ public class Note
 	public static Note random()
 	{
 		return new Note(Name.random(), Accidental.random());
+	}
+	
+	public void toMidiFile(String fileName)
+	{
+		TimedElement te = new TimedElement(Duration.SINGLE);
+		te.add(this);
+		te.toMidiFile(fileName);
 	}
 	
 	@Override

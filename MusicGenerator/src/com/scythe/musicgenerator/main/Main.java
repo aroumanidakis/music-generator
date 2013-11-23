@@ -262,12 +262,7 @@ public class Main
 			}
 		}
 		
-		ArrayList<Bar> track = new ArrayList<Bar>();
-		track.add(bar);
-		
-		MidiWriter midiWriter = new MidiWriter("chords.mid");
-		midiWriter.addTrack(track);
-		midiWriter.write();
+		bar.toMidiFile("chords.mid");
 	}
 	
 	public static void testChordTransposition()
@@ -312,12 +307,7 @@ public class Main
 			transp++;
 		}
 		
-		ArrayList<Bar> track = new ArrayList<Bar>();
-		track.add(bar);
-		
-		MidiWriter writer = new MidiWriter("transp.mid");
-		writer.addTrack(track);
-		writer.write();
+		bar.toMidiFile("transp.mid");
 	}
 	
 	public static void testAutomaticChordInversionAndTransposition()
@@ -337,18 +327,15 @@ public class Main
 			bar.add(chord);
 		}
 		
-		ArrayList<Bar> track = new ArrayList<Bar>();
-		track.add(bar);
-		
-		MidiWriter writer = new MidiWriter("automatic.mid");
-		writer.addTrack(track);
-		writer.write();
+		bar.toMidiFile("automatic.mid");
 	}
 	
 	public static void testChordGeneration()
 	{
 		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
+		
+		scale.toMidiFile("scale.mid");
 		
 		int degree = Degree.random();
 		System.out.println("Selected degree: " + Degree.toString(degree));
@@ -362,12 +349,7 @@ public class Main
 		
 		System.out.println("bar: " + bar);
 		
-		ArrayList<Bar> track = new ArrayList<Bar>();
-		track.add(bar);
-		
-		MidiWriter writer = new MidiWriter("chordGeneration.mid");
-		writer.addTrack(track);
-		writer.write();
+		bar.toMidiFile("chordGeneration.mid");
 	}
 }
 

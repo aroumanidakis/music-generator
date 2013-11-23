@@ -33,6 +33,13 @@ public class TimedElement extends ArrayList<Note>
 		return mDotted;
 	}
 	
+	public void toMidiFile(String fileName)
+	{
+		Bar bar = new Bar();
+		bar.add(this);
+		bar.toMidiFile(fileName);
+	}
+	
 	@Override
 	public String toString()
 	{
