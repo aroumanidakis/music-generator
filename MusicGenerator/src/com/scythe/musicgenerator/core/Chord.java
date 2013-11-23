@@ -109,6 +109,14 @@ public class Chord extends TimedElement
 		return true;
 	}
 	
+	public void dynamics(int dynamics)
+	{
+		for(Note note : this)
+		{
+			note.dynamics(dynamics);
+		}
+	}
+	
 	@Override
 	public boolean add(Note element)
 	{
