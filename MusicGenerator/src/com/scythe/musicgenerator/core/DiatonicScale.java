@@ -22,7 +22,6 @@ public class DiatonicScale extends ArrayList<Note>
 		for(int i = 1; i < 7; i++)
 		{
 			Note nextNote = getHalfToneUpperNote(get(i - 1), mIntervals[i - 1]);
-			
 			if(nextNote == null)
 			{
 				mIsValid = false;
@@ -297,6 +296,28 @@ public class DiatonicScale extends ArrayList<Note>
 		return numberOfAccidental;
 	}
 	
+	public static DiatonicScale random()
+	{
+		DiatonicScale scale = null;
+		while(scale == null || !scale.isValid())
+		{
+			scale = new DiatonicScale(Note.random(), Mode.random());
+		}
+		
+		return scale;
+	}
+	
+	public static DiatonicScale random(int mode)
+	{
+		DiatonicScale scale = null;
+		while(scale == null || !scale.isValid())
+		{
+			scale = new DiatonicScale(Note.random(), mode);
+		}
+		
+		return scale;
+	}
+	
 	@Override
 	public String toString()
 	{
@@ -340,7 +361,7 @@ public class DiatonicScale extends ArrayList<Note>
 	
 	private Note getHalfToneUpperNote(Note refNote, int halfTones)
 	{
-		Note newNote = new Note((refNote.name() + 1) % Name.COUNT, refNote.accidental());
+		Note newNote = new Note((refNote.name() + 1) % Name.list().length, refNote.accidental());
 		
 		int halfToneDiffenrence = getHalfToneDifference(refNote, newNote);
 		
@@ -400,7 +421,7 @@ public class DiatonicScale extends ArrayList<Note>
 				}
 				else
 				{
-					notes[i].name((notes[i].name() + 1) % Name.COUNT);
+					notes[i].name((notes[i].name() + 1) % Name.list().length);
 					notes[i].accidental(Accidental.FLAT);
 				}
 			}
@@ -437,7 +458,7 @@ public class DiatonicScale extends ArrayList<Note>
 			}
 			else
 			{
-				notes[0].name((notes[0].name() + 1) % Name.COUNT);
+				notes[0].name((notes[0].name() + 1) % Name.list().length);
 				notes[0].accidental(Accidental.FLAT);
 			}
 			
@@ -449,8 +470,6 @@ public class DiatonicScale extends ArrayList<Note>
 	
 	public static class Mode
 	{
-		public static final int COUNT = 7;
-		
 		public static final int IONIAN = 0;
 		public static final int DORIAN = 6;
 		public static final int PHRYGIAN = 5;
@@ -458,6 +477,17 @@ public class DiatonicScale extends ArrayList<Note>
 		public static final int MIXOLYDIAN = 3;
 		public static final int EOLIAN = 2;
 		public static final int LOCRIAN = 1;
+		
+		public static int[] list()
+		{
+			return new int[]{IONIAN, DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN, EOLIAN, LOCRIAN};
+		}
+		
+		public static int random()
+		{
+			int[] list = list();
+			return list[(int)(Math.random() * (list.length - 1))];
+		}
 		
 		public static String toString(int mode)
 		{

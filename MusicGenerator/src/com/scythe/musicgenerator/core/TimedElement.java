@@ -49,13 +49,22 @@ public class TimedElement extends ArrayList<Note>
 	
 	public static class Duration
 	{
-		public static final int COUNT = 5;
-		
 		public static final int QUADRUPLE = 0;
 		public static final int DOUBLE = 1;
 		public static final int SINGLE = 2;
 		public static final int HALF = 3;
 		public static final int QUARTER = 4;
+		
+		public static int[] list()
+		{
+			return new int[]{QUADRUPLE, DOUBLE, SINGLE, HALF, QUARTER};
+		}
+		
+		public static int random()
+		{
+			int[] list = list();
+			return list[(int)(Math.random() * (list.length - 1))];
+		}
 		
 		public static float convertInTime(int duration)
 		{

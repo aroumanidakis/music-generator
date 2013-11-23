@@ -112,10 +112,19 @@ public class TimeSignature
 	
 	public static class Type
 	{
-		public static final int COUNT = 2;
-		
 		public static final int SIMPLE = 0;
 		public static final int COMPOSED = 1;
+		
+		public static int[] list()
+		{
+			return new int[]{SIMPLE, COMPOSED};
+		}
+		
+		public static int random()
+		{
+			int[] list = list();
+			return list[(int)(Math.random() * (list.length - 1))];
+		}
 	}
 	
 	private int mNumerator;

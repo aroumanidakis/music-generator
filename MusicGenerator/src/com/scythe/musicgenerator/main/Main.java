@@ -21,34 +21,19 @@ public class Main
 	public static void main(String[] args) throws Exception
 	{
 		//generate();
-		//testBarFactory();
-		//testFourChords();
 		//testSimpleMelody();
-		//testChordInversion();
-		//testChordTransposition();
+		testChordInversion();
+		testChordTransposition();
 		testAutomaticChordInversionAndTransposition();
 		testChordGeneration();
 	}
 	
-	public static void generate()
+	private static void generate()
 	{
-		System.out.println("Scale generation...");
-		
-		DiatonicScale scale = null;
-		while(scale == null || !scale.isValid() || scale.hasStrangeNote())
-		{
-			scale = generateRandomScale();
-		}
-		
+		DiatonicScale scale = DiatonicScale.random();
 		System.out.println("Generated scale: " + scale);
-		System.out.println("Grid generation...");
 		
-		Grid grid = null;
-		while(grid == null || !validateGridForScale(grid, scale))
-		{
-			grid = generateRandomGrid();
-		}
-		
+		Grid grid = Grid.random(4, true);
 		System.out.println("Generated grid: " + grid);
 		
 		System.out.println("Rhythm generation...");
@@ -125,29 +110,7 @@ public class Main
 		midiWriter.write();
 	}
 	
-	public static DiatonicScale generateRandomScale()
-	{
-		int mode = (int)(Math.random() * Mode.COUNT);
-		int tonicName = (int)(Math.random() * Note.Name.COUNT);
-		int tonicAccidental = (int)(Math.random() * Note.Accidental.COUNT);
-		return new DiatonicScale(new Note(tonicName, tonicAccidental), mode);
-	}
-	
-	public static Grid generateRandomGrid()
-	{
-		Grid grid = new Grid();
-		
-		grid.add(Degree.I);
-		for(int i = 0; i < 3; i++)
-		{
-			int degree = (int)(Math.random() * Degree.COUNT);
-			grid.add(degree);
-		}
-		
-		return grid;
-	}
-	
-	public static boolean validateGridForScale(Grid grid, DiatonicScale scale)
+	private static boolean validateGridForScale(Grid grid, DiatonicScale scale)
 	{
 		for(int degreeIndex = 0; degreeIndex < grid.size(); degreeIndex++)
 		{
@@ -163,7 +126,7 @@ public class Main
 		return true;
 	}
 	
-	public static ArrayList<Bar> generatePowerChords(Grid grid, DiatonicScale scale)
+	private static ArrayList<Bar> generatePowerChords(Grid grid, DiatonicScale scale)
 	{
 		ArrayList<Bar> track = new ArrayList<Bar>();
 		
@@ -194,132 +157,16 @@ public class Main
 		return track;
 	}
 	
-	private static void testBarFactory()
-	{
-		DiatonicScale scale = null;
-		while(scale == null || !scale.isValid())
-		{
-			Note tonic = new Note((int)(Math.random() * Note.Name.COUNT), (int)(Math.random() * Note.Accidental.COUNT));
-			int mode = (Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN;
-			scale = new DiatonicScale(tonic, mode);
-		}
-
-		System.out.println(scale);
-		
-		Grid grid = new Grid();
-		grid.add(Degree.I);
-		grid.add(Degree.VI);
-		grid.add(Degree.IV);
-		grid.add(Degree.V);
-		
-		ArrayList<Bar> track = new ArrayList<Bar>();
-		ArrayList<Bar> track2 = new ArrayList<Bar>();
-		
-		for(int i = 0; i < 4; i++)
-		{
-			for(int degree : grid)
-			{
-				int[] degrees = new int[1];
-				degrees[0] = degree;
-				Bar bar = BarFactory.Accompaniment.generateSimple(new TimeSignature("4/4"), scale, degrees);
-				track.add(bar);
-				
-				Bar bar2 = new Bar();
-				
-				TimedElement te = bar.get(0);
-				Note note = new Note(te.get(0));
-				note.octave(0);
-				note.dynamics(Note.Dynamics.FORTISSISSIMO);
-				
-				te = new TimedElement(Duration.SINGLE);
-				te.add(note);
-				
-				for(int j = 0; j < 4; j++)
-				{
-					bar2.add(te);
-				}
-				
-				track2.add(bar2);
-			}
-		}
-		
-		MidiWriter midiWriter = new MidiWriter("accompaniment.mid");
-		midiWriter.tempo(140);
-		midiWriter.scale(scale);
-		midiWriter.addTrack(track, "accompaniment");
-		midiWriter.addTrack(track2, "bass");
-		midiWriter.write();
-		
-		System.out.println("accompaniment.mid written.");
-	}
-	
-	private static void testFourChords()
-	{
-		Note.defaultOctave(2);
-		
-		Note tonic = new Note(Note.Name.F, Note.Accidental.SHARP);
-		int mode = Mode.EOLIAN;
-		TimeSignature signature = new TimeSignature("4/4");
-		
-		DiatonicScale scale = new DiatonicScale(tonic, mode);
-		
-		Bar bar = new Bar(signature);
-		for(int degree : new int[]{Degree.I, Degree.VI, Degree.IV, Degree.V})
-		{
-			Note fundamental = scale.get(degree);
-			
-			Note third = new Note();
-			scale.getNoteAtUpperInterval(degree, Interval.Name.THIRD, third);
-			
-			Note fifth = new Note();
-			scale.getNoteAtUpperInterval(degree, Interval.Name.FIFTH, fifth);
-			
-			Note seventh = new Note();
-			scale.getNoteAtUpperInterval(degree, Interval.Name.SEVENTH, seventh);
-			
-			TimedElement te = new TimedElement(Duration.SINGLE);
-			te.add(fundamental);
-			te.add(third);
-			te.add(fifth);
-			te.add(seventh);
-			
-			bar.add(te);
-		}
-		
-		ArrayList<Bar> track = new ArrayList<Bar>();
-		track.add(bar);
-		
-		MidiWriter midiWriter = new MidiWriter("fourChords.mid");
-		midiWriter.tempo(60);
-		midiWriter.addTrack(track, "intru");
-		midiWriter.write();
-	}
-	
 	private static void testSimpleMelody()
 	{
-		DiatonicScale scale = null;
-		
-		while(scale == null || scale.hasStrangeNote() || !scale.isValid())
-		{
-			Note tonic = new Note((int)(Math.random() * Note.Name.COUNT), (int)(Math.random() * Note.Accidental.COUNT));
-			int mode = (Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN;
-			scale = new DiatonicScale(tonic, mode);
-		}
-		
+		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
 		
-		Grid grid = new Grid();
-		grid.add(Degree.I);
-		grid.add((int)(Math.random() * Degree.COUNT));
-		grid.add((int)(Math.random() * Degree.COUNT));
-		grid.add((Math.random() < 0.5) ? Degree.I : Degree.V);
-		
+		Grid grid = Grid.random(4, true);
 		System.out.println("Selected grid: " + grid);
 		
 		TimeSignature signature = new TimeSignature((Math.random() < 0.5) ? "4/4" : "6/8");
-		
 		System.out.println("Selected time signature: " + signature);
-		
 		
 		ArrayList<Bar> bassTrack = new ArrayList<Bar>();
 		ArrayList<Bar> accompanimentTrack = new ArrayList<Bar>();
@@ -392,57 +239,27 @@ public class Main
 	
 	public static void testChordInversion()
 	{
-		DiatonicScale scale = null;
-		
-		while(scale == null || scale.hasStrangeNote() || !scale.isValid())
-		{
-			Note tonic = new Note((int)(Math.random() * Note.Name.COUNT), (int)(Math.random() * Note.Accidental.COUNT));
-			int mode = (Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN;
-			scale = new DiatonicScale(tonic, mode);
-		}
-		
+		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
 		
-		int degree = (int)(Math.random() * Degree.COUNT);
-		
+		int degree = Degree.random();
 		System.out.println("Selected degree: " + Degree.toString(degree));
-		
-		Note fundamental = scale.get(degree);
-		
-		Note third = new Note();
-		scale.getNoteAtUpperInterval(degree, Interval.Name.THIRD, third);
-		
-		Note fifth = new Note();
-		scale.getNoteAtUpperInterval(degree, Interval.Name.FIFTH, fifth);
-		
-		Note seventh = new Note();
-		scale.getNoteAtUpperInterval(degree, Interval.Name.SEVENTH, seventh);
-		
+
 		Bar bar = new Bar();
 		
-		Chord chord = new Chord(Duration.SINGLE, false);
-		
-		chord.add(fundamental);
-		chord.add(third);
-		chord.add(fifth);
-		chord.add(seventh);
+		Chord chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH);
 		System.out.println(chord);
 		
 		bar.add(chord);
 		
-		for(int inversion = 1; inversion < 54; inversion++)
+		for(int inversion = 1; inversion < 8; inversion++)
 		{
-			chord = new Chord(Duration.SINGLE, false);
-			
-			chord.add(fundamental);
-			chord.add(third);
-			chord.add(fifth);
-			chord.add(seventh);
-			
-			chord.reverse(inversion);
-			System.out.println(chord);
-			
-			bar.add(chord);
+			chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH);
+			if(chord.reverse(inversion))
+			{
+				System.out.println("inv " + chord);
+				bar.add(chord);
+			}
 		}
 		
 		ArrayList<Bar> track = new ArrayList<Bar>();
@@ -455,93 +272,68 @@ public class Main
 	
 	public static void testChordTransposition()
 	{
-		DiatonicScale scale = null;
-		
-		while(scale == null || scale.hasStrangeNote() || !scale.isValid())
-		{
-			Note tonic = new Note((int)(Math.random() * Note.Name.COUNT), (int)(Math.random() * Note.Accidental.COUNT));
-			int mode = (Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN;
-			scale = new DiatonicScale(tonic, mode);
-		}
-		
+		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
 		
-		int degree = (int)(Math.random() * Degree.COUNT);
-		
+		int degree = Degree.random();
 		System.out.println("Selected degree: " + Degree.toString(degree));
 		
-		Note fundamental = scale.get(degree);
+		Bar bar = new Bar();
 		
-		Note third = new Note();
-		scale.getNoteAtUpperInterval(degree, Interval.Name.THIRD, third);
+		Chord chord;
 		
-		Note fifth = new Note();
-		scale.getNoteAtUpperInterval(degree, Interval.Name.FIFTH, fifth);
-		
-		Chord chord = new Chord(Duration.SINGLE, false);
-		
-		chord.add(fundamental);
-		chord.add(third);
-		chord.add(fifth);
-		System.out.println(chord);
-		
-		int transp = (Math.random() < 0.5) ? 1 : -1;
+		int transp = 1;
 		while(true)
 		{
-			if(!chord.transpose(transp))
+			chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH);
+			
+			if(chord.transpose(transp))
+			{
+				System.out.println("up transp. " + chord);
+				bar.add(chord);
+			}
+			else
 			{
 				break;
 			}
 			
-			System.out.println("transp. " + chord);
+			chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH);
+			
+			if(chord.transpose(transp * - 1))
+			{
+				System.out.println("down transp. " + chord);
+				bar.add(chord);
+			}
+			else
+			{
+				break;
+			}
+			
+			transp++;
 		}
+		
+		ArrayList<Bar> track = new ArrayList<Bar>();
+		track.add(bar);
+		
+		MidiWriter writer = new MidiWriter("transp.mid");
+		writer.addTrack(track);
+		writer.write();
 	}
 	
 	public static void testAutomaticChordInversionAndTransposition()
 	{
-		DiatonicScale scale = null;
-		
-		while(scale == null || scale.hasStrangeNote() || !scale.isValid())
-		{
-			Note tonic = new Note((int)(Math.random() * Note.Name.COUNT), (int)(Math.random() * Note.Accidental.COUNT));
-			int mode = (Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN;
-			scale = new DiatonicScale(tonic, mode);
-		}
-		
+		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
 		
-		Grid grid = new Grid();
-		
-		for(int i = 0; i < 4; i++)
-		{
-			grid.add((int)(Math.random() * Degree.COUNT));
-		}
-		
+		Grid grid = Grid.random(4, false);
 		System.out.println("Selected grid: " + grid);
 		
 		Bar bar = new Bar();
 		
 		for(int degree : grid)
 		{
-			Note fundamental = scale.get(degree);
-			
-			Note third = new Note();
-			scale.getNoteAtUpperInterval(degree, Interval.Name.THIRD, third);
-			
-			Note fifth = new Note();
-			scale.getNoteAtUpperInterval(degree, Interval.Name.FIFTH, fifth);
-			
-			Note seventh = new Note();
-			scale.getNoteAtUpperInterval(degree, Interval.Name.SEVENTH, seventh);
-			
-			Chord chord = new Chord(Duration.SINGLE);
-			chord.add(fundamental);
-			chord.add(third);
-			chord.add(fifth);
-			chord.add(seventh);
-			
+			Chord chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH | Chord.SEVENTH);
 			System.out.println("Chord: " + chord);
-			
 			bar.add(chord);
 		}
 		
@@ -555,19 +347,10 @@ public class Main
 	
 	public static void testChordGeneration()
 	{
-		DiatonicScale scale = null;
-		
-		while(scale == null || scale.hasStrangeNote() || !scale.isValid())
-		{
-			Note tonic = new Note((int)(Math.random() * Note.Name.COUNT), (int)(Math.random() * Note.Accidental.COUNT));
-			int mode = (Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN;
-			scale = new DiatonicScale(tonic, mode);
-		}
-		
+		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
 		
-		int degree = (int)(Math.random() * Degree.COUNT);
-		
+		int degree = Degree.random();
 		System.out.println("Selected degree: " + Degree.toString(degree));
 		
 		Bar bar = new Bar();

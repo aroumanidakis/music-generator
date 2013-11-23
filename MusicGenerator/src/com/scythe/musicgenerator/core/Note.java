@@ -60,7 +60,7 @@ public class Note
 	
 	public void name(int name)
 	{
-		if(name >= 0 && name < Name.COUNT)
+		if(name >= Name.list()[0] && name <= Name.list()[Name.list().length - 1])
 		{
 			mName = name;
 		}
@@ -73,7 +73,7 @@ public class Note
 	
 	public void accidental(int accidental)
 	{
-		if(accidental >= 0 && accidental < Accidental.COUNT)
+		if(accidental >= Accidental.list()[0] && accidental <= Accidental.list()[Accidental.list().length - 1])
 		{
 			mAccidental = accidental;
 		}
@@ -125,6 +125,11 @@ public class Note
 		{
 			mDynamics = dynamics;
 		}
+	}
+	
+	public static Note random()
+	{
+		return new Note(Name.random(), Accidental.random());
 	}
 	
 	@Override
@@ -232,8 +237,6 @@ public class Note
 	
 	public static class Name
 	{
-		public static final int COUNT = 7;
-		
 		public static final int C = 0;
 		public static final int D = 1;
 		public static final int E = 2;
@@ -241,6 +244,17 @@ public class Note
 		public static final int G = 4;
 		public static final int A = 5;
 		public static final int B = 6;
+		
+		public static int[] list()
+		{
+			return new int[]{C, D, E, F, G, A, B};
+		}
+		
+		public static int random()
+		{
+			int[] list = list();
+			return list[(int)(Math.random() * (list.length - 1))];
+		}
 		
 		public static String toString(int note)
 		{
@@ -261,11 +275,20 @@ public class Note
 	
 	public static class Accidental
 	{
-		public static final int COUNT = 3;
-		
 		public static final int NONE = 0;
 		public static final int SHARP = 1;
 		public static final int FLAT = 2;
+		
+		public static int[] list()
+		{
+			return new int[]{NONE, SHARP, FLAT};
+		}
+		
+		public static int random()
+		{
+			int[] list = list();
+			return list[(int)(Math.random() * (list.length - 1))];
+		}
 		
 		public static String toString(int accidental)
 		{
@@ -289,6 +312,17 @@ public class Note
 		public static final int FORTE = 96;
 		public static final int FORTISSIMO = 110;
 		public static final int FORTISSISSIMO = 126;
+		
+		public static int[] list()
+		{
+			return new int[]{PIANISSISSIMO, PIANISSIMO, PIANO, MEZZOPIANO, MEZZOFORTE, FORTE, FORTISSIMO, FORTISSISSIMO};
+		}
+		
+		public static int random()
+		{
+			int[] list = list();
+			return list[(int)(Math.random() * (list.length - 1))];
+		}
 		
 		public static String toString(int dynamics)
 		{
