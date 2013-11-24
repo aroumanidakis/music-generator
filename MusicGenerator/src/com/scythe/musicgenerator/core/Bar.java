@@ -213,9 +213,70 @@ public class Bar extends ArrayList<TimedElement>
 		return bar;
 	}
 	
-	public static Bar generateArpeggio()
+	public static Bar generateArpeggio(TimeSignature signature, DiatonicScale scale, int degree)
 	{
-		return null;
+		Chord chord = new Chord(Duration.QUARTER);
+		chord.add(scale.get(degree));
+		
+		int[] intervals = new int[6];
+		
+		for(int i = 0; i < 2; i++)
+		{
+			intervals[3 * i] = Interval.Name.THIRD;
+			intervals[(3 * i) + 1] = Interval.Name.FIFTH;
+			intervals[(3 * i) + 2] = Interval.Name.OCTAVE;
+		}
+		
+		for(int interval : intervals)
+		{
+			Note note = new Note();
+			scale.getNoteAtUpperInterval(degree, interval, note);
+			chord.add(note);
+		}
+		
+		Bar bar = new Bar(signature);
+		
+		if(signature.numerator() == 2)
+		{
+			for(int index : new int[]{0, 2, 3, 2})
+			{
+				TimedElement te = new TimedElement(signature.denominator() + 1);
+				te.add(chord.get(index));
+				bar.add(te);
+			}
+		}
+		else if(signature.numerator() == 3)
+		{
+			System.out.println(signature + " not supported yet.");
+		}
+		else if(signature.numerator() == 4)
+		{
+			for(int index : new int[]{0, 2, 3, 4, 5, 4, 3, 2})
+			{
+				TimedElement te = new TimedElement(signature.denominator() + 1);
+				te.add(chord.get(index));
+				bar.add(te);
+			}
+		}
+		else if(signature.numerator() == 6)
+		{
+			for(int index : new int[]{0, 2, 3, 4, 3, 2})
+			{
+				TimedElement te = new TimedElement(signature.denominator());
+				te.add(chord.get(index));
+				bar.add(te);
+			}
+		}
+		else if(signature.numerator() == 9)
+		{
+			System.out.println(signature + " not supported yet.");
+		}
+		else if(signature.numerator() == 12)
+		{
+			System.out.println(signature + " not supported yet.");
+		}
+		
+		return bar;
 	}
 	
 	private TimeSignature mSignature;

@@ -224,7 +224,10 @@ public class Main
 		Grid grid = Grid.random(4, true);
 		System.out.println("Selected grid: " + grid);
 		
-		TimeSignature signature = new TimeSignature("6/8");
+		String[] signatures = {"2/1", "2/2", "2/4", "2/8", "4/1", "4/2", "4/4", "4/8", "6/2", "6/4", "6/8", "6/16"};
+		TimeSignature signature = new TimeSignature(signatures[(int)(Math.random() * (signatures.length - 1))]);
+		
+		System.out.println("Selected signature: " + signature);
 		
 		ArrayList<Bar> accompaniment = new ArrayList<Bar>();
 		ArrayList<Bar> arpeggio = new ArrayList<Bar>();
@@ -236,24 +239,7 @@ public class Main
 			bar = Bar.generateSimple(signature, scale, degrees, 0, Chord.THIRD | Chord.FIFTH | Chord.SEVENTH | Chord.OCTAVE, Chord.THIRD | Chord.FIFTH | Chord.SEVENTH, Chord.THIRD | Chord.FIFTH);
 			accompaniment.add(bar);
 			
-			Chord chord = new Chord(Duration.EIGHTH);
-			chord.add(scale.get(degree));
-			
-			for(int interval : new int[]{Interval.Name.FIFTH, Interval.Name.OCTAVE, Interval.Name.THIRD})
-			{
-				Note note = new Note();
-				scale.getNoteAtUpperInterval(degree, interval, note);
-				chord.add(note);
-			}
-			
-			bar = new Bar(signature);
-			for(int index : new int[]{0, 1, 2, 3, 2, 1})
-			{
-				TimedElement te = new TimedElement(Duration.EIGHTH);
-				te.add(chord.get(index));
-				bar.add(te);
-			}
-			
+			bar = Bar.generateArpeggio(signature, scale, degree);
 			arpeggio.add(bar);
 		}
 		
@@ -263,7 +249,7 @@ public class Main
 			arpeggio.addAll(arpeggio);
 		}
 		
-		MidiWriter midiWriter = new MidiWriter("Arpeggio.mid");
+		MidiWriter midiWriter = new MidiWriter("arpeggio.mid");
 		midiWriter.tempo(180);
 		midiWriter.addTrack(accompaniment, "accompaniment");
 		midiWriter.addTrack(arpeggio, "arpeggio");
