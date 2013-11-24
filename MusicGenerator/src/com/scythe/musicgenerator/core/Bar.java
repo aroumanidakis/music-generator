@@ -73,7 +73,7 @@ public class Bar extends ArrayList<TimedElement>
 		midiWriter.write();
 	}
 	
-	public static Bar generateAccompanimentSimpleChords(TimeSignature signature, DiatonicScale scale, int[] degrees, int division, int strongTimesNotes, int halfStrongTimesNotes, int weakTimesNotes)
+	public static Bar generateSimple(TimeSignature signature, DiatonicScale scale, int[] degrees, int division, int strongTimesNotes, int halfStrongTimesNotes, int weakTimesNotes)
 	{
 		int nbTimes = signature.getNumberOfTimes();
 		int signatureType = signature.getType();

@@ -2,20 +2,17 @@ package com.scythe.musicgenerator.main;
 
 import java.util.ArrayList;
 
-import javax.swing.plaf.SliderUI;
-
 import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.Chord;
 import com.scythe.musicgenerator.core.Degree;
 import com.scythe.musicgenerator.core.DiatonicScale;
+import com.scythe.musicgenerator.core.Interval;
 import com.scythe.musicgenerator.core.DiatonicScale.Mode;
 import com.scythe.musicgenerator.core.Grid;
-import com.scythe.musicgenerator.core.Interval;
 import com.scythe.musicgenerator.core.Note;
 import com.scythe.musicgenerator.core.TimeSignature;
 import com.scythe.musicgenerator.core.TimedElement;
 import com.scythe.musicgenerator.core.TimedElement.Duration;
-import com.scythe.musicgenerator.factories.BarFactory;
 import com.scythe.musicgenerator.midi.MidiWriter;
 
 public class Main
@@ -27,7 +24,8 @@ public class Main
 		//testChordTransposition();
 		//testAutomaticChordTransposition();
 		//testChordGeneration();
-		
+		testArpeggio();
+		/*
 		String[] signatures = {"2/1", "2/2", "2/4", "2/8", "3/1", "3/2", "3/4", "3/8", "4/1", "4/2", "4/4", "4/8", "6/2", "6/4", "6/8", "6/16", "9/2", "9/4", "9/8", "9/16", "12/2", "12/4", "12/8", "12/16"};
 		
 		DiatonicScale scale = new DiatonicScale(new Note(), Mode.IONIAN);
@@ -41,7 +39,7 @@ public class Main
 			TimeSignature signature = new TimeSignature(sig);
 			for(int division = -1; division < 10; division++)
 			{
-				bar = Bar.generateAccompanimentSimpleChords(signature, scale, degrees, division, Chord.FIFTH | Chord.OCTAVE, Chord.FIFTH, 0);
+				bar = Bar.generateSimple(signature, scale, degrees, division, Chord.FIFTH | Chord.OCTAVE, Chord.FIFTH, 0);
 				if(bar != null)
 				{
 					if(!bar.isValid())
@@ -63,6 +61,7 @@ public class Main
 			writer.addTrack(track);
 			writer.write();
 		}
+		*/
 	}
 	
 	private static void testSimpleMelody()
@@ -85,7 +84,7 @@ public class Main
 			for(int i = 0; i < 4; i++)
 			{
 				degrees[0] = grid.get(i);
-				//track.add(Bar.generateAccompanimentSimpleChords(signature, scale, degrees, true, Chord.FIFTH | Chord.OCTAVE, Chord.FIFTH, 0));
+				track.add(Bar.generateSimple(signature, scale, degrees, 1, Chord.FIFTH | Chord.OCTAVE, Chord.FIFTH, 0));
 			}
 		}
 		
@@ -215,6 +214,60 @@ public class Main
 		System.out.println("bar: " + bar);
 		
 		bar.toMidiFile("chordGeneration.mid");
+	}
+	
+	public static void testArpeggio()
+	{
+		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
+		System.out.println("Selected scale: " + scale);
+		
+		Grid grid = Grid.random(4, true);
+		System.out.println("Selected grid: " + grid);
+		
+		TimeSignature signature = new TimeSignature("6/8");
+		
+		ArrayList<Bar> accompaniment = new ArrayList<Bar>();
+		ArrayList<Bar> arpeggio = new ArrayList<Bar>();
+		
+		Bar bar;
+		for(int degree : grid)
+		{
+			int[] degrees = {degree};
+			bar = Bar.generateSimple(signature, scale, degrees, 0, Chord.THIRD | Chord.FIFTH | Chord.SEVENTH | Chord.OCTAVE, Chord.THIRD | Chord.FIFTH | Chord.SEVENTH, Chord.THIRD | Chord.FIFTH);
+			accompaniment.add(bar);
+			
+			Chord chord = new Chord(Duration.EIGHTH);
+			chord.add(scale.get(degree));
+			
+			for(int interval : new int[]{Interval.Name.FIFTH, Interval.Name.OCTAVE, Interval.Name.THIRD})
+			{
+				Note note = new Note();
+				scale.getNoteAtUpperInterval(degree, interval, note);
+				chord.add(note);
+			}
+			
+			bar = new Bar(signature);
+			for(int index : new int[]{0, 1, 2, 3, 2, 1})
+			{
+				TimedElement te = new TimedElement(Duration.EIGHTH);
+				te.add(chord.get(index));
+				bar.add(te);
+			}
+			
+			arpeggio.add(bar);
+		}
+		
+		for(int i = 0; i < 2; i++)
+		{
+			accompaniment.addAll(accompaniment);
+			arpeggio.addAll(arpeggio);
+		}
+		
+		MidiWriter midiWriter = new MidiWriter("Arpeggio.mid");
+		midiWriter.tempo(180);
+		midiWriter.addTrack(accompaniment, "accompaniment");
+		midiWriter.addTrack(arpeggio, "arpeggio");
+		midiWriter.write();
 	}
 }
 
