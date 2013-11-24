@@ -31,7 +31,7 @@ public class TimeSignature
 		
 		int refTime = Duration.reverseConvert(tmp);
 		
-		if(refTime == 0)
+		if(refTime == -1)
 		{
 			invalidate();
 		}
@@ -80,15 +80,15 @@ public class TimeSignature
 	{
 		if(mNumerator == 2 || mNumerator == 3 || mNumerator == 4)
 		{
-			return Type.SIMPLE;
+			return Type.BINARY;
 		}
 		else if(mNumerator == 6 || mNumerator == 9 || mNumerator == 12)
 		{
-			return Type.COMPOSED;
+			return Type.TERNARY;
 		}
 		else
 		{
-			return -1;
+			return Type.ASYMMETRIC;
 		}
 	}
 	
@@ -112,12 +112,13 @@ public class TimeSignature
 	
 	public static class Type
 	{
-		public static final int SIMPLE = 0;
-		public static final int COMPOSED = 1;
+		public static final int BINARY = 0;
+		public static final int TERNARY = 1;
+		public static final int ASYMMETRIC = 2;
 		
 		public static int[] list()
 		{
-			return new int[]{SIMPLE, COMPOSED};
+			return new int[]{BINARY, TERNARY, ASYMMETRIC};
 		}
 		
 		public static int random()

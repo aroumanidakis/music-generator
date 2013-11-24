@@ -136,7 +136,7 @@ public class Note
 	
 	public void toMidiFile(String fileName)
 	{
-		TimedElement te = new TimedElement(Duration.SINGLE);
+		TimedElement te = new TimedElement(Duration.QUARTER);
 		te.add(this);
 		te.toMidiFile(fileName);
 	}

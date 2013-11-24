@@ -56,15 +56,16 @@ public class TimedElement extends ArrayList<Note>
 	
 	public static class Duration
 	{
-		public static final int QUADRUPLE = 0;
-		public static final int DOUBLE = 1;
-		public static final int SINGLE = 2;
-		public static final int HALF = 3;
-		public static final int QUARTER = 4;
+		public static final int WHOLE = 0;
+		public static final int HALF = 1;
+		public static final int QUARTER = 2;
+		public static final int EIGHTH = 3;
+		public static final int SIXTEENTH = 4;
+		public static final int THIRTYSECOND = 5;
 		
 		public static int[] list()
 		{
-			return new int[]{QUADRUPLE, DOUBLE, SINGLE, HALF, QUARTER};
+			return new int[]{WHOLE, HALF, QUARTER, EIGHTH, SIXTEENTH, THIRTYSECOND};
 		}
 		
 		public static int random()
@@ -77,11 +78,12 @@ public class TimedElement extends ArrayList<Note>
 		{
 			switch(duration)
 			{
-				case QUADRUPLE: return 4;
-				case DOUBLE: return 2;
-				case SINGLE: return 1;
-				case HALF: return 0.5f;
-				case QUARTER: return 0.25f;
+				case WHOLE: return 4;
+				case HALF: return 2;
+				case QUARTER: return 1;
+				case EIGHTH: return 0.5f;
+				case SIXTEENTH: return 0.25f;
+				case THIRTYSECOND: return 0.125f;
 			}
 			
 			return 0;
@@ -91,11 +93,12 @@ public class TimedElement extends ArrayList<Note>
 		{
 			switch(duration)
 			{
-				case QUADRUPLE:	return 1;
-				case DOUBLE: return 2;
-				case SINGLE: return 4;
-				case HALF: return 8;
-				case QUARTER: return 16;
+				case WHOLE:	return 1;
+				case HALF: return 2;
+				case QUARTER: return 4;
+				case EIGHTH: return 8;
+				case SIXTEENTH: return 16;
+				case THIRTYSECOND: return 32;
 			}
 			
 			return 0;
@@ -105,15 +108,17 @@ public class TimedElement extends ArrayList<Note>
 		{
 			switch(timeSignature)
 			{
-				case 1: return QUADRUPLE;
-				case 2: return DOUBLE;
-				case 4: return SINGLE;
-				case 8: return HALF;
-				case 16: return QUARTER;
+				case 1: return WHOLE;
+				case 2: return HALF;
+				case 4: return QUARTER;
+				case 8: return EIGHTH;
+				case 16: return SIXTEENTH;
+				case 32: return THIRTYSECOND;
 			}
 			
-			return 0;
+			return -1;
 		}
+		
 	}
 	
 	private int mDuration;

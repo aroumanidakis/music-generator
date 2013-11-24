@@ -22,11 +22,47 @@ public class Main
 {
 	public static void main(String[] args) throws Exception
 	{
-		testSimpleMelody();
+		//testSimpleMelody();
 		//testChordInversion();
 		//testChordTransposition();
 		//testAutomaticChordTransposition();
 		//testChordGeneration();
+		
+		String[] signatures = {"2/1", "2/2", "2/4", "2/8", "3/1", "3/2", "3/4", "3/8", "4/1", "4/2", "4/4", "4/8", "6/2", "6/4", "6/8", "6/16", "9/2", "9/4", "9/8", "9/16", "12/2", "12/4", "12/8", "12/16"};
+		
+		DiatonicScale scale = new DiatonicScale(new Note(), Mode.IONIAN);
+		int[] degrees = {Degree.I};
+		
+		Bar bar = null;
+		for(String sig : signatures)
+		{
+			ArrayList<Bar> track = new ArrayList<Bar>();
+			
+			TimeSignature signature = new TimeSignature(sig);
+			for(int division = -1; division < 10; division++)
+			{
+				bar = Bar.generateAccompanimentSimpleChords(signature, scale, degrees, division, Chord.FIFTH | Chord.OCTAVE, Chord.FIFTH, 0);
+				if(bar != null)
+				{
+					if(!bar.isValid())
+					{
+						System.out.println("INVALID GENERATED BAR !!!!" + sig + " " + division);
+						for(TimedElement te : bar)
+						{
+							System.out.println(te);
+						}
+					}
+					else
+					{
+						track.add(bar);
+					}
+				}
+			}
+			
+			MidiWriter writer = new MidiWriter("bar" + signature.numerator() + "_" + Duration.convertInTimeSignature(signature.denominator()) + ".mid");
+			writer.addTrack(track);
+			writer.write();
+		}
 	}
 	
 	private static void testSimpleMelody()
@@ -49,7 +85,7 @@ public class Main
 			for(int i = 0; i < 4; i++)
 			{
 				degrees[0] = grid.get(i);
-				track.add(Bar.generateAccompanimentSimpleChords(signature, scale, degrees, true, Chord.FIFTH | Chord.OCTAVE, Chord.FIFTH, 0));
+				//track.add(Bar.generateAccompanimentSimpleChords(signature, scale, degrees, true, Chord.FIFTH | Chord.OCTAVE, Chord.FIFTH, 0));
 			}
 		}
 		
@@ -74,14 +110,14 @@ public class Main
 
 		Bar bar = new Bar();
 		
-		Chord chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH);
+		Chord chord = Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.FIFTH);
 		System.out.println(chord);
 		
 		bar.add(chord);
 		
 		for(int inversion = 1; inversion < 8; inversion++)
 		{
-			chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH);
+			chord = Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.FIFTH);
 			if(chord.reverseByTop(inversion))
 			{
 				System.out.println("inv " + chord);
@@ -109,7 +145,7 @@ public class Main
 		int transp = 1;
 		while(true)
 		{
-			chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH);
+			chord = Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.FIFTH);
 			
 			if(chord.transpose(transp))
 			{
@@ -121,7 +157,7 @@ public class Main
 				break;
 			}
 			
-			chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH);
+			chord = Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.FIFTH);
 			
 			if(chord.transpose(transp * - 1))
 			{
@@ -151,7 +187,7 @@ public class Main
 		
 		for(int degree : grid)
 		{
-			Chord chord = Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH);
+			Chord chord = Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.FIFTH);
 			System.out.println("Chord: " + chord);
 			bar.add(chord);
 		}
@@ -171,10 +207,10 @@ public class Main
 		
 		Bar bar = new Bar();
 
-		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.FIFTH));
-		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.FIFTH));
-		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.THIRD | Chord.SEVENTH));
-		bar.add(Chord.generate(Duration.SINGLE, false, scale, degree, Chord.FIFTH | Chord.OCTAVE | Chord.THIRD));
+		bar.add(Chord.generate(Duration.QUARTER, false, scale, degree, Chord.FIFTH));
+		bar.add(Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.FIFTH));
+		bar.add(Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.SEVENTH));
+		bar.add(Chord.generate(Duration.QUARTER, false, scale, degree, Chord.FIFTH | Chord.OCTAVE | Chord.THIRD));
 		
 		System.out.println("bar: " + bar);
 		

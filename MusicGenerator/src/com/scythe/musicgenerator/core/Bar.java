@@ -30,7 +30,7 @@ public class Bar extends ArrayList<TimedElement>
 	
 	private boolean isRhythmSignatureValid()
 	{
-		return (mSignature.numerator() == 0 || mSignature.denominator() == 0 || Duration.convertInTimeSignature(mSignature.denominator()) == 0) ? false : true;
+		return (mSignature.numerator() == 0 || Duration.convertInTimeSignature(mSignature.denominator()) == 0) ? false : true;
 	}
 	
 	private boolean isNotesValid()
@@ -73,43 +73,87 @@ public class Bar extends ArrayList<TimedElement>
 		midiWriter.write();
 	}
 	
-	public static Bar generateAccompanimentSimpleChords(TimeSignature signature, DiatonicScale scale, int[] degrees, boolean doubleTime, int strongTimesNotes, int halfStrongTimesNotes, int weakTimesNotes)
+	public static Bar generateAccompanimentSimpleChords(TimeSignature signature, DiatonicScale scale, int[] degrees, int division, int strongTimesNotes, int halfStrongTimesNotes, int weakTimesNotes)
 	{
-		int numberOfTimes = signature.getNumberOfTimes();
-		if(numberOfTimes == -1)
+		int nbTimes = signature.getNumberOfTimes();
+		int signatureType = signature.getType();
+		
+		int duration;
+		boolean dotted;
+		int nbElements;
+		if(signatureType == TimeSignature.Type.BINARY || signatureType == TimeSignature.Type.TERNARY)
 		{
-			System.out.println(signature + " not supported yet.");
+			if(division < 0)
+			{
+				if(signatureType == TimeSignature.Type.TERNARY && division == -1)
+				{
+					if(signature.denominator() == Duration.WHOLE)
+					{
+						System.out.println("The division -1 can not be applied on " + signature + " time signature.");
+						return null;
+					}
+					else
+					{
+						duration = signature.denominator() - 1;
+						dotted = true;
+						nbElements = signature.numerator() / 3;
+					}
+				}
+				else
+				{
+					System.out.println("The division " + division + " can not be applied.");
+					return null;
+				}
+			}
+			else
+			{
+				duration = signature.denominator();
+				duration += division;
+				
+				if(Duration.convertInTime(duration) == 0)
+				{
+					System.out.println("The divion is two high for this time signature.");
+					return null;
+				}
+				
+				dotted = false;
+				
+				nbElements = signature.numerator();
+				
+				for(int i = 0; i < division; i++)
+				{
+					nbElements *= 2;
+				}
+			}
+		}
+		else
+		{
+			System.out.println(signature + " not supported yet in this generation function.");
 			return null;
 		}
 		
-		if(degrees.length > signature.numerator())
+		if(nbElements % degrees.length != 0)
 		{
-			System.out.println(degrees.length + " degrees can not be inserted in a " + signature + " bar.");
+			System.out.println(degrees.length + " degrees can not be placed in " + nbElements + " elements.");
 			return null;
 		}
 		
-		if(signature.numerator() % degrees.length != 0)
-		{
-			System.out.println("The number of degrees (" + degrees.length + ") is not compatible with the bar structure (" + signature + ")");
-			return null;
-		}
+		int nbElementsPerDegree = nbElements / degrees.length;
+		int currentDegree = 0;
+		int degreeElementsAdded = 0;
 		
-		int notesPerDegree = signature.numerator() / degrees.length;
-		int currentDegreeIndex = 0;
-		int degreeNotesAdded = 0;
-		
-		int notesPerTime = signature.numerator() / numberOfTimes;
+		int nbElementsPerTime = nbElements / nbTimes;
 		int currentTime = 1;
-		int timeNotesAdded = 0;
+		int timeElementsAdded = 0;
 		
 		Bar bar = new Bar(signature);
-		for(int noteIndex = 0; noteIndex < signature.numerator(); noteIndex++)
+		for(int noteIndex = 0; noteIndex < nbElements; noteIndex++)
 		{
 			int dynamics = Note.Dynamics.MEZZOPIANO;
 			int notesMask = weakTimesNotes;
-			if(timeNotesAdded == 0)
+			if(timeElementsAdded == 0)
 			{
-				if(numberOfTimes == 2)
+				if(nbTimes == 2)
 				{
 					if(currentTime == 1)
 					{
@@ -122,7 +166,7 @@ public class Bar extends ArrayList<TimedElement>
 						notesMask = halfStrongTimesNotes;
 					}
 				}
-				else if(numberOfTimes == 3)
+				else if(nbTimes == 3)
 				{
 					if(currentTime == 1)
 					{
@@ -130,7 +174,7 @@ public class Bar extends ArrayList<TimedElement>
 						notesMask = strongTimesNotes;
 					}
 				}
-				else if(numberOfTimes == 4)
+				else if(nbTimes == 4)
 				{
 					if(currentTime == 1)
 					{
@@ -145,37 +189,24 @@ public class Bar extends ArrayList<TimedElement>
 				}
 			}
 			
-			int degree = degrees[currentDegreeIndex];
+			int degree = degrees[currentDegree];
 			
-			Chord chord;
-			if(doubleTime)
-			{
-				chord = Chord.generate(signature.denominator() + 1, false, scale, degree, notesMask);
-				chord.dynamics(dynamics);
-				bar.add(chord);
-				chord = Chord.generate(signature.denominator() + 1, false, scale, degree, weakTimesNotes);
-				chord.dynamics(Note.Dynamics.MEZZOPIANO);
-				bar.add(chord);
-			}
-			else
-			{
-				chord = Chord.generate(signature.denominator(), false, scale, degree, notesMask);
-				chord.dynamics(dynamics);
-				bar.add(chord);
-			}
+			Chord chord = Chord.generate(duration, dotted, scale, degree, notesMask);
+			chord.dynamics(dynamics);
+			bar.add(chord);
 			
-			timeNotesAdded++;
-			if(timeNotesAdded == notesPerTime)
+			timeElementsAdded++;
+			if(timeElementsAdded == nbElementsPerTime)
 			{
 				currentTime++;
-				timeNotesAdded = 0;
+				timeElementsAdded = 0;
 			}
 			
-			degreeNotesAdded++;
-			if(degreeNotesAdded == notesPerDegree)
+			degreeElementsAdded++;
+			if(degreeElementsAdded == nbElementsPerDegree)
 			{
-				currentDegreeIndex++;
-				degreeNotesAdded = 0;
+				currentDegree++;
+				degreeElementsAdded = 0;
 			}
 		}
 		

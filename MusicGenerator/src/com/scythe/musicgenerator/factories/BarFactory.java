@@ -171,7 +171,7 @@ public class BarFactory
 			
 			switch(signature.getType())
 			{
-				case TimeSignature.Type.SIMPLE:
+				case TimeSignature.Type.BINARY:
 				{
 					for(int i = 0; i < signature.numerator(); i++)
 					{
@@ -180,7 +180,7 @@ public class BarFactory
 					
 					break;
 				}
-				case TimeSignature.Type.COMPOSED:
+				case TimeSignature.Type.TERNARY:
 				{
 					for(int i = 0; i < signature.numerator() / 3; i++)
 					{
@@ -209,7 +209,7 @@ public class BarFactory
 				ArrayList<TimedElementToCut> cuts = new ArrayList<TimedElementToCut>();
 				TimedElement timedElement1, timedElement2;
 				
-				if(mTimedElement.duration() != Duration.QUARTER)
+				if(mTimedElement.duration() != Duration.SIXTEENTH)
 				{
 					if(Math.random() < mCuttingChance)
 					{
