@@ -37,7 +37,7 @@ public class Main
 		Grid grid = Grid.random(4, true);
 		System.out.println("Selected grid: " + grid);
 		
-		String[] signatures = {"2/2", "2/4", "3/8", "2/8", "3/2", "3/4", /*"3/8",*/ "4/2", "4/4", "4/8"};
+		String[] signatures = {"2/2", "2/4", "2/8", "3/2", "3/4", "3/8", "4/2", "4/4", "4/8"};
 		
 		ArrayList<Bar> track = new ArrayList<Bar>();
 		

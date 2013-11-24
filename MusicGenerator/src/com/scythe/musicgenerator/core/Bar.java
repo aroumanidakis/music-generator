@@ -147,21 +147,20 @@ public class Bar extends ArrayList<TimedElement>
 			
 			int degree = degrees[currentDegreeIndex];
 			
+			Chord chord;
 			if(doubleTime)
 			{
-				for(int i = 0; i < 2; i++)
-				{
-					Chord chord = Chord.generate(signature.denominator() + 1, false, scale, degree, (i == 0) ? notesMask : weakTimesNotes);
-					chord.dynamics(dynamics);
-					
-					bar.add(chord);
-				}
+				chord = Chord.generate(signature.denominator() + 1, false, scale, degree, notesMask);
+				chord.dynamics(dynamics);
+				bar.add(chord);
+				chord = Chord.generate(signature.denominator() + 1, false, scale, degree, weakTimesNotes);
+				chord.dynamics(Note.Dynamics.MEZZOPIANO);
+				bar.add(chord);
 			}
 			else
 			{
-				Chord chord = Chord.generate(signature.denominator(), false, scale, degree, notesMask);
+				chord = Chord.generate(signature.denominator(), false, scale, degree, notesMask);
 				chord.dynamics(dynamics);
-				
 				bar.add(chord);
 			}
 			
