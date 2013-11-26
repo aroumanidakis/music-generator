@@ -119,9 +119,12 @@ public class DiatonicScale extends ArrayList<Note>
 		
 		Note n = get(newNoteIndex % size());
 		
-		note.name(n.name());
-		note.accidental(n.accidental());
-		note.octave(n.octave() + octaveIncr);
+		if(note != null)
+		{
+			note.name(n.name());
+			note.accidental(n.accidental());
+			note.octave(n.octave() + octaveIncr);
+		}
 		
 		int diatHalfToneCnt = 0;
 		int toneCnt = 0;
