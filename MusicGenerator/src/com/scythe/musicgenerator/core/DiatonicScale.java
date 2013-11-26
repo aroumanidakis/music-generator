@@ -493,13 +493,13 @@ public class DiatonicScale extends ArrayList<Note>
 		{
 			switch(mode)
 			{
-				case IONIAN: return "IONIAN (major)";
-				case DORIAN: return "DORIAN";
-				case PHRYGIAN: return "PHRYGIAN";
-				case LYDIAN: return "LYDIAN";
-				case MIXOLYDIAN: return "MIXOLYDIAN";
-				case EOLIAN: return "EOLIAN (minor)";
-				case LOCRIAN: return "LOCRIAN";
+				case IONIAN: return "Ionian (maj.)";
+				case DORIAN: return "Dorian";
+				case PHRYGIAN: return "Phrygian";
+				case LYDIAN: return "Lydian";
+				case MIXOLYDIAN: return "Mixolydian";
+				case EOLIAN: return "Eolian (min.)";
+				case LOCRIAN: return "Locrian";
 			}
 			
 			return "";
