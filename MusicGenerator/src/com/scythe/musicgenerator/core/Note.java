@@ -2,11 +2,25 @@ package com.scythe.musicgenerator.core;
 
 import com.scythe.musicgenerator.core.TimedElement.Duration;
 
+/**
+ * Class intended to represent a note. <br />
+ * <br />
+ * A note is defined by : <br />
+ * - A name (A, B, C, D, E, F or G) <br />
+ * - An accidental (#, b or none) <br />
+ * - An octave between -2 and 8 (in accordance with MIDI specifications) <br />
+ * - A dynamics between 0 and 127 (in accordance with MIDI specifications) <br />
+ * 
+ * @author Scythe
+ */
 public class Note 
 {
 	public static final int MIN_OCTAVE = -2;
 	public static final int MAX_OCTAVE = 8;
 	
+	/**
+	 * Default constructor. Instantiates a C, octave 2, Mezzoforte. 
+	 */
 	public Note()
 	{
 		mName = Name.C;
@@ -15,38 +29,73 @@ public class Note
 		mDynamics = mDefaultDynamics;
 	}
 	
+	/**
+	 * Constructor.
+	 * @param name The note name.
+	 * @param accidental The note accidental.
+	 * @param octave The note octave.
+	 * @param dynamics The note Dynamics.
+	 * @see Note.Name
+	 * @see Note.Accidental
+	 * @see Note.Dynamics
+	 */
 	public Note(int name, int accidental, int octave, int dynamics)
 	{
-		name(name);
-		accidental(accidental);
+		setName(name);
+		setAccidental(accidental);
 		octave(octave);
 		dynamics(dynamics);
 	}
 	
+	/**
+	 * Constructor setting automatically the default dynamics.
+	 * @param name The note name.
+	 * @param accidental The note accidental.
+	 * @param octave The note octave.
+	 * @see Note.Name
+	 * @see Note.Accidental
+	 * @see Note.Dynamics
+	 */
 	public Note(int name, int accidental, int octave)
 	{
-		name(name);
-		accidental(accidental);
+		setName(name);
+		setAccidental(accidental);
 		octave(octave);
 		mDynamics = mDefaultDynamics;
 	}
 	
+	/**
+	 * Constructor setting automatically the default octave and dynamics.
+	 * @param name The note name.
+	 * @param accidental The note accidental.
+	 * @see Note.Name
+	 * @see Note.Accidental
+	 */
 	public Note(int name, int accidental)
 	{
-		name(name);
-		accidental(accidental);
+		setName(name);
+		setAccidental(accidental);
 		mOctave = mDefaultOctave;
 		mDynamics = mDefaultDynamics;
 	}
 	
+	/**
+	 * Constructor setting automatically the default octave and dynamics and the accidental to none.
+	 * @param name The note name.
+	 * @see Note.Name
+	 */
 	public Note(int name)
 	{
-		name(name);
+		setName(name);
 		mAccidental = Accidental.NONE;
 		mOctave = mDefaultOctave;
 		mDynamics = mDefaultDynamics;
 	}
 	
+	/**
+	 * Constructor by copy.
+	 * @param note The instance to copy.
+	 */
 	public Note(Note note)
 	{
 		mName = note.mName;
@@ -55,37 +104,66 @@ public class Note
 		mDynamics = note.mDynamics;
 	}
 	
-	public int name()
+	/**
+	 * Gets the note name.
+	 * @return The note name.
+	 * @see Note.Name
+	 */
+	public int getName()
 	{
 		return mName;
 	}
 	
-	public void name(int name)
+	/**
+	 * Sets the note name. Will work only if the parameter is a Note.Name constant value.
+	 * @param name The note name.
+	 * @see Note.Name
+	 */
+	public void setName(int name)
 	{
-		if(name >= Name.list()[0] && name <= Name.list()[Name.list().length - 1])
+		if(name >= Name.getList()[0] && name <= Name.getList()[Name.getList().length - 1])
 		{
 			mName = name;
 		}
 	}
 	
-	public int accidental()
+	/**
+	 * Gets the note accidental.
+	 * @return The note accidental.
+	 * @see Note.Accidental
+	 */
+	public int getAccidental()
 	{
 		return mAccidental;
 	}
 	
-	public void accidental(int accidental)
+	/**
+	 * Sets the note accidental. Will work only if the parameter is a Note.Accidental constant value.
+	 * @param accidental The note accidental.
+	 * @see Note.Accidental
+	 */
+	public void setAccidental(int accidental)
 	{
-		if(accidental >= Accidental.list()[0] && accidental <= Accidental.list()[Accidental.list().length - 1])
+		if(accidental >= Accidental.getList()[0] && accidental <= Accidental.getList()[Accidental.getList().length - 1])
 		{
 			mAccidental = accidental;
 		}
 	}
 	
-	public int octave()
+	/**
+	 * Gets the note octave.
+	 * @return The note octave.
+	 */
+	public int getOctave()
 	{
 		return mOctave;
 	}
 	
+	/**
+	 * Sets the note octave. Will work only if it fits with MIDI specifications : a note should be between C-2 and G8.
+	 * @param octave The note octave.
+	 * @return true if the octave has been changed, false otherwise.
+	 */
 	public boolean octave(int octave)
 	{
 		if(octave >= MIN_OCTAVE && octave <= MAX_OCTAVE)
@@ -108,11 +186,19 @@ public class Note
 		}
 	}
 	
-	public int dynamics()
+	/**
+	 * Gets the note dynamics.
+	 * @return The note dynamics.
+	 */
+	public int getDynamics()
 	{
 		return mDynamics;
 	}
 	
+	/**
+	 * Sets the note dynamics. Will work only if it fits with MIDI specifications : a velocity should be 0 and 127.
+	 * @param dynamics the note dynamics.
+	 */
 	public void dynamics(int dynamics)
 	{
 		if(dynamics < 0)
@@ -129,11 +215,19 @@ public class Note
 		}
 	}
 	
-	public static Note random()
+	/**
+	 * Gets a random instance of Note.
+	 * @return A random note.
+	 */
+	public static Note getRandom()
 	{
-		return new Note(Name.random(), Accidental.random());
+		return new Note(Name.getRandom(), Accidental.getRandom());
 	}
 	
+	/**
+	 * Writes the note in a simple MIDI file.
+	 * @param fileName The file name to write.
+	 */
 	public void toMidiFile(String fileName)
 	{
 		TimedElement te = new TimedElement(Duration.QUARTER);
@@ -152,75 +246,14 @@ public class Note
 	{
 		Note note = (Note) obj;
 		
-		return mName == note.name() && mAccidental == note.accidental() ? true : false;
+		return mName == note.getName() && mAccidental == note.getAccidental() ? true : false;
 	}
 	
-	public byte toMidiNoteNumber()
-	{
-		int noteNumber = 24 + (mOctave * 12);
-		
-		switch(mName)
-		{
-			case Name.D:
-			{
-				noteNumber += 2;
-				break;
-			}
-			case Name.E:
-			{
-				noteNumber += 4;
-				break;
-			}
-			case Name.F:
-			{
-				noteNumber += 5;
-				break;
-			}
-			case Name.G:
-			{
-				noteNumber += 7;
-				break;
-			}
-			case Name.A:
-			{
-				noteNumber += 9;
-				break;
-			}
-			case Name.B:
-			{
-				noteNumber += 11;
-				break;
-			}
-		}
-		
-		switch(mAccidental)
-		{
-			case Accidental.SHARP:
-			{
-				noteNumber++;
-				break;
-			}
-			case Accidental.FLAT:
-			{
-				noteNumber--;
-			}
-		}
-		
-		if(noteNumber < 0)
-		{
-			System.out.println("The note (" + this + ") is to low for midi format.");
-			noteNumber = 0;
-		}
-		else if(noteNumber > 127)
-		{
-			System.out.println("The note (" + this + ") is to high for midi format.");
-			noteNumber = 127;
-		}
-		
-		return (byte)noteNumber;
-	}
-	
-	public static void defaultOctave(int defaultOctave)
+	/**
+	 * Sets the default octave for the next instantiations.
+	 * @param defaultOctave The new default octave.
+	 */
+	public static void setDefaultOctave(int defaultOctave)
 	{
 		if(defaultOctave >= MIN_OCTAVE && defaultOctave <= MAX_OCTAVE)
 		{
@@ -228,7 +261,11 @@ public class Note
 		}
 	}
 	
-	public static void defaultDynamics(int defaultDynamics)
+	/**
+	 * Sets the default dynamics for the next instantiations.
+	 * @param defaultDynamics The new default dynamics.
+	 */
+	public static void setDefaultDynamics(int defaultDynamics)
 	{
 		if(defaultDynamics < 0)
 		{
@@ -244,6 +281,10 @@ public class Note
 		}
 	}
 	
+	/**
+	 * Class of constants for note names.
+	 * @author Scythe
+	 */
 	public static class Name
 	{
 		public static final int C = 0;
@@ -254,17 +295,25 @@ public class Note
 		public static final int A = 5;
 		public static final int B = 6;
 		
-		public static int[] list()
+		/**
+		 * Gets the list of existing constants.
+		 * @return The list of constants.
+		 */
+		public static int[] getList()
 		{
 			return new int[]{C, D, E, F, G, A, B};
 		}
 		
-		public static int random()
+		/**
+		 * Gets a random value of constant.
+		 * @return A random value of constant.
+		 */
+		public static int getRandom()
 		{
-			int[] list = list();
+			int[] list = getList();
 			return list[(int)(Math.random() * (list.length - 1))];
 		}
-		
+
 		public static String toString(int note)
 		{
 			switch(note)
@@ -282,20 +331,32 @@ public class Note
 		}
 	}
 	
+	/**
+	 * Class of consants for accidentals.
+	 * @author Scythe
+	 */
 	public static class Accidental
 	{
 		public static final int NONE = 0;
 		public static final int SHARP = 1;
 		public static final int FLAT = 2;
 		
-		public static int[] list()
+		/**
+		 * Gets the list of existing constants.
+		 * @return The list of constants.
+		 */
+		public static int[] getList()
 		{
 			return new int[]{NONE, SHARP, FLAT};
 		}
 		
-		public static int random()
+		/**
+		 * Gets a random value of constant.
+		 * @return A random value of constant.
+		 */
+		public static int getRandom()
 		{
-			int[] list = list();
+			int[] list = getList();
 			return list[(int)(Math.random() * (list.length - 1))];
 		}
 		
@@ -311,6 +372,10 @@ public class Note
 		}
 	}
 	
+	/**
+	 * Class of constants for Dynamics
+	 * @author Scythe
+	 */
 	public static class Dynamics
 	{
 		public static final int PIANISSISSIMO = 16;
@@ -322,14 +387,22 @@ public class Note
 		public static final int FORTISSIMO = 110;
 		public static final int FORTISSISSIMO = 126;
 		
-		public static int[] list()
+		/**
+		 * Gets the list of existing constants.
+		 * @return The list of constants.
+		 */
+		public static int[] getList()
 		{
 			return new int[]{PIANISSISSIMO, PIANISSIMO, PIANO, MEZZOPIANO, MEZZOFORTE, FORTE, FORTISSIMO, FORTISSISSIMO};
 		}
 		
-		public static int random()
+		/**
+		 * Gets a random value of constant.
+		 * @return A random value of constant.
+		 */
+		public static int getRandom()
 		{
-			int[] list = list();
+			int[] list = getList();
 			return list[(int)(Math.random() * (list.length - 1))];
 		}
 		

@@ -66,10 +66,10 @@ public class Main
 	
 	private static void testSimpleMelody()
 	{
-		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
+		DiatonicScale scale = DiatonicScale.getRandom((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
 		
-		Grid grid = Grid.random(4, true);
+		Grid grid = Grid.getRandom(4, true);
 		System.out.println("Selected grid: " + grid);
 		
 		String[] signatures = {"2/2", "2/4", "2/8", "3/2", "3/4", "3/8", "4/2", "4/4", "4/8"};
@@ -92,8 +92,8 @@ public class Main
 		System.out.println("Selected tempo: " + tempo);
 		
 		MidiWriter midiWriter = new MidiWriter("SimpleMelody.mid");
-		midiWriter.tempo(tempo);
-		midiWriter.scale(scale);
+		midiWriter.setTempo(tempo);
+		midiWriter.setKeySignature(scale);
 		
 		midiWriter.addTrack(track);
 		midiWriter.write();
@@ -101,10 +101,10 @@ public class Main
 	
 	public static void testChordInversion()
 	{
-		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
+		DiatonicScale scale = DiatonicScale.getRandom((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
 		
-		int degree = Degree.random();
+		int degree = Degree.getRandom();
 		System.out.println("Selected degree: " + Degree.toString(degree));
 
 		Bar bar = new Bar();
@@ -120,7 +120,7 @@ public class Main
 			if(chord.reverseByTop(inversion))
 			{
 				System.out.println("inv " + chord);
-				System.out.println("fundamental: " + chord.fundamental());
+				System.out.println("fundamental: " + chord.getFundamental());
 				
 				bar.add(chord);
 			}
@@ -131,10 +131,10 @@ public class Main
 	
 	public static void testChordTransposition()
 	{
-		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
+		DiatonicScale scale = DiatonicScale.getRandom((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
 		
-		int degree = Degree.random();
+		int degree = Degree.getRandom();
 		System.out.println("Selected degree: " + Degree.toString(degree));
 		
 		Bar bar = new Bar();
@@ -176,10 +176,10 @@ public class Main
 	
 	public static void testAutomaticChordTransposition()
 	{
-		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
+		DiatonicScale scale = DiatonicScale.getRandom((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
 		
-		Grid grid = Grid.random(4, false);
+		Grid grid = Grid.getRandom(4, false);
 		System.out.println("Selected grid: " + grid);
 		
 		Bar bar = new Bar();
@@ -196,12 +196,12 @@ public class Main
 	
 	public static void testChordGeneration()
 	{
-		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
+		DiatonicScale scale = DiatonicScale.getRandom((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
 		
 		scale.toMidiFile("scale.mid");
 		
-		int degree = Degree.random();
+		int degree = Degree.getRandom();
 		System.out.println("Selected degree: " + Degree.toString(degree));
 		
 		Bar bar = new Bar();
@@ -218,10 +218,10 @@ public class Main
 	
 	public static void testArpeggio()
 	{
-		DiatonicScale scale = DiatonicScale.random((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
+		DiatonicScale scale = DiatonicScale.getRandom((Math.random() < 0.5) ? Mode.IONIAN : Mode.EOLIAN);
 		System.out.println("Selected scale: " + scale);
 		
-		Grid grid = Grid.random(4, true);
+		Grid grid = Grid.getRandom(4, true);
 		System.out.println("Selected grid: " + grid);
 		
 		String[] signatures = {"2/1", "2/2", "2/4", "2/8", "4/1", "4/2", "4/4", "4/8", "6/2", "6/4", "6/8", "6/16"};
@@ -250,7 +250,7 @@ public class Main
 		}
 		
 		MidiWriter midiWriter = new MidiWriter("arpeggio.mid");
-		midiWriter.tempo(180);
+		midiWriter.setTempo(180);
 		midiWriter.addTrack(accompaniment, "accompaniment");
 		midiWriter.addTrack(arpeggio, "arpeggio");
 		midiWriter.write();

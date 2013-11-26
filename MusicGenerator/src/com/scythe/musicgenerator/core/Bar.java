@@ -5,64 +5,62 @@ import java.util.ArrayList;
 import com.scythe.musicgenerator.core.TimedElement.Duration;
 import com.scythe.musicgenerator.midi.MidiWriter;
 
+/**
+ * Container class representing a bar.
+ * @author Scythe
+ *
+ */
 @SuppressWarnings("serial")
 public class Bar extends ArrayList<TimedElement>
 {
+	/**
+	 * Default constructor. Makes a 4/4 bar.
+	 */
 	public Bar()
 	{
 		mSignature = new TimeSignature("4/4");
 	}
 	
-	public Bar(TimeSignature signature)
-	{
-		mSignature = signature;
-	}
-	
+	/**
+	 * Constructor.
+	 * @param timeSignature The time signature as a String. Examples: "4/4, "9/8", etc...
+	 */
 	public Bar(String timeSignature)
 	{
 		mSignature = new TimeSignature(timeSignature);
 	}
 	
+	/**
+	 * Constructor.
+	 * @param signature A TimeSignature instantiated.
+	 */
+	public Bar(TimeSignature signature)
+	{
+		mSignature = signature;
+	}
+	
+	/**
+	 * Checks if the bar is valid, including time signature validation and total note times validations.
+	 * @return true if the bar is valid, false otherwise.
+	 */
 	public boolean isValid()
 	{
-		return isRhythmSignatureValid() && isNotesValid();
+		return isTimeSignatureValid() && isNotesValid();
 	}
 	
-	private boolean isRhythmSignatureValid()
-	{
-		return (mSignature.numerator() == 0 || Duration.convertInTimeSignature(mSignature.denominator()) == 0) ? false : true;
-	}
-	
-	private boolean isNotesValid()
-	{
-		float expectedTotalTime = mSignature.numerator() * Duration.convertInTime(mSignature.denominator());
-		
-		float realTotalTime = 0;
-		for(int i = 0; i < size(); i++)
-		{
-			realTotalTime += get(i).durationInTime();
-		}
-		
-		return expectedTotalTime == realTotalTime;
-	}
-	
-	public TimeSignature signature()
+	/**
+	 * Gets the time signature of the bar.
+	 * @return The time signature.
+	 */
+	public TimeSignature getSignature()
 	{
 		return mSignature;
 	}
 	
-	@Override
-	public String toString()
-	{
-		String str = mSignature.numerator() + "/" + Duration.convertInTimeSignature(mSignature.denominator()) + " ";
-		for(int i = 0; i < size(); i++)
-		{
-			str += get(i) + " ";
-		}
-		
-		return str;
-	}
-	
+	/**
+	 * Writes the bar in a simple MIDI file.
+	 * @param fileName The MIDI file name to write.
+	 */
 	public void toMidiFile(String fileName)
 	{
 		ArrayList<Bar> track = new ArrayList<Bar>();
@@ -73,6 +71,29 @@ public class Bar extends ArrayList<TimedElement>
 		midiWriter.write();
 	}
 	
+	@Override
+	public String toString()
+	{
+		String str = mSignature.getNumerator() + "/" + Duration.convertInTimeSignature(mSignature.getDenominator()) + " ";
+		for(int i = 0; i < size(); i++)
+		{
+			str += get(i) + " ";
+		}
+		
+		return str;
+	}
+	
+	/**
+	 * Generates a fully parametrized bar of accompaniment.
+	 * @param signature The bar time signature.
+	 * @param scale The scale used to build the bar.
+	 * @param degrees the degrees to put in the bar.
+	 * @param division sets the duration of used notes. Passing 0 make the time signature, 1 twice the number of notes, on so on... -1 can be passed for ternary bars.
+	 * @param strongTimesNotes Notes to be put on strong times. Works as flag, example: Chord.THIRD | Chord.FIFTH | Chord.SEVENTH. Passing 0 put only the fundamental.
+	 * @param halfStrongTimesNotes Notes to be put on half strong times. Works as flag, example: Chord.THIRD | Chord.FIFTH. Passing 0 put only the fundamental.
+	 * @param weakTimesNotes Notes to be put on weak times. Works as flag, example: Chord.THIRD. Passing 0 put only the fundamental.
+	 * @return The generated bar is it could be generated, null otherwise (An error message is printed for each problem).
+	 */
 	public static Bar generateSimple(TimeSignature signature, DiatonicScale scale, int[] degrees, int division, int strongTimesNotes, int halfStrongTimesNotes, int weakTimesNotes)
 	{
 		int nbTimes = signature.getNumberOfTimes();
@@ -87,16 +108,16 @@ public class Bar extends ArrayList<TimedElement>
 			{
 				if(signatureType == TimeSignature.Type.TERNARY && division == -1)
 				{
-					if(signature.denominator() == Duration.WHOLE)
+					if(signature.getDenominator() == Duration.WHOLE)
 					{
 						System.out.println("The division -1 can not be applied on " + signature + " time signature.");
 						return null;
 					}
 					else
 					{
-						duration = signature.denominator() - 1;
+						duration = signature.getDenominator() - 1;
 						dotted = true;
-						nbElements = signature.numerator() / 3;
+						nbElements = signature.getNumerator() / 3;
 					}
 				}
 				else
@@ -107,7 +128,7 @@ public class Bar extends ArrayList<TimedElement>
 			}
 			else
 			{
-				duration = signature.denominator();
+				duration = signature.getDenominator();
 				duration += division;
 				
 				if(Duration.convertInTime(duration) == 0)
@@ -118,7 +139,7 @@ public class Bar extends ArrayList<TimedElement>
 				
 				dotted = false;
 				
-				nbElements = signature.numerator();
+				nbElements = signature.getNumerator();
 				
 				for(int i = 0; i < division; i++)
 				{
@@ -192,7 +213,7 @@ public class Bar extends ArrayList<TimedElement>
 			int degree = degrees[currentDegree];
 			
 			Chord chord = Chord.generate(duration, dotted, scale, degree, notesMask);
-			chord.dynamics(dynamics);
+			chord.setDynamics(dynamics);
 			bar.add(chord);
 			
 			timeElementsAdded++;
@@ -213,6 +234,13 @@ public class Bar extends ArrayList<TimedElement>
 		return bar;
 	}
 	
+	/**
+	 * Generates a bar containing an arpeggio.
+	 * @param signature The time signature.
+	 * @param scale The scale to use to build the bar.
+	 * @param degree The degree taken for arpeggio generation.
+	 * @return The generated bar or null if the time signature is not supported (3/*, 6/*, 9/* and 12/*).
+	 */
 	public static Bar generateArpeggio(TimeSignature signature, DiatonicScale scale, int degree)
 	{
 		Chord chord = new Chord(Duration.QUARTER);
@@ -236,47 +264,68 @@ public class Bar extends ArrayList<TimedElement>
 		
 		Bar bar = new Bar(signature);
 		
-		if(signature.numerator() == 2)
+		if(signature.getNumerator() == 2)
 		{
 			for(int index : new int[]{0, 2, 3, 2})
 			{
-				TimedElement te = new TimedElement(signature.denominator() + 1);
+				TimedElement te = new TimedElement(signature.getDenominator() + 1);
 				te.add(chord.get(index));
 				bar.add(te);
 			}
 		}
-		else if(signature.numerator() == 3)
+		else if(signature.getNumerator() == 3)
 		{
 			System.out.println(signature + " not supported yet.");
+			return null;
 		}
-		else if(signature.numerator() == 4)
+		else if(signature.getNumerator() == 4)
 		{
 			for(int index : new int[]{0, 2, 3, 4, 5, 4, 3, 2})
 			{
-				TimedElement te = new TimedElement(signature.denominator() + 1);
+				TimedElement te = new TimedElement(signature.getDenominator() + 1);
 				te.add(chord.get(index));
 				bar.add(te);
 			}
 		}
-		else if(signature.numerator() == 6)
+		else if(signature.getNumerator() == 6)
 		{
 			for(int index : new int[]{0, 2, 3, 4, 3, 2})
 			{
-				TimedElement te = new TimedElement(signature.denominator());
+				TimedElement te = new TimedElement(signature.getDenominator());
 				te.add(chord.get(index));
 				bar.add(te);
 			}
 		}
-		else if(signature.numerator() == 9)
+		else if(signature.getNumerator() == 9)
 		{
 			System.out.println(signature + " not supported yet.");
+			return null;
 		}
-		else if(signature.numerator() == 12)
+		else if(signature.getNumerator() == 12)
 		{
 			System.out.println(signature + " not supported yet.");
+			return null;
 		}
 		
 		return bar;
+	}
+	
+	private boolean isTimeSignatureValid()
+	{
+		return (mSignature.getNumerator() == 0 || Duration.convertInTimeSignature(mSignature.getDenominator()) == 0) ? false : true;
+	}
+	
+	private boolean isNotesValid()
+	{
+		float expectedTotalTime = mSignature.getNumerator() * Duration.convertInTime(mSignature.getDenominator());
+		
+		float realTotalTime = 0;
+		for(int i = 0; i < size(); i++)
+		{
+			realTotalTime += get(i).getDurationInTimes();
+		}
+		
+		return expectedTotalTime == realTotalTime;
 	}
 	
 	private TimeSignature mSignature;

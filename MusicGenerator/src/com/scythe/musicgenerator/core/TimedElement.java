@@ -2,37 +2,82 @@ package com.scythe.musicgenerator.core;
 
 import java.util.ArrayList;
 
+/**
+ * Container class representing a note (or several) with a time information. <br />
+ * <br />
+ * Here is an example of usage to make a C major perfect chord during a whole note : <br />
+ * <br />
+ * {@code TimedElement timedElement = new TimedElement(Duration.WHOLE);} <br />
+ * {@code timedElement.add(new Note(Note.Name.C));} <br />
+ * {@code timedElement.add(new Note(Note.Name.E));} <br />
+ * {@code timedElement.add(new Note(Note.Name.G));} <br />
+ * <br />
+ * {@code // if you wanna listen to it} <br />
+ * {@code timedElement.toMidiFile("CMajorPerfectChord.mid");} <br />
+ * 
+ * @author Scythe
+ * @see Note
+ * @see TimedElement.Duration
+ */
 @SuppressWarnings("serial")
 public class TimedElement extends ArrayList<Note>
 {
-	public TimedElement(int duration, boolean dotted)
-	{
-		mDuration = duration;
-		mDotted = dotted;
-	}
-	
+	/**
+	 * Constructor setting the element not dotted.
+	 * @param duration The timed element duration.
+	 * @see TimedElement.Duration
+	 */
 	public TimedElement(int duration)
 	{
 		mDuration = duration;
 		mDotted = false;
 	}
 	
-	public int duration()
+	/**
+	 * Constructor.
+	 * @param duration The element duration.
+	 * @param dotted Boolean setting if the element is dotted of not.
+	 * @see TimedElement.Duration
+	 */
+	public TimedElement(int duration, boolean dotted)
+	{
+		mDuration = duration;
+		mDotted = dotted;
+	}
+	
+	/**
+	 * Gets the element duration.
+	 * @return The element duration.
+	 * @see TimedElement.Duration
+	 */
+	public int getDuration()
 	{
 		return mDuration;
 	}
 	
-	public float durationInTime()
+	/**
+	 * Gets the element duration in times unit.
+	 * @return The element duration in times unit.
+	 */
+	public float getDurationInTimes()
 	{
 		float duration = Duration.convertInTime(mDuration);
 		return mDotted ? duration * 1.5f : duration;
 	}
 	
-	public boolean dotted()
+	/**
+	 * Gets if the element is dotted or not.
+	 * @return true if the element is dotted, false otherwise.
+	 */
+	public boolean isDotted()
 	{
 		return mDotted;
 	}
 	
+	/**
+	 * Write the element in a simple MIDI file.
+	 * @param fileName The MIDI file name to write.
+	 */
 	public void toMidiFile(String fileName)
 	{
 		Bar bar = new Bar();
@@ -43,7 +88,7 @@ public class TimedElement extends ArrayList<Note>
 	@Override
 	public String toString()
 	{
-		String str = durationInTime() + "[";
+		String str = getDurationInTimes() + "[";
 		
 		for(int i = 0; i < size(); i++)
 		{
@@ -54,6 +99,10 @@ public class TimedElement extends ArrayList<Note>
 		return str;
 	}
 	
+	/**
+	 * Class of constant values for musical durations.
+	 * @author Scythe
+	 */
 	public static class Duration
 	{
 		public static final int WHOLE = 0;
@@ -63,17 +112,11 @@ public class TimedElement extends ArrayList<Note>
 		public static final int SIXTEENTH = 4;
 		public static final int THIRTYSECOND = 5;
 		
-		public static int[] list()
-		{
-			return new int[]{WHOLE, HALF, QUARTER, EIGHTH, SIXTEENTH, THIRTYSECOND};
-		}
-		
-		public static int random()
-		{
-			int[] list = list();
-			return list[(int)(Math.random() * (list.length - 1))];
-		}
-		
+		/**
+		 * Converts the duration is time unit.
+		 * @param duration A value of duration from constants.
+		 * @return The number of time corresponding to the duration as a float, or 0 if the constant is unknown.
+		 */
 		public static float convertInTime(int duration)
 		{
 			switch(duration)
@@ -89,6 +132,11 @@ public class TimedElement extends ArrayList<Note>
 			return 0;
 		}
 		
+		/**
+		 * Converts a duration constant into time signature number.
+		 * @param duration A value of duration from constants.
+		 * @return The duration as time signature number, or 0 if the constant is unknown.
+		 */
 		public static int convertInTimeSignature(int duration)
 		{
 			switch(duration)
@@ -104,6 +152,11 @@ public class TimedElement extends ArrayList<Note>
 			return 0;
 		}
 		
+		/**
+		 * Converts a time signature denominator into a Duration constant.
+		 * @param timeSignature a time signature denominator.
+		 * @return the corresponding Duration constant, or -1 if the constant is unknown.
+		 */
 		public static int reverseConvert(int timeSignature)
 		{
 			switch(timeSignature)

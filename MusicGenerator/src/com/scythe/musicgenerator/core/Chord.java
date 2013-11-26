@@ -2,6 +2,10 @@ package com.scythe.musicgenerator.core;
 
 import java.util.ArrayList;
 
+/**
+ * Class intended to manage a chord.
+ * @author Scythe
+ */
 @SuppressWarnings("serial")
 public class Chord extends TimedElement
 {
@@ -10,30 +14,50 @@ public class Chord extends TimedElement
 	public static final int SEVENTH = 0x04;
 	public static final int OCTAVE = 0x08;
 	
+	/**
+	 * Constructor.
+	 * @param duration The chord duration.
+	 * @param dotted Boolean setting if the chord is dotted or not.
+	 * @see TimedElement.Duration
+	 */
 	public Chord(int duration, boolean dotted)
 	{
 		super(duration, dotted);
 		mFundamentalIndex = 0;
 	}
 	
+	/**
+	 * Constructor setting dotted to false.
+	 * @param duration duration The chord duration.
+	 * @see TimedElement.Duration
+	 */
 	public Chord(int duration)
 	{
 		super(duration);
 		mFundamentalIndex = 0;
 	}
 	
-	public Note fundamental()
+	/**
+	 * Gets the fundamental note of the Chord.
+	 * @return The fundamental note or null if no note has been set.
+	 */
+	public Note getFundamental()
 	{
 		return isEmpty() ? null : get(mFundamentalIndex);
 	}
 	
+	/**
+	 * Transposes the chord.
+	 * @param transposition The number of octave the chord will be transpose of, can be negative or positive.
+	 * @return true if the chord has been transposed, false if not, due to MIDI specification.
+	 */
 	public boolean transpose(int transposition)
 	{
 		ArrayList<Note> notes = new ArrayList<Note>(this);
 		
 		for(Note note : notes)
 		{
-			if(!note.octave(note.octave() + transposition))
+			if(!note.octave(note.getOctave() + transposition))
 			{
 				return false;
 			}
@@ -47,6 +71,11 @@ public class Chord extends TimedElement
 		return true;
 	}
 
+	/**
+	 * Reverses the chord by placing the bass on the top of the chord.
+	 * @param inversion The number of iterations.
+	 * @return true if the chord has been reversed, false if not, due to MIDI specification.
+	 */
 	public boolean reverseByBottom(int inversion)
 	{
 		if(size() < 2 || inversion <= 0)
@@ -54,12 +83,12 @@ public class Chord extends TimedElement
 			return false;
 		}
 		
-		Note fundamental = fundamental();
+		Note fundamental = getFundamental();
 		
 		for(int i = 0; i < inversion; i++)
 		{
 			Note firstNote = get(0);
-			if(!firstNote.octave(firstNote.octave() + 1))
+			if(!firstNote.octave(firstNote.getOctave() + 1))
 			{
 				System.out.println("The inversion can not be done. The chord would be too high.");
 				return false;
@@ -78,6 +107,11 @@ public class Chord extends TimedElement
 		return true;
 	}
 	
+	/**
+	 * Reverses the chord by placing the top note on the bass of the chord.
+	 * @param inversion The number of iterations.
+	 * @return true if the chord has been reversed, false if not, due to MIDI specification.
+	 */
 	public boolean reverseByTop(int inversion)
 	{
 		if(size() < 2 || inversion <= 0)
@@ -85,12 +119,12 @@ public class Chord extends TimedElement
 			return false;
 		}
 		
-		Note fundamental = fundamental();
+		Note fundamental = getFundamental();
 		
 		for(int i = 0; i < inversion; i++)
 		{
 			Note lastNote = get(size() - 1);
-			if(!lastNote.octave(lastNote.octave() - 1))
+			if(!lastNote.octave(lastNote.getOctave() - 1))
 			{
 				System.out.println("The inversion can not be done. The chord would be too low.");
 				return false;
@@ -109,12 +143,48 @@ public class Chord extends TimedElement
 		return true;
 	}
 	
-	public void dynamics(int dynamics)
+	/**
+	 * Sets the dynamics of the chord.
+	 * @param dynamics The new dynamics.
+	 */
+	public void setDynamics(int dynamics)
 	{
 		for(Note note : this)
 		{
 			note.dynamics(dynamics);
 		}
+	}
+	
+	/**
+	 * Generates a fully parametrized chord.
+	 * @param duration The chord duration
+	 * @param dotted Boolean setting if the chord is dotted or not.
+	 * @param scale A diatonic scale from which one the chord will be build.
+	 * @param degree The degree of the chord in the scale.
+	 * @param notes Notes to be put in the chord (fundamental is always put). Works as flags : for a power chord, pass Chord.FIFTH | Chord.OCTAVE. Passing 0 puts only fundamental.
+	 * @return The generated Chord.
+	 * @see TimedElement.Duration
+	 * @see DiatonicScale
+	 * @see Degree
+	 */
+	public static Chord generate(int duration, boolean dotted, DiatonicScale scale, int degree, int notes)
+	{
+		Chord chord = new Chord(duration, dotted);
+		
+		Note fundamental = scale.get(degree);
+		chord.add(fundamental);
+		
+		for(int note : new int[]{THIRD, FIFTH, SEVENTH, OCTAVE})
+		{
+			if((notes & note) == note)
+			{
+				Note n = new Note();
+				scale.getNoteAtUpperInterval(degree, toStdInterval(note), n);
+				chord.add(n);
+			}
+		}
+		
+		return chord;
 	}
 	
 	@Override
@@ -134,35 +204,15 @@ public class Chord extends TimedElement
 	{
 		for(int i = 0; i < size() - 1; i++)
 		{
-			if(get(i).name() > get(i + 1).name())
+			if(get(i).getName() > get(i + 1).getName())
 			{
-				get(i + 1).octave(get(i).octave() + 1);
+				get(i + 1).octave(get(i).getOctave() + 1);
 			}
-			else if(get(i).octave() != get(i + 1).octave())
+			else if(get(i).getOctave() != get(i + 1).getOctave())
 			{
-				get(i + 1).octave(get(i).octave());
-			}
-		}
-	}
-	
-	public static Chord generate(int duration, boolean dotted, DiatonicScale scale, int degree, int notes)
-	{
-		Chord chord = new Chord(duration, dotted);
-		
-		Note fundamental = scale.get(degree);
-		chord.add(fundamental);
-		
-		for(int note : new int[]{THIRD, FIFTH, SEVENTH, OCTAVE})
-		{
-			if((notes & note) == note)
-			{
-				Note n = new Note();
-				scale.getNoteAtUpperInterval(degree, toStdInterval(note), n);
-				chord.add(n);
+				get(i + 1).octave(get(i).getOctave());
 			}
 		}
-		
-		return chord;
 	}
 	
 	private static int toStdInterval(int chordInterval)

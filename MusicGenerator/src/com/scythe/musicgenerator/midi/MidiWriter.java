@@ -8,12 +8,39 @@ import java.util.ArrayList;
 import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.DiatonicScale;
 import com.scythe.musicgenerator.core.DiatonicScale.Mode;
+import com.scythe.musicgenerator.core.Note.Accidental;
+import com.scythe.musicgenerator.core.Note.Name;
 import com.scythe.musicgenerator.core.Note;
 import com.scythe.musicgenerator.core.TimeSignature;
 import com.scythe.musicgenerator.core.TimedElement;
 
+/**
+ * Class dedicated to all MIDI file writing stuff. <br />
+ * <br />
+ * It handles the following things: <br />
+ * - multi track export in a single file <br />
+ * - tempo setting (which is the same for all the file for the time being <br />
+ * - time signature changing (done automatically in accordance with the bars having to be written) <br />
+ * - key signature (even if it is not necessary for MIDI playing) <br />
+ * <br />
+ * Here is an example of minimal usage: <br />
+ * <br />
+ * {@code ArrayList<Bar> track = new ArrayList();} <br />
+ * <br />
+ * {@code // feel the list with own made or generated bars} <br />
+ * <br />
+ * {@code MidiWriter midiWriter = new MidiWriter("output.mid");} <br />
+ * {@code midiWriter.addTrack(track);} <br />
+ * {@code midiWriter.write();} <br />
+ * 
+ * @author Scythe
+ */
 public class MidiWriter
 {
+	/**
+	 * Main constructor of the class.
+	 * @param fileName The output MIDI file name.
+	 */
 	public MidiWriter(String fileName)
 	{
 		mFileName = fileName;
@@ -23,27 +50,49 @@ public class MidiWriter
 		mScale = null;
 	}
 	
+	/**
+	 * Adds a track to be written to the writer.
+	 * @param track An ArrayList containing bars.
+	 * @param trackName The track name which will be written in the MIDI file.
+	 * @see Bar
+	 */
 	public void addTrack(ArrayList<Bar> track, String trackName)
 	{
 		mTracks.add(track);
 		mTrackNames.add(trackName);
 	}
 	
+	/**
+	 * Adds a track to be written to the writer with "trackName" name.
+	 * @param track An ArrayList containing bars.
+	 * @see Bar
+	 */
 	public void addTrack(ArrayList<Bar> track)
 	{
 		addTrack(track, "trackName");
 	}
 	
-	public void tempo(int tempo)
+	/**
+	 * Sets the global tempo of the MIDI file.
+	 * @param tempo The tempo in bpm.
+	 */
+	public void setTempo(int tempo)
 	{
 		mTempo = tempo;
 	}
 	
-	public void scale(DiatonicScale scale)
+	/**
+	 * Sets the global key signature used in the MIDI file.
+	 * @param scale A DiatonicScale instance to deduce the key signature.
+	 */
+	public void setKeySignature(DiatonicScale scale)
 	{
 		mScale = scale;
 	}
 	
+	/**
+	 * Writes the MIDI file on disk.
+	 */
 	public void write()
 	{
 		if(mTracks.size() < 1)
@@ -104,9 +153,9 @@ public class MidiWriter
 			
 			for(Bar bar : mTracks.get(trackIndex))
 			{
-				if(currentSignature == null || !currentSignature.equals(bar.signature()))
+				if(currentSignature == null || !currentSignature.equals(bar.getSignature()))
 				{
-					currentSignature = bar.signature();
+					currentSignature = bar.getSignature();
 					events.add(generateTimeSignatureEvent(currentSignature));
 				}
 				
@@ -117,8 +166,8 @@ public class MidiWriter
 						byte[] noteOnEvent = new byte[4];
 						noteOnEvent[0] = 0;
 						noteOnEvent[1] = (byte)0x90;
-						noteOnEvent[2] = note.toMidiNoteNumber();
-						noteOnEvent[3] = (byte)note.dynamics();
+						noteOnEvent[2] = notetoMidiNumber(note);
+						noteOnEvent[3] = (byte)note.getDynamics();
 						
 						events.add(noteOnEvent);
 					}
@@ -127,7 +176,7 @@ public class MidiWriter
 					{
 						if(noteIndex == 0)
 						{
-							byte[] deltaTime = intToDeltaTime((int)(element.durationInTime() * mTicksPerBeat));
+							byte[] deltaTime = intToDeltaTime((int)(element.getDurationInTimes() * mTicksPerBeat));
 							
 							byte[] noteOffEvent = new byte[deltaTime.length + 3];
 							for(int i = 0; i < deltaTime.length; i++)
@@ -136,8 +185,8 @@ public class MidiWriter
 							}
 							
 							noteOffEvent[noteOffEvent.length - 3] = (byte)0x80;
-							noteOffEvent[noteOffEvent.length - 2] = element.get(noteIndex).toMidiNoteNumber();
-							noteOffEvent[noteOffEvent.length - 1] = (byte)element.get(noteIndex).dynamics();
+							noteOffEvent[noteOffEvent.length - 2] = notetoMidiNumber(element.get(noteIndex));
+							noteOffEvent[noteOffEvent.length - 1] = (byte)element.get(noteIndex).getDynamics();
 							
 							events.add(noteOffEvent);
 						}
@@ -147,8 +196,8 @@ public class MidiWriter
 							
 							noteOffEvent[0] = 0;
 							noteOffEvent[1] = (byte)0x80;
-							noteOffEvent[2] = element.get(noteIndex).toMidiNoteNumber();
-							noteOffEvent[3] = (byte)element.get(noteIndex).dynamics();
+							noteOffEvent[2] = notetoMidiNumber(element.get(noteIndex));
+							noteOffEvent[3] = (byte)element.get(noteIndex).getDynamics();
 							
 							events.add(noteOffEvent);
 						}
@@ -264,8 +313,8 @@ public class MidiWriter
 		event[1] = (byte)0xFF;
 		event[2] = 0x58;
 		event[3] = 0x04;
-		event[4] = (byte)signature.numerator();
-		event[5] = (byte)signature.denominator();
+		event[4] = (byte)signature.getNumerator();
+		event[5] = (byte)signature.getDenominator();
 		event[6] = 0x24;
 		event[7] = 0x8;
 		
@@ -289,13 +338,13 @@ public class MidiWriter
 		else
 		{
 			int numberOfAccidental = mScale.getNumberOfAccidental();
-			if(mScale.accidental() == Note.Accidental.FLAT)
+			if(mScale.getAccidental() == Note.Accidental.FLAT)
 			{
 				numberOfAccidental *= -1;
 			}
 			
 			event[4] = (byte)numberOfAccidental;
-			event[5] = (mScale.mode() == Mode.IONIAN) ? (byte)0x00 : (byte)0x01;
+			event[5] = (mScale.getMode() == Mode.IONIAN) ? (byte)0x00 : (byte)0x01;
 		}
 		
 		return event;
@@ -318,6 +367,71 @@ public class MidiWriter
 		}
 		
 		return deltaTime;
+	}
+	
+	private byte notetoMidiNumber(Note note)
+	{
+		int noteNumber = 24 + (note.getOctave() * 12);
+		
+		switch(note.getName())
+		{
+			case Name.D:
+			{
+				noteNumber += 2;
+				break;
+			}
+			case Name.E:
+			{
+				noteNumber += 4;
+				break;
+			}
+			case Name.F:
+			{
+				noteNumber += 5;
+				break;
+			}
+			case Name.G:
+			{
+				noteNumber += 7;
+				break;
+			}
+			case Name.A:
+			{
+				noteNumber += 9;
+				break;
+			}
+			case Name.B:
+			{
+				noteNumber += 11;
+				break;
+			}
+		}
+		
+		switch(note.getAccidental())
+		{
+			case Accidental.SHARP:
+			{
+				noteNumber++;
+				break;
+			}
+			case Accidental.FLAT:
+			{
+				noteNumber--;
+			}
+		}
+		
+		if(noteNumber < 0)
+		{
+			System.out.println("The note (" + this + ") is to low for midi format.");
+			noteNumber = 0;
+		}
+		else if(noteNumber > 127)
+		{
+			System.out.println("The note (" + this + ") is to high for midi format.");
+			noteNumber = 127;
+		}
+		
+		return (byte)noteNumber;
 	}
 	
 	private static final int mTicksPerBeat = 480;

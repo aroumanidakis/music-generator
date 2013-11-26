@@ -1,5 +1,9 @@
 package com.scythe.musicgenerator.core;
 
+/**
+ * Class of constant for degrees.
+ * @author Scythe
+ */
 public class Degree
 {
 	public static final int I = 0;
@@ -10,14 +14,22 @@ public class Degree
 	public static final int VI = 5;
 	public static final int VII = 6;
 	
-	public static int[] list()
+	/**
+	 * Gets the list of existing constants.
+	 * @return The list of constants.
+	 */
+	public static int[] getList()
 	{
 		return new int[]{I, II, III, IV, V, VI, VII};
 	}
 	
-	public static int random()
+	/**
+	 * Gets a random value of constant.
+	 * @return A random value of constant.
+	 */
+	public static int getRandom()
 	{
-		int[] list = list();
+		int[] list = getList();
 		return list[(int)(Math.random() * (list.length - 1))];
 	}
 	

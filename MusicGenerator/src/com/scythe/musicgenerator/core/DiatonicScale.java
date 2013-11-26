@@ -7,9 +7,21 @@ import com.scythe.musicgenerator.core.Note.Name;
 import com.scythe.musicgenerator.core.TimedElement.Duration;
 import com.scythe.musicgenerator.midi.MidiWriter;
 
+/**
+ * Class intended to represent a diatonic scale. It contains a generator able to build a scale from a tonic and one of the seven diatonic modes. <br />
+ * The double sharp and double flat or higher is not supported. Check if the instantiation has been well done by calling isValid() method.
+ * @author Scythe
+ * @see DiatonicScale.Mode
+ */
 @SuppressWarnings("serial")
 public class DiatonicScale extends ArrayList<Note>
 {
+	/**
+	 * Main constructor of the class. It will generate automatically the requested scale when it is possible.
+	 * @param tonic The scale tonic.
+	 * @param mode The scale mode.
+	 * @see DiatonicScale.Mode
+	 */
 	public DiatonicScale(Note tonic, int mode)
 	{
 		mMode = mode;
@@ -37,12 +49,12 @@ public class DiatonicScale extends ArrayList<Note>
 		{
 			if(mAccidental == Note.Accidental.NONE)
 			{
-				if(note.accidental() == Note.Accidental.SHARP)
+				if(note.getAccidental() == Note.Accidental.SHARP)
 				{
 					mAccidental = Note.Accidental.SHARP;
 					break;
 				}
-				else if(note.accidental() == Note.Accidental.FLAT)
+				else if(note.getAccidental() == Note.Accidental.FLAT)
 				{
 					mAccidental = Note.Accidental.FLAT;
 					break;
@@ -50,52 +62,73 @@ public class DiatonicScale extends ArrayList<Note>
 			}
 		}
 		
-		if(get(0).name() != Note.Name.C)
+		if(get(0).getName() != Note.Name.C)
 		{
 			for(int i = indexOfC(); i < size(); i++)
 			{
-				get(i).octave(get(i).octave() + 1);
+				get(i).octave(get(i).getOctave() + 1);
 			}
 		}
 	}
 	
-	public Note tonic()
+	/**
+	 * Gets the scale tonic.
+	 * @return The scale tonic.
+	 */
+	public Note getTonic()
 	{
 		return get(0);
 	}
 	
-	public int mode()
+	/**
+	 * Gets the scale mode.
+	 * @return The scale mode.
+	 * @see DiatonicScale.Mode
+	 */
+	public int getMode()
 	{
 		return mMode;
 	}
 	
-	public int accidental()
+	/**
+	 * Gets the accidental of the hole scale.
+	 * @return the scale accidental.
+	 */
+	public int getAccidental()
 	{
 		return mAccidental;
 	}
 	
+	/**
+	 * Checks if the instance has been correctly made.
+	 * @return false if any problems occurred during the instantiation, true otherwise.
+	 */
 	public boolean isValid()
 	{
 		return mIsValid;
 	}
 	
+	/**
+	 * Checks if the scale contains strange notes like Cb, E#, Fb, B#.
+	 * @return true if one of these four notes is in the scale, false otherwise.
+	 */
 	public boolean hasStrangeNote()
 	{
 		for(int i = 0; i < size(); i++)
 		{
-			if(get(i).name() == Note.Name.C && get(i).accidental() == Note.Accidental.FLAT)
+			if(get(i).getName() == Note.Name.C && get(i).getAccidental() == Note.Accidental.FLAT)
 			{
 				return true;
 			}
-			else if(get(i).name() == Note.Name.E && get(i).accidental() == Note.Accidental.SHARP)
+			else if(get(i).getName() == Note.Name.E && get(i).getAccidental() == Note.Accidental.SHARP)
 			{
 				return true;
 			}
-			else if(get(i).name() == Note.Name.F && get(i).accidental() == Note.Accidental.FLAT)
+			else if(get(i).getName() == Note.Name.F && get(i).getAccidental() == Note.Accidental.FLAT)
 			{
 				return true;
 			}
-			else if(get(i).name() == Note.Name.B && get(i).accidental() == Note.Accidental.SHARP)
+			else if(get(i).getName() == Note.Name.B && get(i).getAccidental() == Note.Accidental.SHARP)
 			{
 				return true;
 			}
@@ -104,6 +137,15 @@ public class DiatonicScale extends ArrayList<Note>
 		return false;
 	}
 	
+	/**
+	 * Gets a note at the specified upper interval.
+	 * @param baseNoteIndex The base degree in the scale.
+	 * @param interval The interval wanted.
+	 * @param note An instantiated Note to be felt.
+	 * @return the qualification of the interval requested.
+	 * @see Interval.Name
+	 * @see Interval.Qualification
+	 */
 	public int getNoteAtUpperInterval(int baseNoteIndex, int interval, Note note)
 	{
 		int octaveIncr = 0;
@@ -121,9 +163,9 @@ public class DiatonicScale extends ArrayList<Note>
 		
 		if(note != null)
 		{
-			note.name(n.name());
-			note.accidental(n.accidental());
-			note.octave(n.octave() + octaveIncr);
+			note.setName(n.getName());
+			note.setAccidental(n.getAccidental());
+			note.octave(n.getOctave() + octaveIncr);
 		}
 		
 		int diatHalfToneCnt = 0;
@@ -261,6 +303,10 @@ public class DiatonicScale extends ArrayList<Note>
 		return -1;
 	}
 	
+	/**
+	 * Writes the scale in a simple MIDI file.
+	 * @param fileName the MIDI file name to write.
+	 */
 	public void toMidiFile(String fileName)
 	{
 		Bar bar = new Bar("4/4");
@@ -272,7 +318,7 @@ public class DiatonicScale extends ArrayList<Note>
 		}
 		
 		Note note = new Note(get(0));
-		note.octave(note.octave() + 1);
+		note.octave(note.getOctave() + 1);
 		TimedElement te = new TimedElement(Duration.HALF);
 		te.add(note);
 		bar.add(te);
@@ -285,12 +331,16 @@ public class DiatonicScale extends ArrayList<Note>
 		midiWriter.write();
 	}
 	
+	/**
+	 * Gets the number of accidentals being in the scale.
+	 * @return The number of accientals.
+	 */
 	public int getNumberOfAccidental()
 	{
 		int numberOfAccidental = 0;
 		for(Note note : this)
 		{
-			if(note.accidental() != Note.Accidental.NONE)
+			if(note.getAccidental() != Note.Accidental.NONE)
 			{
 				numberOfAccidental++;
 			}
@@ -299,26 +349,110 @@ public class DiatonicScale extends ArrayList<Note>
 		return numberOfAccidental;
 	}
 	
-	public static DiatonicScale random()
+	/**
+	 * Gets a random, but valid, instance of Scale.
+	 * @return A random Scale.
+	 */
+	public static DiatonicScale getRandom()
 	{
 		DiatonicScale scale = null;
 		while(scale == null || !scale.isValid())
 		{
-			scale = new DiatonicScale(Note.random(), Mode.random());
+			scale = new DiatonicScale(Note.getRandom(), Mode.getRandom());
 		}
 		
 		return scale;
 	}
 	
-	public static DiatonicScale random(int mode)
+	/**
+	 * Gets a random, but valid, instance of Scale in accordance with passed Mode.
+	 * @param mode The wanted mode.
+	 * @return A random scale.
+	 */
+	public static DiatonicScale getRandom(int mode)
 	{
 		DiatonicScale scale = null;
 		while(scale == null || !scale.isValid())
 		{
-			scale = new DiatonicScale(Note.random(), mode);
+			scale = new DiatonicScale(Note.getRandom(), mode);
 		}
 		
 		return scale;
+	}
+	
+	/**
+	 * Gets the number of half tones between two notes.
+	 * @param lowNote The low note.
+	 * @param highNote The high note.
+	 * @return The number of half tones.
+	 */
+	public int getHalfToneDifference(Note lowNote, Note highNote)
+	{	
+		Note[] notes = new Note[2];
+		notes[0] = new Note(lowNote);
+		notes[1] = new Note(highNote);
+		
+		for(int i = 0; i < 2; i++)
+		{
+			if(notes[i].getAccidental() == Accidental.SHARP)
+			{
+				if(notes[i].getName() == Name.B)
+				{
+					notes[i].setName(Name.C);
+					notes[i].setAccidental(Accidental.NONE);
+				}
+				else if(notes[i].getName() == Name.E)
+				{
+					notes[i].setName(Name.F);
+					notes[i].setAccidental(Accidental.NONE);
+				}
+				else
+				{
+					notes[i].setName((notes[i].getName() + 1) % Name.getList().length);
+					notes[i].setAccidental(Accidental.FLAT);
+				}
+			}
+			
+			if(notes[i].getAccidental() == Accidental.FLAT)
+			{
+				if(notes[i].getName() == Name.F)
+				{
+					notes[i].setName(Name.E);
+					notes[i].setAccidental(Accidental.NONE);
+				}
+				else if(notes[i].getName() == Name.C)
+				{
+					notes[i].setName(Name.B);
+					notes[i].setAccidental(Accidental.NONE);
+				}
+			}
+		}
+		
+		int halfToneCnt = 0;
+		while(notes[0].getName() != notes[1].getName() || notes[0].getAccidental() != notes[1].getAccidental())
+		{	
+			if(notes[0].getName() == Name.E && notes[0].getAccidental() == Accidental.NONE)
+			{
+				notes[0].setName(Name.F);
+			}
+			else if(notes[0].getName() == Name.B && notes[0].getAccidental() == Accidental.NONE)
+			{
+				notes[0].setName(Name.C);
+			}
+			else if(notes[0].getAccidental() == Accidental.FLAT)
+			{
+				notes[0].setAccidental(Accidental.NONE);
+			}
+			else
+			{
+				notes[0].setName((notes[0].getName() + 1) % Name.getList().length);
+				notes[0].setAccidental(Accidental.FLAT);
+			}
+			
+			halfToneCnt++;
+		}
+		
+		return halfToneCnt;
 	}
 	
 	@Override
@@ -346,7 +480,7 @@ public class DiatonicScale extends ArrayList<Note>
 	private int indexOfC()
 	{
 		int indexC;
-		for(indexC = 0; get(indexC).name() != Note.Name.C; indexC++);
+		for(indexC = 0; get(indexC).getName() != Note.Name.C; indexC++);
 		return indexC;
 	}
 	
@@ -364,19 +498,19 @@ public class DiatonicScale extends ArrayList<Note>
 	
 	private Note getHalfToneUpperNote(Note refNote, int halfTones)
 	{
-		Note newNote = new Note((refNote.name() + 1) % Name.list().length, refNote.accidental());
+		Note newNote = new Note((refNote.getName() + 1) % Name.getList().length, refNote.getAccidental());
 		
 		int halfToneDiffenrence = getHalfToneDifference(refNote, newNote);
 		
 		if(halfToneDiffenrence == halfTones - 1)
 		{
-			if(newNote.accidental() == Accidental.FLAT)
+			if(newNote.getAccidental() == Accidental.FLAT)
 			{
-				newNote.accidental(Accidental.NONE);
+				newNote.setAccidental(Accidental.NONE);
 			}
-			else if(newNote.accidental() == Accidental.NONE)
+			else if(newNote.getAccidental() == Accidental.NONE)
 			{
-				newNote.accidental(Accidental.SHARP);
+				newNote.setAccidental(Accidental.SHARP);
 			}
 			else
 			{
@@ -385,13 +519,13 @@ public class DiatonicScale extends ArrayList<Note>
 		}
 		else if(halfToneDiffenrence == halfTones + 1)
 		{
-			if(newNote.accidental() == Accidental.SHARP)
+			if(newNote.getAccidental() == Accidental.SHARP)
 			{
-				newNote.accidental(Accidental.NONE);
+				newNote.setAccidental(Accidental.NONE);
 			}
-			else if(newNote.accidental() == Accidental.NONE)
+			else if(newNote.getAccidental() == Accidental.NONE)
 			{
-				newNote.accidental(Accidental.FLAT);
+				newNote.setAccidental(Accidental.FLAT);
 			}
 			else
 			{
@@ -402,75 +536,10 @@ public class DiatonicScale extends ArrayList<Note>
 		return newNote;
 	}
 	
-	private int getHalfToneDifference(Note lowNote, Note highNote)
-	{	
-		Note[] notes = new Note[2];
-		notes[0] = new Note(lowNote);
-		notes[1] = new Note(highNote);
-		
-		for(int i = 0; i < 2; i++)
-		{
-			if(notes[i].accidental() == Accidental.SHARP)
-			{
-				if(notes[i].name() == Name.B)
-				{
-					notes[i].name(Name.C);
-					notes[i].accidental(Accidental.NONE);
-				}
-				else if(notes[i].name() == Name.E)
-				{
-					notes[i].name(Name.F);
-					notes[i].accidental(Accidental.NONE);
-				}
-				else
-				{
-					notes[i].name((notes[i].name() + 1) % Name.list().length);
-					notes[i].accidental(Accidental.FLAT);
-				}
-			}
-			
-			if(notes[i].accidental() == Accidental.FLAT)
-			{
-				if(notes[i].name() == Name.F)
-				{
-					notes[i].name(Name.E);
-					notes[i].accidental(Accidental.NONE);
-				}
-				else if(notes[i].name() == Name.C)
-				{
-					notes[i].name(Name.B);
-					notes[i].accidental(Accidental.NONE);
-				}
-			}
-		}
-		
-		int halfToneCnt = 0;
-		while(notes[0].name() != notes[1].name() || notes[0].accidental() != notes[1].accidental())
-		{	
-			if(notes[0].name() == Name.E && notes[0].accidental() == Accidental.NONE)
-			{
-				notes[0].name(Name.F);
-			}
-			else if(notes[0].name() == Name.B && notes[0].accidental() == Accidental.NONE)
-			{
-				notes[0].name(Name.C);
-			}
-			else if(notes[0].accidental() == Accidental.FLAT)
-			{
-				notes[0].accidental(Accidental.NONE);
-			}
-			else
-			{
-				notes[0].name((notes[0].name() + 1) % Name.list().length);
-				notes[0].accidental(Accidental.FLAT);
-			}
-			
-			halfToneCnt++;
-		}
-		
-		return halfToneCnt;
-	}
-	
+	/**
+	 * Class of constants for diatonic modes.
+	 * @author Scythe
+	 */
 	public static class Mode
 	{
 		public static final int IONIAN = 0;
@@ -481,14 +550,22 @@ public class DiatonicScale extends ArrayList<Note>
 		public static final int EOLIAN = 2;
 		public static final int LOCRIAN = 1;
 		
-		public static int[] list()
+		/**
+		 * Gets the list of existing constants.
+		 * @return The list of constants.
+		 */
+		public static int[] getList()
 		{
 			return new int[]{IONIAN, DORIAN, PHRYGIAN, LYDIAN, MIXOLYDIAN, EOLIAN, LOCRIAN};
 		}
 		
-		public static int random()
+		/**
+		 * Gets a random value of constant.
+		 * @return A random value of constant.
+		 */
+		public static int getRandom()
 		{
-			int[] list = list();
+			int[] list = getList();
 			return list[(int)(Math.random() * (list.length - 1))];
 		}
 		
