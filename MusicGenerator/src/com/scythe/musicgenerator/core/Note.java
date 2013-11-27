@@ -43,8 +43,8 @@ public class Note
 	{
 		setName(name);
 		setAccidental(accidental);
-		octave(octave);
-		dynamics(dynamics);
+		setOctave(octave);
+		setDynamics(dynamics);
 	}
 	
 	/**
@@ -60,7 +60,7 @@ public class Note
 	{
 		setName(name);
 		setAccidental(accidental);
-		octave(octave);
+		setOctave(octave);
 		mDynamics = mDefaultDynamics;
 	}
 	
@@ -164,7 +164,7 @@ public class Note
 	 * @param octave The note octave.
 	 * @return true if the octave has been changed, false otherwise.
 	 */
-	public boolean octave(int octave)
+	public boolean setOctave(int octave)
 	{
 		if(octave >= MIN_OCTAVE && octave <= MAX_OCTAVE)
 		{
@@ -199,7 +199,7 @@ public class Note
 	 * Sets the note dynamics. Will work only if it fits with MIDI specifications : a velocity should be 0 and 127.
 	 * @param dynamics the note dynamics.
 	 */
-	public void dynamics(int dynamics)
+	public void setDynamics(int dynamics)
 	{
 		if(dynamics < 0)
 		{
@@ -247,6 +247,113 @@ public class Note
 		Note note = (Note) obj;
 		
 		return mName == note.getName() && mAccidental == note.getAccidental() ? true : false;
+	}
+	
+	/**
+	 * Compares the instance with another note about highness.
+	 * @param note An other Note.
+	 * @return 1 if the passed Note is higher, - 1 if it is lower, 0 if it is the same.
+	 */
+	public int compare(Note note)
+	{
+		if(equals(note))
+		{
+			return 0;
+		}
+		else
+		{
+			if(note.getOctave() < mOctave)
+			{
+				return -1;
+			}
+			else if(note.getOctave() > mOctave)
+			{
+				return 1;
+			}
+			else
+			{
+				return (note.getName() < mName) ? -1 : 1;
+			}
+		}
+	}
+	
+	/**
+	 * Gets the number of half tones between two notes.
+	 * @param lowNote The low note.
+	 * @param highNote The high note.
+	 * @return The number of half tones.
+	 */
+	public static int getHalfToneDifference(Note lowNote, Note highNote, boolean octaveCare)
+	{	
+		Note[] notes = new Note[2];
+		notes[0] = new Note(lowNote);
+		notes[1] = new Note(highNote);
+		
+		for(int i = 0; i < 2; i++)
+		{
+			if(notes[i].getAccidental() == Accidental.SHARP)
+			{
+				if(notes[i].getName() == Name.B)
+				{
+					notes[i].setName(Name.C);
+					notes[i].setAccidental(Accidental.NONE);
+				}
+				else if(notes[i].getName() == Name.E)
+				{
+					notes[i].setName(Name.F);
+					notes[i].setAccidental(Accidental.NONE);
+				}
+				else
+				{
+					notes[i].setName((notes[i].getName() + 1) % Name.getList().length);
+					notes[i].setAccidental(Accidental.FLAT);
+				}
+			}
+			
+			if(notes[i].getAccidental() == Accidental.FLAT)
+			{
+				if(notes[i].getName() == Name.F)
+				{
+					notes[i].setName(Name.E);
+					notes[i].setAccidental(Accidental.NONE);
+				}
+				else if(notes[i].getName() == Name.C)
+				{
+					notes[i].setName(Name.B);
+					notes[i].setAccidental(Accidental.NONE);
+				}
+			}
+		}
+		
+		int halfToneCnt = 0;
+		while(notes[0].getName() != notes[1].getName() || notes[0].getAccidental() != notes[1].getAccidental() || (octaveCare ? notes[0].getOctave() != notes[1].getOctave() : false))
+		{
+			if(notes[0].getName() == Name.E && notes[0].getAccidental() == Accidental.NONE)
+			{
+				notes[0].setName(Name.F);
+			}
+			else if(notes[0].getName() == Name.B && notes[0].getAccidental() == Accidental.NONE)
+			{
+				notes[0].setName(Name.C);
+				if(octaveCare)
+				{
+					notes[0].setOctave(notes[0].getOctave() + 1);
+				}
+			}
+			else if(notes[0].getAccidental() == Accidental.FLAT)
+			{
+				notes[0].setAccidental(Accidental.NONE);
+			}
+			else
+			{
+				notes[0].setName((notes[0].getName() + 1) % Name.getList().length);
+				notes[0].setAccidental(Accidental.FLAT);
+			}
+			
+			halfToneCnt++;
+		}
+		
+		return halfToneCnt;
 	}
 	
 	/**

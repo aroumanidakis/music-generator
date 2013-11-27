@@ -62,6 +62,68 @@ public class Main
 			writer.write();
 		}
 		*/
+		
+		DiatonicScale scale;
+		Grid grid;
+		
+		ArrayList<Bar> track = new ArrayList<Bar>();
+		for(int i = 0; i < 2; i++)
+		{
+			scale = new DiatonicScale(new Note(Note.Name.D), (i == 0) ? Mode.IONIAN : Mode.EOLIAN);
+			
+			grid = new Grid(); // Pachelbel canon
+			grid.add(Degree.I);
+			grid.add(Degree.V);
+			grid.add(Degree.VI);
+			grid.add(Degree.III);
+			grid.add(Degree.IV);
+			grid.add(Degree.I);
+			grid.add(Degree.IV);
+			grid.add(Degree.V);
+			
+			Bar fundamentalChords = new Bar();
+			Bar reversedChords = new Bar();
+			
+			for(int degree : grid)
+			{
+				fundamentalChords.add(Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.FIFTH));
+				reversedChords.add(Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.FIFTH));
+			}
+			
+			compressChords(reversedChords);
+			
+			track.add(fundamentalChords);
+			track.add(reversedChords);
+		}
+		
+		MidiWriter midiWriter = new MidiWriter("pachelbel.mid");
+		midiWriter.setTempo(50);
+		midiWriter.addTrack(track);
+		midiWriter.write();
+		
+		scale = DiatonicScale.getRandom();
+		System.out.println(scale);
+		
+		grid = Grid.getRandom(4,  true);
+		System.out.println(grid);
+		
+		track.clear();
+		Bar globalBar = new Bar();
+		for(int degree : grid)
+		{
+			Bar bar = Bar.generateSimple(new TimeSignature("4/4"), scale, new int[]{degree}, 1, Chord.THIRD | Chord.FIFTH | Chord.OCTAVE, Chord.THIRD | Chord.FIFTH, Chord.THIRD | Chord.FIFTH);
+			if(bar != null)
+			{
+				globalBar.addAll(bar);
+			}
+		}
+		
+		compressChords(globalBar);
+		track.add(globalBar);
+		
+		midiWriter = new MidiWriter("testReverse.mid");
+		midiWriter.addTrack(track);
+		midiWriter.write();
 	}
 	
 	private static void testSimpleMelody()
@@ -254,6 +316,115 @@ public class Main
 		midiWriter.addTrack(accompaniment, "accompaniment");
 		midiWriter.addTrack(arpeggio, "arpeggio");
 		midiWriter.write();
+	}
+	
+	public static void compressChords(Bar chords)
+	{
+		Note[] selectedNotes = new Note[4];
+		int[] selectedChords = new int[2];
+		
+		boolean reversedByBottom;
+		int reversedChordIndex;
+		
+		while(true)
+		{
+			int previousAmplitude = getChordArrayAmplitude(chords);
+			
+			TimedElement chord = chords.get(0);
+			
+			selectedNotes[0] = chord.get(0);
+			selectedNotes[1] = chord.get(1);
+			selectedNotes[2] = chord.get(chord.size() - 2);
+			selectedNotes[3] = chord.get(chord.size() - 1);
+			
+			selectedChords[0] = 0;
+			selectedChords[1] = 0;
+			
+			for(int i = 1; i < chords.size(); i++)
+			{
+				chord = chords.get(i);
+				
+				if(chord.get(0).compare(selectedNotes[0]) == 1)
+				{
+					selectedNotes[0] = chord.get(0);
+					selectedChords[0] = i;
+				}
+				
+				if((chord.get(1).compare(selectedNotes[1]) == 1) && (!chord.get(1).equals(selectedNotes[0])))
+				{
+					selectedNotes[1] = chord.get(1);
+				}
+				
+				if(chord.get(chord.size() - 1).compare(selectedNotes[3]) == -1)
+				{
+					selectedNotes[3] = chord.get(chord.size() - 1);
+					selectedChords[1] = i;
+				}
+				
+				if((chord.get(chord.size() - 2).compare(selectedNotes[2]) == -1) && (!chord.get(chord.size() - 2).equals(selectedNotes[2])))
+				{
+					selectedNotes[2] = chord.get(chord.size() - 2);
+				}
+			}
+			
+			int lowNotesDiff = Note.getHalfToneDifference(selectedNotes[0], selectedNotes[1], true);
+			int highNotesDiff = Note.getHalfToneDifference(selectedNotes[2], selectedNotes[3], true);
+			
+			if(lowNotesDiff >= highNotesDiff)
+			{
+				reversedByBottom = true;
+				reversedChordIndex = selectedChords[0];
+				((Chord)(chords.get(reversedChordIndex))).reverseByBottom(1);
+			}
+			else
+			{
+				reversedByBottom = false;
+				reversedChordIndex = selectedChords[1];
+				((Chord)chords.get(reversedChordIndex)).reverseByTop(1);
+			}
+			
+			int newAmplitude = getChordArrayAmplitude(chords);
+
+			if(newAmplitude > previousAmplitude)
+			{
+				if(reversedByBottom)
+				{
+					((Chord)(chords.get(reversedChordIndex))).reverseByTop(1);
+				}
+				else
+				{
+					((Chord)(chords.get(reversedChordIndex))).reverseByBottom(1);
+				}
+				
+				break;
+			}
+			
+			System.out.println("Chord " + reversedChordIndex + " reversed by " + ((reversedByBottom) ? "bottom" : "top"));
+		}
+	}
+	
+	public static int getChordArrayAmplitude(Bar chords)
+	{
+		TimedElement chord = chords.get(0);
+		Note lowerNote = chord.get(0);
+		Note higherNote = chord.get(chord.size() - 1);
+		
+		for(int i = 1; i < chords.size(); i++)
+		{
+			chord = chords.get(i);
+			
+			if(chord.get(0).compare(lowerNote) == 1)
+			{
+				lowerNote = chord.get(0);
+			}
+			
+			if(chord.get(chord.size() - 1).compare(higherNote) == -1)
+			{
+				higherNote = chord.get(chord.size() - 1);
+			}
+		}
+		
+		return Note.getHalfToneDifference(lowerNote, higherNote, true);
 	}
 }
 

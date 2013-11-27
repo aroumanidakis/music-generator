@@ -57,7 +57,7 @@ public class Chord extends TimedElement
 		
 		for(Note note : notes)
 		{
-			if(!note.octave(note.getOctave() + transposition))
+			if(!note.setOctave(note.getOctave() + transposition))
 			{
 				return false;
 			}
@@ -88,7 +88,7 @@ public class Chord extends TimedElement
 		for(int i = 0; i < inversion; i++)
 		{
 			Note firstNote = get(0);
-			if(!firstNote.octave(firstNote.getOctave() + 1))
+			if(!firstNote.setOctave(firstNote.getOctave() + 1))
 			{
 				System.out.println("The inversion can not be done. The chord would be too high.");
 				return false;
@@ -124,7 +124,7 @@ public class Chord extends TimedElement
 		for(int i = 0; i < inversion; i++)
 		{
 			Note lastNote = get(size() - 1);
-			if(!lastNote.octave(lastNote.getOctave() - 1))
+			if(!lastNote.setOctave(lastNote.getOctave() - 1))
 			{
 				System.out.println("The inversion can not be done. The chord would be too low.");
 				return false;
@@ -151,8 +151,16 @@ public class Chord extends TimedElement
 	{
 		for(Note note : this)
 		{
-			note.dynamics(dynamics);
+			note.setDynamics(dynamics);
 		}
+	}
+	
+	/**
+	 * Puts the chord bass one octave down.
+	 */
+	public void bassOneOctaveDown()
+	{
+		get(0).setOctave(get(0).getOctave() - 1);
 	}
 	
 	/**
@@ -206,11 +214,11 @@ public class Chord extends TimedElement
 		{
 			if(get(i).getName() > get(i + 1).getName())
 			{
-				get(i + 1).octave(get(i).getOctave() + 1);
+				get(i + 1).setOctave(get(i).getOctave() + 1);
 			}
 			else if(get(i).getOctave() != get(i + 1).getOctave())
 			{
-				get(i + 1).octave(get(i).getOctave());
+				get(i + 1).setOctave(get(i).getOctave());
 			}
 		}
 	}

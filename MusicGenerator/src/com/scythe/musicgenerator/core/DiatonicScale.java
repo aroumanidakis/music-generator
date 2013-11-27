@@ -66,7 +66,7 @@ public class DiatonicScale extends ArrayList<Note>
 		{
 			for(int i = indexOfC(); i < size(); i++)
 			{
-				get(i).octave(get(i).getOctave() + 1);
+				get(i).setOctave(get(i).getOctave() + 1);
 			}
 		}
 	}
@@ -165,7 +165,7 @@ public class DiatonicScale extends ArrayList<Note>
 		{
 			note.setName(n.getName());
 			note.setAccidental(n.getAccidental());
-			note.octave(n.getOctave() + octaveIncr);
+			note.setOctave(n.getOctave() + octaveIncr);
 		}
 		
 		int diatHalfToneCnt = 0;
@@ -318,7 +318,7 @@ public class DiatonicScale extends ArrayList<Note>
 		}
 		
 		Note note = new Note(get(0));
-		note.octave(note.getOctave() + 1);
+		note.setOctave(note.getOctave() + 1);
 		TimedElement te = new TimedElement(Duration.HALF);
 		te.add(note);
 		bar.add(te);
@@ -380,81 +380,6 @@ public class DiatonicScale extends ArrayList<Note>
 		return scale;
 	}
 	
-	/**
-	 * Gets the number of half tones between two notes.
-	 * @param lowNote The low note.
-	 * @param highNote The high note.
-	 * @return The number of half tones.
-	 */
-	public int getHalfToneDifference(Note lowNote, Note highNote)
-	{	
-		Note[] notes = new Note[2];
-		notes[0] = new Note(lowNote);
-		notes[1] = new Note(highNote);
-		
-		for(int i = 0; i < 2; i++)
-		{
-			if(notes[i].getAccidental() == Accidental.SHARP)
-			{
-				if(notes[i].getName() == Name.B)
-				{
-					notes[i].setName(Name.C);
-					notes[i].setAccidental(Accidental.NONE);
-				}
-				else if(notes[i].getName() == Name.E)
-				{
-					notes[i].setName(Name.F);
-					notes[i].setAccidental(Accidental.NONE);
-				}
-				else
-				{
-					notes[i].setName((notes[i].getName() + 1) % Name.getList().length);
-					notes[i].setAccidental(Accidental.FLAT);
-				}
-			}
-			
-			if(notes[i].getAccidental() == Accidental.FLAT)
-			{
-				if(notes[i].getName() == Name.F)
-				{
-					notes[i].setName(Name.E);
-					notes[i].setAccidental(Accidental.NONE);
-				}
-				else if(notes[i].getName() == Name.C)
-				{
-					notes[i].setName(Name.B);
-					notes[i].setAccidental(Accidental.NONE);
-				}
-			}
-		}
-		
-		int halfToneCnt = 0;
-		while(notes[0].getName() != notes[1].getName() || notes[0].getAccidental() != notes[1].getAccidental())
-		{	
-			if(notes[0].getName() == Name.E && notes[0].getAccidental() == Accidental.NONE)
-			{
-				notes[0].setName(Name.F);
-			}
-			else if(notes[0].getName() == Name.B && notes[0].getAccidental() == Accidental.NONE)
-			{
-				notes[0].setName(Name.C);
-			}
-			else if(notes[0].getAccidental() == Accidental.FLAT)
-			{
-				notes[0].setAccidental(Accidental.NONE);
-			}
-			else
-			{
-				notes[0].setName((notes[0].getName() + 1) % Name.getList().length);
-				notes[0].setAccidental(Accidental.FLAT);
-			}
-			
-			halfToneCnt++;
-		}
-		
-		return halfToneCnt;
-	}
-	
 	@Override
 	public String toString()
 	{
@@ -500,7 +425,7 @@ public class DiatonicScale extends ArrayList<Note>
 	{
 		Note newNote = new Note((refNote.getName() + 1) % Name.getList().length, refNote.getAccidental());
 		
-		int halfToneDiffenrence = getHalfToneDifference(refNote, newNote);
+		int halfToneDiffenrence = Note.getHalfToneDifference(refNote, newNote, false);
 		
 		if(halfToneDiffenrence == halfTones - 1)
 		{
