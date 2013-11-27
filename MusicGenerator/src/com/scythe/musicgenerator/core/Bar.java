@@ -280,7 +280,7 @@ public class Bar extends ArrayList<TimedElement>
 		}
 		else if(signature.getNumerator() == 4)
 		{
-			for(int index : new int[]{0, 2, 3, 4, 5, 4, 3, 2})
+			for(int index : new int[]{0, 2, 3, 4, 5, 3, 4, 5})
 			{
 				TimedElement te = new TimedElement(signature.getDenominator() + 1);
 				te.add(chord.get(index));

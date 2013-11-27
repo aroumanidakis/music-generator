@@ -6,7 +6,6 @@ import com.scythe.musicgenerator.core.Bar;
 import com.scythe.musicgenerator.core.Chord;
 import com.scythe.musicgenerator.core.Degree;
 import com.scythe.musicgenerator.core.DiatonicScale;
-import com.scythe.musicgenerator.core.Interval;
 import com.scythe.musicgenerator.core.DiatonicScale.Mode;
 import com.scythe.musicgenerator.core.Grid;
 import com.scythe.musicgenerator.core.Note;
@@ -63,67 +62,8 @@ public class Main
 		}
 		*/
 		
-		DiatonicScale scale;
-		Grid grid;
-		
-		ArrayList<Bar> track = new ArrayList<Bar>();
-		for(int i = 0; i < 2; i++)
-		{
-			scale = new DiatonicScale(new Note(Note.Name.D), (i == 0) ? Mode.IONIAN : Mode.EOLIAN);
-			
-			grid = new Grid(); // Pachelbel canon
-			grid.add(Degree.I);
-			grid.add(Degree.V);
-			grid.add(Degree.VI);
-			grid.add(Degree.III);
-			grid.add(Degree.IV);
-			grid.add(Degree.I);
-			grid.add(Degree.IV);
-			grid.add(Degree.V);
-			
-			Bar fundamentalChords = new Bar();
-			Bar reversedChords = new Bar();
-			
-			for(int degree : grid)
-			{
-				fundamentalChords.add(Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.FIFTH));
-				reversedChords.add(Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.FIFTH));
-			}
-			
-			compressChords(reversedChords);
-			
-			track.add(fundamentalChords);
-			track.add(reversedChords);
-		}
-		
-		MidiWriter midiWriter = new MidiWriter("pachelbel.mid");
-		midiWriter.setTempo(50);
-		midiWriter.addTrack(track);
-		midiWriter.write();
-		
-		scale = DiatonicScale.getRandom();
-		System.out.println(scale);
-		
-		grid = Grid.getRandom(4,  true);
-		System.out.println(grid);
-		
-		track.clear();
-		Bar globalBar = new Bar();
-		for(int degree : grid)
-		{
-			Bar bar = Bar.generateSimple(new TimeSignature("4/4"), scale, new int[]{degree}, 1, Chord.THIRD | Chord.FIFTH | Chord.OCTAVE, Chord.THIRD | Chord.FIFTH, Chord.THIRD | Chord.FIFTH);
-			if(bar != null)
-			{
-				globalBar.addAll(bar);
-			}
-		}
-		
-		compressChords(globalBar);
-		track.add(globalBar);
-		
-		midiWriter = new MidiWriter("testReverse.mid");
-		midiWriter.addTrack(track);
-		midiWriter.write();
+		pachelbelCanon();
+		firstPreludeBach();
 	}
 	
 	private static void testSimpleMelody()
@@ -425,6 +365,92 @@ public class Main
 		}
 		
 		return Note.getHalfToneDifference(lowerNote, higherNote, true);
+	}
+	
+	public static void pachelbelCanon()
+	{
+		DiatonicScale scale;
+		Grid grid;
+		
+		ArrayList<Bar> track = new ArrayList<Bar>();
+		for(int i = 0; i < 2; i++)
+		{
+			scale = new DiatonicScale(new Note(Note.Name.D), (i == 0) ? Mode.IONIAN : Mode.EOLIAN);
+			
+			grid = new Grid(); // Pachelbel canon
+			grid.add(Degree.I);
+			grid.add(Degree.V);
+			grid.add(Degree.VI);
+			grid.add(Degree.III);
+			grid.add(Degree.IV);
+			grid.add(Degree.I);
+			grid.add(Degree.IV);
+			grid.add(Degree.V);
+			
+			Bar fundamentalChords = new Bar();
+			Bar reversedChords = new Bar();
+			
+			for(int degree : grid)
+			{
+				fundamentalChords.add(Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.FIFTH));
+				reversedChords.add(Chord.generate(Duration.QUARTER, false, scale, degree, Chord.THIRD | Chord.FIFTH));
+			}
+			
+			compressChords(reversedChords);
+			
+			track.add(fundamentalChords);
+			track.add(reversedChords);
+		}
+		
+		MidiWriter midiWriter = new MidiWriter("pachelbel.mid");
+		midiWriter.setTempo(50);
+		midiWriter.addTrack(track);
+		midiWriter.write();
+	}
+	
+	public static void firstPreludeBach()
+	{
+		DiatonicScale scale = new DiatonicScale(new Note(), Mode.IONIAN);
+		
+		TimeSignature signature = new TimeSignature("4/4");
+		
+		Grid grid = new Grid();
+		grid.add(Degree.I);
+		grid.add(Degree.I);
+		grid.add(Degree.II);
+		grid.add(Degree.II);
+		grid.add(Degree.V);
+		grid.add(Degree.V);
+		grid.add(Degree.I);
+		grid.add(Degree.I);
+		
+		ArrayList<Bar> accompanimentTrack = new ArrayList<Bar>();
+		ArrayList<Bar> arpeggioTrack = new ArrayList<Bar>();
+		
+		for(int degree : grid)
+		{
+			int[] deg = new int[]{degree};
+			
+			Bar acc;
+			if(degree == Degree.V)
+			{
+				acc = Bar.generateSimple(signature, scale, deg, 0, Chord.THIRD | Chord.FIFTH | Chord.SEVENTH, Chord.THIRD | Chord.FIFTH | Chord.SEVENTH, Chord.THIRD | Chord.FIFTH | Chord.SEVENTH);
+			}
+			else
+			{
+				acc = Bar.generateSimple(signature, scale, deg, 0, Chord.THIRD | Chord.FIFTH, Chord.THIRD | Chord.FIFTH, Chord.THIRD | Chord.FIFTH);
+			}
+			
+			accompanimentTrack.add(acc);
+			
+			Bar arp = Bar.generateArpeggio(signature, scale, degree);
+			arpeggioTrack.add(arp);
+		}
+		
+		MidiWriter writer = new MidiWriter("bach.mid");
+		writer.addTrack(accompanimentTrack, "acc");
+		writer.addTrack(arpeggioTrack, "arp");
+		writer.write();
 	}
 }
 
